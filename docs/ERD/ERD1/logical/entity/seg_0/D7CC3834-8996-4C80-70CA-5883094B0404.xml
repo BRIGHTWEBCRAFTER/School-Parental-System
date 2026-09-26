@@ -1,0 +1,174 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="D7CC3834-8996-4C80-70CA-5883094B0404" name="User">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 06:54:02 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="user_id" id="DF4D3F7B-E91F-98E8-91C8-6DCC7B6B8CB4">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:22:56 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>10</dataTypeSize>
+<ownDataTypeParameters>10,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="role_id" id="469973BD-2DE4-5636-6C56-48D8A4058AD7">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:28:24 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>20</dataTypeSize>
+<ownDataTypeParameters>20,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="school_id" id="11004AFB-F267-13D8-8900-8DB7ABDF277E">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:30:11 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<dataTypePrecision>30</dataTypePrecision>
+<ownDataTypeParameters>,30,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="full_name" id="DF465767-CF81-C3DA-8616-C1EE7AC3B53E">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:31:20 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="email" id="DC18B2BF-7E7B-7F80-6D69-9C1C7744EBE6">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:31:48 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100</dataTypeSize>
+<ownDataTypeParameters>100,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="password" id="3CA88FCD-6D37-5106-FF9F-33CFDA5DD3A2">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:32:35 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>250</dataTypeSize>
+<ownDataTypeParameters>250,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="access_code" id="8367F385-100F-6E89-40E4-A81CFD2D6A56">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:33:46 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>20</dataTypeSize>
+<ownDataTypeParameters>20,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="phone" id="BA10DC7E-97AE-2DC9-DF1F-5BC43522EED8">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:34:08 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>20</dataTypeSize>
+<ownDataTypeParameters>20,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="profile_picture" id="55813DA1-CCBC-65D9-CE65-FA5A55EDA767">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:34:35 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT010</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="is_active" id="196AFA85-1E29-B0B3-2C3C-6AFEBEEB61C8">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:35:10 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT006</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="created_at" id="B7552012-EC10-0B62-6DCD-83E4DC8183D8">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:35:42 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT047</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="252201B3-BD4D-FF7F-7829-207178805754" name="User PK">
+<createdBy>lehlo</createdBy>
+<createdTime>2026-09-25 07:26:02 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="5FBC08B4-3FF5-0A31-32F5-BAD2A89059DE" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>DF4D3F7B-E91F-98E8-91C8-6DCC7B6B8CB4</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>
