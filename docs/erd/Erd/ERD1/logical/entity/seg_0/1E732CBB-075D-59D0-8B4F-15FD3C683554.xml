@@ -1,0 +1,95 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="1E732CBB-075D-59D0-8B4F-15FD3C683554" name="Subject">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 00:21:36 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="subject_id" id="CADB3DD2-6C8A-DC1C-DB26-8CC198B5D702">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 00:21:57 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="description" id="32263696-EC03-1F50-AD3F-E043DE4D19FE">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 00:22:11 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="name" id="6E05700E-E11B-C61C-E62F-22A2A494F2B8">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 00:22:40 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="subject_code" id="9BB6E9AD-8F07-2617-6D65-4291F6A4E9FA">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 00:23:28 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="grade_level" id="8A376704-96D4-42E2-82F6-F163EB70424F">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 00:24:34 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="grade_id" id="51245C58-CFE3-94ED-0D71-BA1BBB18ECCE">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-24 20:23:32 UTC</createdTime>
+<generatorID>0289F378-BD43-2306-7364-D8E8DF097ECD</generatorID>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<referedAttribute>6958AE03-45BE-877D-16A4-A4C956E54F15</referedAttribute>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="30E239FC-5290-6E94-EDB5-78D1E338C459" name="Subject PK">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-24 12:44:22 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>CADB3DD2-6C8A-DC1C-DB26-8CC198B5D702</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

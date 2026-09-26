@@ -1,0 +1,115 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="154D87AF-53E1-141E-B978-AE200A47011A" name="ParentCommunication">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 01:15:11 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="message_id" id="EEE610A3-ACD6-2EFA-9A41-E213F8DB0464">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 01:15:46 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="parent_id(FK)" id="6C1553E4-EB0C-2EED-92A7-F6D9ED5476AF">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 01:16:42 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="student_id(FK)" id="3D1094CF-CFFD-D1F9-A3BE-9C32A8D2A581">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 01:17:04 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="sender_type" id="BF637FF9-6162-2167-F017-590CD1DCF0CE">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 01:18:04 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="message" id="6C94E38F-5361-5B75-4612-5171D25A6D3F">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 01:18:22 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="date_sent" id="A85C0F58-8AD2-1A97-0072-4E3EA23F684C">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 01:18:34 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="read_status" id="65F70263-C804-AE80-A1CE-9BEF1CB5935B">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 01:18:53 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="announcement_id" id="D10C3028-E68C-681B-944E-9B2C9E545E0B">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-24 16:57:25 UTC</createdTime>
+<generatorID>96ED0565-1C26-4506-F5AC-6A7AD1DE8B99</generatorID>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<referedAttribute>41BE080A-971D-F478-2E14-7E69DB3F7864</referedAttribute>
+<use>0</use>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="17DD7CBB-0A67-FBAF-0A5D-9AA86FF034E6" name="ParentCommunication PK">
+<createdBy>TA Nkuna</createdBy>
+<createdTime>2026-09-22 01:16:37 UTC</createdTime>
+<ownerDesignName>ERD1</ownerDesignName>
+<engineerTo>
+<item key="07A66FF9-27C8-DA30-49FB-FB87F27DE0E3" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>EEE610A3-ACD6-2EFA-9A41-E213F8DB0464</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>
