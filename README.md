@@ -1,11 +1,5 @@
 # School-Parental System
 
-![Status](https://img.shields.io/badge/Status-Phase%201%20Complete-brightgreen)
-![Phase](https://img.shields.io/badge/Phase-1%20Requirements-blue)
-![Module](https://img.shields.io/badge/Module-ITC327W-orange)
-![Year](https://img.shields.io/badge/Year-2026-purple)
-
----
 
 ## PROJECT OVERVIEW
 
@@ -52,7 +46,6 @@ A centralized platform that provides:
 | Group Name | Bright Web Crafters |
 | Module | ITC327W |
 | Institution | Central University of Technology (CUT) |
-| Phase | Phase 1 - Requirements Analysis |
 | Year | 2026 |
 | Repository | https://github.com/BRIGHTWEBCRAFTER/School-Parental-System |
 
@@ -60,12 +53,12 @@ A centralized platform that provides:
 
 | Name | Student Number | Role |
 |------|----------------|------|
-| [Name 1] | [Number] | Project Manager |
-| [Name 2] | [Number] | Backend Developer |
-| [Name 3] | [Number] | Frontend Developer |
-| [Name 4] | [Number] | UI/UX Designer |
-| [Name 5] | [Number] | Database Administrator |
-| [Name 6] | [Number] | Quality Assurance |
+| L.P Moshoeu | 223046876 | Team Leader |
+| A Sithole | 223000460 | Group Member |
+| M.A Nkuna | 224000274 | Group Member |
+| S.T Pheko | 223050336 | Group Member |
+| T.M.C Motone | 224027806 | Group Member |
+| P.A Luthada | 222023335 | Group Member |
 
 ---
 
@@ -433,31 +426,12 @@ The School-Parental System is an integrated platform designed to allow education
 ### Communication Requirements
 
 | # | Requirement | Priority |
-|---|-------------|----------|
+|----|-------------|----------|
 | NFR20 | Communication shall only be accessible to authorized users | Medium |
 | NFR21 | Unread communication shall be visually distinguished | Medium |
 | NFR22 | Important and Urgent announcements shall be visually distinguished | Medium |
 | NFR23 | The system shall provide clear feedback for Parent Acknowledgement | High |
 
----
-
-## DATA REQUIREMENTS
-
-### Data Entities
-
-| # | Entity | Key Fields |
-|---|--------|------------|
-| 1 | Schools | id, name, address, phone, email, logo_url, school_code, created_at |
-| 2 | Users | id, email, full_name, role, school_id, phone, is_active, created_at |
-| 3 | Students | id, admission_number, full_name, date_of_birth, gender, school_id, grade, parent_id, address |
-| 4 | Teachers | id, employee_id, user_id, school_id, specialization, joining_date |
-| 5 | Classes | id, name, code, school_id, grade, section, teacher_id, room_number, capacity |
-| 6 | Attendance | id, student_id, class_id, date, status, remarks, marked_by |
-| 7 | Grades | id, student_id, subject, assessment_name, assessment_type, score, grade_letter |
-| 8 | Announcements | id, school_id, created_by, title, content, priority, target_type, acknowledgement_required |
-| 9 | Announcement_Recipients | id, announcement_id, user_id, is_read, read_at, is_acknowledged, acknowledged_at |
-| 10 | Notifications | id, user_id, title, message, notification_type, is_read, read_at |
-| 11 | Events | id, school_id, created_by, event_name, description, event_date, venue |
 
 ### Storage Requirements
 
@@ -686,6 +660,671 @@ Following the feasibility study and risk analysis, the project prioritises:
 
 ---
 
+# PHASE 2 - SYSTEM ARCHITECTURE AND DESIGN
+
+---
+
+## PROJECT PROGRESS - PHASE 2
+
+### Completed
+
+- Phase 1 SRS (requirements, stakeholder engagement, feasibility)
+- System Architecture Design
+- Use Case Diagram (all actors and relationships)
+- Sequence Diagrams (Flutter+Supabase, ASP.NET+Supabase)
+- Entity Relationship Diagram (ERD)
+- Flutter Mobile Interface Designs
+- ASP.NET Web Interface Designs
+- Design Alignment Table
+- Microsoft Project Schedule
+- GitHub Repository Setup
+- Supabase Project Setup
+
+### Next Steps (Phase 3)
+
+- Flutter application development
+- ASP.NET Core Web API development
+- Supabase database implementation (tables, RLS policies)
+- Integration testing
+- User acceptance testing
+- Final presentation preparation
+
+---
+
+## PHASE 2 DELIVERABLES
+
+| # | Deliverable | Location | Status |
+|---|-------------|----------|--------|
+| 1 | System Architecture Diagram | docs/architecture/ | Complete |
+| 2 | Use Case Diagram | docs/uml/ | Complete |
+| 3 | Sequence Diagram 1 (Flutter + Supabase) | docs/uml/ | Complete |
+| 4 | Sequence Diagram 2 (ASP.NET + Supabase) | docs/uml/ | Complete |
+| 5 | Entity Relationship Diagram (ERD) | docs/erd/ | Complete |
+| 6 | Flutter Mobile Wireframes | docs/wireframes/flutter/ | Complete |
+| 7 | ASP.NET Web Wireframes | docs/wireframes/aspnet/ | Complete |
+| 8 | Design Alignment Table | docs/design-alignment/ | Complete |
+| 9 | Original Design Source Links | docs/design-sources/ | Complete |
+| 10 | Microsoft Project Schedule | project-management/microsoft-project/ | Complete |
+| 11 | Project Progress Tracker | project-management/progress-tracker/ | Complete |
+| 12 | Individual Contributions | docs/contributions/ | Complete |
+
+---
+
+## SYSTEM ARCHITECTURE
+
+### Three-Tier Architecture
+
+The School-Parental System follows a three-tier architecture that integrates a Flutter mobile application, an ASP.NET Core web application, and a shared Supabase backend.
+
+
+### Main User Roles
+
+| Role | Primary Interaction |
+|------|---------------------|
+| Super Admin | ASP.NET Web Application |
+| School Admin | ASP.NET Web Application |
+| Teacher | ASP.NET Web Application |
+| Parent | Flutter Mobile Application and Web Browser |
+
+### Flutter Mobile Application
+
+The Flutter mobile application is the primary interface for parents and guardians. Main responsibilities:
+
+- Parent login using email and password
+- Real-time attendance records for children
+- Academic grades and assessment results
+- School announcements with read/unread status
+- Parent acknowledgement for important announcements
+- Upcoming school events
+- Download term reports
+- Notifications for important updates
+- Direct messaging with school admin
+
+### ASP.NET Core Web Application
+
+The ASP.NET Core web application serves administrators and teachers. Main responsibilities:
+
+- Super Admin dashboard for managing multiple schools
+- School Admin dashboard for managing a single school
+- Manage students, teachers, and classes
+- Mark attendance and record grades
+- Create announcements and events
+- Communication statistics and read/acknowledgement tracking
+- Generate attendance and grade reports
+- Manage user accounts and access codes
+
+### Supabase Backend
+
+| Service | Purpose |
+|---------|---------|
+| PostgreSQL Database | Stores all system data |
+| Supabase Auth | Handles authentication for all user roles |
+| Row Level Security (RLS) | Enforces data access rules at the database level |
+| Supabase Storage | Stores profile pictures and documents |
+| Real-time Subscriptions | Enables real-time updates |
+
+### Data Flow
+
+1. Users interact with the Flutter mobile app or ASP.NET web application
+2. The client sends HTTPS requests to the ASP.NET Core Web API
+3. The API validates the JWT token and checks user permissions
+4. The API queries or updates the Supabase PostgreSQL database
+5. Supabase RLS policies enforce data access rules
+6. The API returns the response to the client
+7. The client displays the data to the user
+
+### Integration Explanation
+
+The three components operate as one integrated system:
+
+- The Flutter app and ASP.NET web app share the same backend API and database
+- Supabase Auth provides a single authentication system for all roles
+- JWT tokens are used consistently across both clients
+- Row Level Security ensures data isolation between schools and roles
+- Real-time subscriptions allow instant updates to all connected clients
+
+### Design Source Link
+
+| Design | Tool | Link |
+|--------|------|------|
+| System Architecture Diagram | Draw.io | [INSERT LINK] |
+
+---
+
+## UML DESIGN
+
+### Use Case Diagram
+
+
+#### System Boundary
+
+The School-Parental System is clearly labelled as the system boundary, with all use cases placed inside.
+
+#### Actors
+
+| Actor | Description |
+|-------|-------------|
+| Super Admin | Manages multiple schools and system-wide information |
+| School Admin | Manages a single school's data |
+| Teacher | Manages assigned classes, attendance, and grades |
+| Parent | Views children's information and school communication |
+
+#### Use Cases
+
+| Use Case | Actor | Description |
+|----------|-------|-------------|
+| Login | All Actors | Authenticate using credentials |
+| Manage Schools | Super Admin | Add, edit, or delete schools |
+| Manage School Admins | Super Admin | Add, edit, or remove school admins |
+| Manage Teachers | School Admin | Add, edit, or remove teachers |
+| Manage Students | School Admin | Add, edit, or remove students |
+| Manage Classes | School Admin | Create, edit, or assign classes |
+| Manage Subjects | School Admin | Create, edit, or remove subjects |
+| Mark Attendance | Teacher | Record attendance for assigned classes |
+| Record Grades | Teacher | Record grades for assigned students |
+| View Attendance | Parent, Teacher, School Admin | View attendance records |
+| View Grades | Parent, Teacher, School Admin | View grade records |
+| View Announcements | All Actors | View school announcements |
+| Send Message | Parent | Send messages to school admin |
+| View Messages | Parent, School Admin | View sent and received messages |
+| View Reports | School Admin, Super Admin | Generate and view reports |
+
+#### UML Relationships
+
+| Relationship | Where Used |
+|--------------|------------|
+| <<include>> | Login includes Authenticate |
+| <<extend>> | Send Message extends View Messages |
+| Generalization | Super Admin and School Admin are specialized Users |
+
+#### Design Source Link
+
+| Design | Tool | Link |
+|--------|------|------|
+| Use Case Diagram | Draw.io | [INSERT LINK] |
+
+---
+
+### Sequence Diagram 1: Parent Views Attendance (Flutter + Supabase)
+
+#### Participants
+
+| Participant | Role |
+|-------------|------|
+| Parent | End user |
+| Flutter App | Mobile client |
+| Supabase Auth | Authentication service |
+| Supabase Database | Data storage |
+
+#### Sequence of Interactions
+
+1. Parent opens the Flutter app
+2. Parent enters email and password
+3. Flutter app sends authentication request to Supabase Auth
+4. Supabase Auth validates credentials
+5. Supabase Auth returns JWT token
+6. Parent requests to view attendance
+7. Flutter app sends request to Supabase Database with JWT token
+8. Supabase Database validates token and checks RLS policies
+9. Supabase Database returns attendance records for the parent's child
+10. Flutter app displays attendance records to the parent
+
+#### Requirements Alignment
+
+| Requirement | Use Case |
+|-------------|----------|
+| P4 - Parent can view children's attendance | View Attendance |
+
+#### Design Source Link
+
+| Design | Tool | Link |
+|--------|------|------|
+| Sequence Diagram 1 | Draw.io | [INSERT LINK] |
+
+---
+
+### Sequence Diagram 2: Teacher Marks Attendance (ASP.NET + Supabase)
+
+
+#### Participants
+
+| Participant | Role |
+|-------------|------|
+| Teacher | End user |
+| ASP.NET Web App | Web client |
+| ASP.NET Web API | Backend service |
+| Supabase Database | Data storage |
+
+#### Sequence of Interactions
+
+1. Teacher logs into the ASP.NET web application
+2. ASP.NET Web API authenticates the teacher with Supabase Auth
+3. Supabase Auth returns JWT token
+4. Teacher selects a class and opens the attendance page
+5. Teacher marks each student as Present, Absent, or Late
+6. Teacher clicks Save Attendance
+7. ASP.NET Web API validates the teacher's role and class assignment
+8. ASP.NET Web API sends attendance records to Supabase Database
+9. Supabase Database validates RLS policies
+10. Supabase Database stores attendance records
+11. Supabase Database returns success response
+12. ASP.NET Web API returns confirmation to the web app
+13. Web app displays confirmation to the teacher
+
+#### Requirements Alignment
+
+| Requirement | Use Case |
+|-------------|----------|
+| T5 - Teacher can mark attendance for assigned classes | Mark Attendance |
+
+#### Design Source Link
+
+| Design | Tool | Link |
+|--------|------|------|
+| Sequence Diagram 2 | Draw.io | [INSERT LINK] |
+
+---
+
+## DATABASE DESIGN: ENTITY RELATIONSHIP DIAGRAM (ERD)
+
+
+
+### Entities and Tables
+
+| # | Entity | Description |
+|---|--------|-------------|
+| 1 | Super_Admin | System administrator |
+| 2 | School | School information |
+| 3 | School_Admin | School administrator |
+| 4 | Parent | Parent/Guardian |
+| 5 | Student | Student information |
+| 6 | Parent_Student | Links parents to students |
+| 7 | Class | Class information |
+| 8 | Teacher | Teacher information |
+| 9 | Subject | Subject information |
+| 10 | Attendance | Attendance records |
+| 11 | Grade | Grade records |
+| 12 | Message | Parent-School communication |
+
+### Entity Details
+
+#### Super_Admin
+
+| Field | Type | Key |
+|-------|------|-----|
+| super_admin_id | UUID | PK |
+| name | VARCHAR(255) | |
+| email | VARCHAR(255) | |
+| password | VARCHAR(255) | |
+| phone | VARCHAR(20) | |
+| created_at | TIMESTAMP | |
+
+#### School
+
+| Field | Type | Key |
+|-------|------|-----|
+| school_id | UUID | PK |
+| name | VARCHAR(255) | |
+| address | TEXT | |
+| contact_number | VARCHAR(20) | |
+| email | VARCHAR(255) | |
+| created_at | TIMESTAMP | |
+| super_admin_id | UUID | FK |
+
+#### School_Admin
+
+| Field | Type | Key |
+|-------|------|-----|
+| school_admin_id | UUID | PK |
+| name | VARCHAR(255) | |
+| email | VARCHAR(255) | |
+| password | VARCHAR(255) | |
+| phone | VARCHAR(20) | |
+| created_at | TIMESTAMP | |
+| school_id | UUID | FK |
+
+#### Parent
+
+| Field | Type | Key |
+|-------|------|-----|
+| parent_id | UUID | PK |
+| name | VARCHAR(255) | |
+| email | VARCHAR(255) | |
+| password | VARCHAR(255) | |
+| phone | VARCHAR(20) | |
+| address | TEXT | |
+| occupation | VARCHAR(255) | |
+| created_at | TIMESTAMP | |
+
+#### Student
+
+| Field | Type | Key |
+|-------|------|-----|
+| student_id | UUID | PK |
+| name | VARCHAR(255) | |
+| surname | VARCHAR(255) | |
+| date_of_birth | DATE | |
+| gender | VARCHAR(10) | |
+| email | VARCHAR(255) | |
+| phone | VARCHAR(20) | |
+| address | TEXT | |
+| enrollment_date | DATE | |
+| status | VARCHAR(20) | |
+| class_id | UUID | FK |
+| school_id | UUID | FK |
+
+#### Parent_Student
+
+| Field | Type | Key |
+|-------|------|-----|
+| parent_id | UUID | PK, FK |
+| student_id | UUID | PK, FK |
+| relationship | VARCHAR(50) | |
+| created_at | TIMESTAMP | |
+
+#### Class
+
+| Field | Type | Key |
+|-------|------|-----|
+| class_id | UUID | PK |
+| name | VARCHAR(50) | |
+| grade_level | VARCHAR(10) | |
+| section | VARCHAR(10) | |
+| created_at | TIMESTAMP | |
+| teacher_id | UUID | FK |
+| school_id | UUID | FK |
+
+#### Teacher
+
+| Field | Type | Key |
+|-------|------|-----|
+| teacher_id | UUID | PK |
+| name | VARCHAR(255) | |
+| email | VARCHAR(255) | |
+| password | VARCHAR(255) | |
+| phone | VARCHAR(20) | |
+| qualification | VARCHAR(255) | |
+| created_at | TIMESTAMP | |
+| school_id | UUID | FK |
+
+#### Subject
+
+| Field | Type | Key |
+|-------|------|-----|
+| subject_id | UUID | PK |
+| name | VARCHAR(100) | |
+| description | TEXT | |
+| created_at | TIMESTAMP | |
+
+#### Attendance
+
+| Field | Type | Key |
+|-------|------|-----|
+| attendance_id | UUID | PK |
+| date | DATE | |
+| status | VARCHAR(20) | |
+| remarks | TEXT | |
+| student_id | UUID | FK |
+| class_id | UUID | FK |
+| teacher_id | UUID | FK |
+
+#### Grade
+
+| Field | Type | Key |
+|-------|------|-----|
+| grade_id | UUID | PK |
+| subject | VARCHAR(100) | |
+| score | DECIMAL(5,2) | |
+| term | VARCHAR(20) | |
+| remarks | TEXT | |
+| student_id | UUID | FK |
+| teacher_id | UUID | FK |
+| class_id | UUID | FK |
+
+#### Message
+
+| Field | Type | Key |
+|-------|------|-----|
+| message_id | UUID | PK |
+| subject | VARCHAR(255) | |
+| message | TEXT | |
+| created_at | TIMESTAMP | |
+| sender_id | UUID | FK |
+| receiver_id | UUID | FK |
+
+### Primary Keys
+
+| Entity | Primary Key |
+|--------|-------------|
+| Super_Admin | super_admin_id |
+| School | school_id |
+| School_Admin | school_admin_id |
+| Parent | parent_id |
+| Student | student_id |
+| Parent_Student | parent_id, student_id |
+| Class | class_id |
+| Teacher | teacher_id |
+| Subject | subject_id |
+| Attendance | attendance_id |
+| Grade | grade_id |
+| Message | message_id |
+
+### Foreign Keys
+
+| Entity | Foreign Key | References |
+|--------|-------------|------------|
+| School | super_admin_id | Super_Admin(super_admin_id) |
+| School_Admin | school_id | School(school_id) |
+| Student | class_id | Class(class_id) |
+| Student | school_id | School(school_id) |
+| Parent_Student | parent_id | Parent(parent_id) |
+| Parent_Student | student_id | Student(student_id) |
+| Class | teacher_id | Teacher(teacher_id) |
+| Class | school_id | School(school_id) |
+| Teacher | school_id | School(school_id) |
+| Attendance | student_id | Student(student_id) |
+| Attendance | class_id | Class(class_id) |
+| Attendance | teacher_id | Teacher(teacher_id) |
+| Grade | student_id | Student(student_id) |
+| Grade | teacher_id | Teacher(teacher_id) |
+| Grade | class_id | Class(class_id) |
+| Message | sender_id | Parent(parent_id) |
+| Message | receiver_id | School_Admin(school_admin_id) |
+
+### Relationships and Cardinality
+
+| Relationship | Cardinality |
+|--------------|-------------|
+| Super_Admin manages School | One-to-Many |
+| School has School_Admin | One-to-Many |
+| School has Teacher | One-to-Many |
+| School has Student | One-to-Many |
+| School has Class | One-to-Many |
+| Parent has Student (via Parent_Student) | Many-to-Many |
+| Student enrolls in Class | Many-to-One |
+| Teacher teaches Class | One-to-One |
+| Teacher records Attendance | One-to-Many |
+| Teacher records Grade | One-to-Many |
+| Teacher has Subject | One-to-Many |
+| Class has Attendance | One-to-Many |
+| Class has Grade | One-to-Many |
+| Student has Attendance | One-to-Many |
+| Student has Grade | One-to-Many |
+| Parent sends Message | One-to-Many |
+| School_Admin receives Message | One-to-Many |
+
+### Design Source Link
+
+| Design | Tool | Link |
+|--------|------|------|
+| Entity Relationship Diagram | Draw.io | [INSERT LINK] |
+
+---
+
+## USER INTERFACE DESIGN
+
+### Flutter Mobile Screens
+
+| Screen | Description | Linked Requirement |
+|--------|-------------|-------------------|
+| Login | Parent login with email and password | P1 |
+| Parent Dashboard | Overview of child's information | P3 |
+| Attendance View | Monthly attendance records | P4 |
+| Grades View | Subject grades and assessments | P5 |
+| Announcements List | School announcements | P6 |
+| Events List | Upcoming and past events | P9 |
+| Reports | Download term reports | P7 |
+| Learner Profile | Child's personal information | P3 |
+| Messages | Send and receive messages | P8 |
+
+### ASP.NET Web Pages
+
+| Page | Description | Linked Requirement |
+|------|-------------|-------------------|
+| Admin Login | Admin login | SA12 |
+| Super Admin Dashboard | Overview of all schools | SA2, SA7 |
+| Manage Schools | Add, edit, delete schools | SA3, SA4, SA5 |
+| Add School | Create new school | SA3 |
+| School Details | View school information | SA2 |
+| School Admin Dashboard | Overview of single school | SA13 |
+| Manage Users | Manage learners, parents, teachers | SA6, SA14, SA16 |
+| Add Learner | Create new student | SA14 |
+| Add Parent | Create new parent | SA14 |
+| Add Teacher | Create new teacher | SA16 |
+| Class Management | Create and manage classes | SA18, SA19 |
+| Teacher Dashboard | Overview of assigned classes | T3 |
+| Class Details | View students in a class | T4 |
+| Mark Attendance | Record attendance for a class | T5 |
+| Attendance Records | View attendance history | T6 |
+| Record Grades | Record grades for students | T7 |
+| Create Announcement | Create and target announcements | SA22 |
+| Create Event | Create school events | SA23 |
+| Attendance Reports | School-wide attendance reports | SA20 |
+| Grade Reports | School-wide grade reports | SA21 |
+| Messages | View and respond to messages | SA25 |
+
+### Design Source Links
+
+| Design | Tool | Link |
+|--------|------|------|
+| Flutter Wireframes | Figma | [INSERT LINK] |
+| ASP.NET Wireframes | Figma | [INSERT LINK] |
+
+---
+
+## DESIGN ALIGNMENT TABLE
+
+| # | Requirement | Use Case | Sequence Diagram | ERD Element | Interface |
+|---|-------------|----------|------------------|-------------|-----------|
+| 1 | Parent views attendance | View Attendance | SD1: Parent Views Attendance | Attendance table | Flutter: Attendance View |
+| 2 | Teacher marks attendance | Mark Attendance | SD2: Teacher Marks Attendance | Attendance table | ASP.NET: Mark Attendance |
+| 3 | Parent views grades | View Grades | SD1: Parent Views Grades | Grade table | Flutter: Grades View |
+| 4 | Teacher records grades | Record Grades | SD2: Teacher Records Grades | Grade table | ASP.NET: Record Grades |
+| 5 | Admin manages students | Manage Students | SD2: Admin Adds Student | Student table | ASP.NET: Add Student |
+| 6 | Admin manages teachers | Manage Teachers | SD2: Admin Adds Teacher | Teacher table | ASP.NET: Add Teacher |
+| 7 | Admin manages classes | Manage Classes | SD2: Admin Creates Class | Class table | ASP.NET: Class Management |
+| 8 | Parent views announcements | View Announcements | SD1: Parent Views Announcements | Announcements table | Flutter: Announcements |
+| 9 | Parent sends message | Send Message | SD1: Parent Sends Message | Message table | Flutter: Messages |
+| 10 | Admin views messages | View Messages | SD2: Admin Views Messages | Message table | ASP.NET: Messages |
+| 11 | Parent views events | View Events | SD1: Parent Views Events | Events table | Flutter: Events |
+| 12 | Admin manages events | Manage Events | SD2: Admin Creates Event | Events table | ASP.NET: Create Event |
+| 13 | Admin views reports | View Reports | SD2: Admin Views Reports | Attendance, Grade | ASP.NET: Reports |
+| 14 | Super Admin manages schools | Manage Schools | SD2: Super Admin Adds School | School table | ASP.NET: Manage Schools |
+| 15 | Admin manages subjects | Manage Subjects | SD2: Admin Adds Subject | Subject table | ASP.NET: Subject Management |
+
+---
+
+## MICROSOFT PROJECT PLAN
+
+### Project Schedule Screenshot
+
+[INSERT MICROSOFT PROJECT SCREENSHOT HERE]
+
+### Project Activities
+
+| Phase | Activity | Start Date | End Date | Status |
+|-------|----------|------------|----------|--------|
+| Phase 1 | Requirements Analysis | [Date] | [Date] | Complete |
+| Phase 1 | Stakeholder Interviews | [Date] | [Date] | Complete |
+| Phase 1 | SRS Documentation | [Date] | [Date] | Complete |
+| Phase 2 | System Architecture Design | [Date] | [Date] | Complete |
+| Phase 2 | UML Diagrams | [Date] | [Date] | Complete |
+| Phase 2 | ERD Design | [Date] | [Date] | Complete |
+| Phase 2 | Wireframe Design | [Date] | [Date] | Complete |
+| Phase 2 | Design Alignment | [Date] | [Date] | Complete |
+| Phase 3 | Backend Development | [Date] | [Date] | Pending |
+| Phase 3 | Flutter Development | [Date] | [Date] | Pending |
+| Phase 3 | Integration Testing | [Date] | [Date] | Pending |
+| Phase 3 | Final Presentation | [Date] | [Date] | Pending |
+
+### Microsoft Project File
+
+| File | Location |
+|------|----------|
+| SchoolPortal_Schedule.mpp | project-management/microsoft-project/ |
+
+---
+
+## GITHUB AND PROJECT PROGRESS TRACKER
+
+### GitHub Repository
+
+Repository Link: https://github.com/BRIGHTWEBCRAFTER/School-Parental-System
+
+### Repository Structure
+
+| Folder | Contents |
+|--------|----------|
+| docs/SRS | SRS documents |
+| docs/architecture | System architecture diagram |
+| docs/uml | Use case and sequence diagrams |
+| docs/erd | Entity Relationship Diagram |
+| docs/wireframes/flutter | Flutter mobile wireframes |
+| docs/wireframes/aspnet | ASP.NET web wireframes |
+| docs/design-alignment | Design alignment table |
+| docs/design-sources | Original design file links |
+| docs/contributions | Individual contributions |
+| backend | ASP.NET Core API (Phase 3) |
+| mobile | Flutter app (Phase 3) |
+| database | SQL scripts |
+| project-management | MS Project and Progress Tracker |
+| presentations | Phase presentations |
+
+### Project Progress Tracker
+
+| File | Location |
+|------|----------|
+| ITC327W_Progress_Tracker.xlsx | project-management/progress-tracker/ |
+
+---
+
+## GROUP MEMBERS AND CONTRIBUTIONS
+
+| Student Name | Student Number | Phase 2 Responsibility |
+|--------------|----------------|------------------------|
+| LP Moshoeu | 223046876 | Figma Mobile Application |
+| A Sithole | 223000460 | Figma Web Application |
+| MA Nkuna | 224000274 | ERD |
+| ST Pheko | 223050336 | System Architecture |
+| TMC Motone | 224027806 | Sequence Diagram |
+| PA Luthanda | 222023335 | Use Case Diagram |
+
+---
+
+## ORIGINAL DESIGN SOURCE LINKS
+
+| Design | Tool Used | Source Link | Editable File |
+|--------|-----------|-------------|---------------|
+| System Architecture Diagram | Draw.io | [INSERT LINK] | system-architecture.drawio |
+| Use Case Diagram | Draw.io | [INSERT LINK] | use-case-diagram.drawio |
+| Sequence Diagram 1 | Draw.io | [INSERT LINK] | sequence-diagram-1.drawio |
+| Sequence Diagram 2 | Draw.io | [INSERT LINK] | sequence-diagram-2.drawio |
+| Entity Relationship Diagram | Draw.io | [INSERT LINK] | erd-diagram.drawio |
+| Flutter Wireframes | Figma | [INSERT LINK] | N/A |
+| ASP.NET Wireframes | Figma | [INSERT LINK] | N/A |
+
+---
+
 ## REFERENCES
 
 1. Microsoft. (2024). ASP.NET Core Documentation. https://learn.microsoft.com/en-us/aspnet/core/
@@ -714,7 +1353,6 @@ All AI-generated content was reviewed, validated, and modified by all group memb
 
 | Field | Details |
 |-------|---------|
-| Group Email | brightwebcrafters@cut.ac.za |
 | Institution | Central University of Technology |
 | Module | ITC327W |
 | Repository | https://github.com/BRIGHTWEBCRAFTER/School-Parental-System |
@@ -733,12 +1371,18 @@ Copyright 2026 Bright Web Crafters
 
 ## ACKNOWLEDGEMENTS
 
+- Central University of Technology (CUT)
 - Reitzpark Primary School
 - Lenakeng Technical School
 - Thabong Primary School
+- All stakeholders who participated in interviews
 
+---
 
+Last Updated: September 2026
 
 Phase 1 Status: Complete
 
-Next Phase: Phase 2 - System Architecture and Design
+Phase 2 Status: Complete
+
+Next Phase: Phase 3 - Development
