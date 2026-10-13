@@ -1,0 +1,190 @@
+﻿@{
+    var pageTitle = ViewData["Title"]?.ToString() ?? "School Admin";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@pageTitle - School-Parental System</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/school-admin-dashboard.css"
+          asp-append-version="true" />
+</head>
+
+<body>
+
+    <div class="admin-shell">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    <img src="~/images/dbe-logo.webp"
+                         alt="Department of Basic Education"
+                         class="dbe-logo" />
+                </div>
+
+                <div class="brand-title">
+                    School-Parental
+                    <br />
+                    System
+                </div>
+
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a class="nav-item @(currentAction == "Dashboard" ? "active" : "")"
+                   asp-controller="SchoolAdmin"
+                   asp-action="Dashboard">
+                    <i class="bi bi-grid-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a class="nav-item @(
+                currentAction == "Learners" ||
+                currentAction == "AddLearner" ||
+                currentAction == "LearnerDetails" ||
+                currentAction == "EditLearner"
+                ? "active"
+                : "")"
+                   asp-controller="SchoolAdmin"
+                   asp-action="Learners">
+
+                    <i class="bi bi-people"></i>
+                    <span>Learners</span>
+                </a>
+
+                <a class="nav-item" href="#">
+                    <i class="bi bi-person-workspace"></i>
+                    <span>Teachers</span>
+                </a>
+
+                <a class="nav-item" href="#">
+                    <i class="bi bi-easel"></i>
+                    <span>Classes</span>
+                </a>
+
+                <a class="nav-item" href="#">
+                    <i class="bi bi-person-hearts"></i>
+                    <span>Parents/Guardians</span>
+                </a>
+
+                <a class="nav-item" href="#">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Attendance</span>
+                </a>
+
+                <a class="nav-item" href="#">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Grades</span>
+                </a>
+
+                <a class="nav-item" href="#">
+                    <i class="bi bi-chat-left-text"></i>
+                    <span>Communication</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <a class="nav-item" href="#">
+                    <i class="bi bi-person-circle"></i>
+                    <span>Profile</span>
+                </a>
+
+                <form asp-controller="Auth"
+                      asp-action="Logout"
+                      method="post"
+                      class="logout-form">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="nav-item logout-button">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                        <span>Logout</span>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-area">
+
+            <!-- TOP BAR -->
+            <header class="topbar">
+
+                <div>
+                    <h1>@pageTitle</h1>
+                    <p>Manage today. Brighter tomorrows.</p>
+                </div>
+
+                <div class="topbar-right">
+
+                    <div class="search-box">
+                        <i class="bi bi-search"></i>
+
+                        <input type="text"
+                               placeholder="Search learners, teachers, classes..." />
+                    </div>
+
+                    <button class="notification-button"
+                            type="button">
+
+                        <i class="bi bi-bell"></i>
+
+                        <span class="notification-badge">
+                            6
+                        </span>
+
+                    </button>
+
+                    <div class="profile-summary">
+
+                        <div class="profile-avatar">
+                            SA
+                        </div>
+
+                        <div>
+                            <strong>
+                                @(User.Identity?.Name ?? "School Admin")
+                            </strong>
+                            <span>School Admin</span>
+                        </div>
+
+                        <i class="bi bi-chevron-down"></i>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+            @RenderBody()
+
+        </main>
+
+    </div>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

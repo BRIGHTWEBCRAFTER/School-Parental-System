@@ -1,0 +1,549 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.AddLearnerViewModel
+
+@{
+    ViewData["Title"] = "Add Learner";
+    Layout = "_SchoolAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+        <div>
+            <h2>Add Learner</h2>
+            <p>Register a new learner for your school.</p>
+        </div>
+
+        <a class="secondary-action"
+           asp-controller="SchoolAdmin"
+           asp-action="Learners">
+            <i class="bi bi-arrow-left"></i>
+            Back to Learners
+        </a>
+    </div>
+
+
+
+    <form asp-action="AddLearner"
+          method="post"
+          class="learner-form">
+
+        <div asp-validation-summary="All"
+             class="validation-summary">
+        </div>
+        @Html.AntiForgeryToken()
+
+
+        <section class="form-card">
+
+            <div class="form-section-header">
+                <i class="bi bi-person-vcard"></i>
+
+                <div>
+                    <h3>Learner Information</h3>
+                    <p>Enter the learner's personal and school details.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Admission Number</label>
+
+                    <div class="automatic-field">
+
+                        <i class="bi bi-magic"></i>
+
+                        <span>
+                            Automatically generated when the learner is saved
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="FullName"></label>
+                    <input asp-for="FullName"
+                           placeholder="Enter learner full name" />
+                    <span asp-validation-for="FullName"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DateOfBirth"></label>
+                    <input asp-for="DateOfBirth" />
+                    <span asp-validation-for="DateOfBirth"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Gender"></label>
+
+                    <select asp-for="Gender">
+                        <option value="">Select gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+
+                    <span asp-validation-for="Gender"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Grade"></label>
+
+                    <select asp-for="Grade">
+                        <option value="">Select grade</option>
+                        <option>Grade 8</option>
+                        <option>Grade 9</option>
+                        <option>Grade 10</option>
+                        <option>Grade 11</option>
+                        <option>Grade 12</option>
+                    </select>
+
+                    <span asp-validation-for="Grade"></span>
+                </div>
+
+                <div class="form-group">
+
+                    <label asp-for="ClassId">Class</label>
+
+                    <select asp-for="ClassId">
+
+                        <option value="">
+                            Select class
+                        </option>
+
+                        @foreach (var schoolClass in Model.AvailableClasses)
+                        {
+                            <option value="@schoolClass.Id">
+                                @schoolClass.Name
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="ClassId"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+                <div class="form-group full-width">
+                    <label asp-for="Address"></label>
+
+                    <textarea asp-for="Address"
+                              rows="3"
+                              placeholder="Enter home address"></textarea>
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="form-card">
+
+            <div class="form-section-header">
+                <i class="bi bi-person-hearts"></i>
+
+                <div>
+                    <h3>Guardian Information</h3>
+                    <p>Link guardian details to this learner.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group parent-search-group">
+
+    <label>
+        Parent / Guardian
+    </label>
+
+    <div class="parent-search-box">
+        <i class="bi bi-search"></i>
+
+        <input type="text"
+               id="parentSearchInput"
+               placeholder="Search guardian number, name, phone or email"
+               autocomplete="off" />
+    </div>
+
+    <input asp-for="ParentId"
+           type="hidden"
+           id="selectedParentId" />
+
+    <span asp-validation-for="ParentId"
+          class="field-validation-error">
+    </span>
+
+
+    <div id="parentSearchResults"
+         class="parent-search-results">
+    </div>
+
+
+    <div id="selectedParentCard"
+         class="selected-parent-card"
+         style="display:none;">
+
+        <div class="selected-parent-icon">
+            <i class="bi bi-person-check-fill"></i>
+        </div>
+
+        <div class="selected-parent-info">
+
+            <strong id="selectedParentName"></strong>
+
+            <span id="selectedParentDetails"></span>
+
+        </div>
+
+        <button type="button"
+                id="removeSelectedParent"
+                class="remove-parent-button"
+                title="Remove selected parent">
+
+            <i class="bi bi-x-lg"></i>
+
+        </button>
+
+    </div>
+
+</div>
+
+                <div class="form-group">
+
+                    <label asp-for="Relationship"></label>
+
+                    <select asp-for="Relationship">
+
+                        <option value="">
+                            Select relationship
+                        </option>
+
+                        <option value="Mother">Mother</option>
+
+                        <option value="Father">Father</option>
+
+                        <option value="Guardian">Guardian</option>
+
+                        <option value="Grandparent">Grandparent</option>
+
+                        <option value="Other">Other</option>
+
+                    </select>
+
+                    <span asp-validation-for="Relationship"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <div class="form-actions">
+
+            <a class="cancel-button"
+               asp-controller="SchoolAdmin"
+               asp-action="Learners">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="primary-action">
+
+                <i class="bi bi-check-circle-fill"></i>
+                Save Learner
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+<script>
+    const searchInput =
+        document.getElementById("parentSearchInput");
+
+    const resultsContainer =
+        document.getElementById("parentSearchResults");
+
+    const selectedParentId =
+        document.getElementById("selectedParentId");
+
+    const selectedCard =
+        document.getElementById("selectedParentCard");
+
+    const selectedName =
+        document.getElementById("selectedParentName");
+
+    const selectedDetails =
+        document.getElementById("selectedParentDetails");
+
+    const removeButton =
+        document.getElementById("removeSelectedParent");
+
+    let searchTimer;
+
+
+    searchInput.addEventListener("input", function () {
+
+        clearTimeout(searchTimer);
+
+        const query =
+            searchInput.value.trim();
+
+        if (query.length < 2) {
+
+            resultsContainer.innerHTML = "";
+
+            resultsContainer.classList.remove("open");
+
+            return;
+        }
+
+        searchTimer =
+            setTimeout(
+                () => searchParents(query),
+                300
+            );
+    });
+
+
+    async function searchParents(query) {
+
+        resultsContainer.innerHTML =
+            `<div class="parent-search-message">
+                    Searching...
+                 </div>`;
+
+        resultsContainer.classList.add("open");
+
+        try {
+
+            const response =
+                await fetch(
+                    `/SchoolAdmin/SearchParents?query=${encodeURIComponent(query)
+                    }`
+                );
+
+            if (!response.ok) {
+                throw new Error(
+                    "Parent search failed."
+                );
+            }
+
+            const parents =
+                await response.json();
+
+            renderParentResults(parents);
+
+        }
+        catch (error) {
+
+            console.error(
+                "Parent search error:",
+                error
+            );
+
+            resultsContainer.innerHTML =
+                `<div class="parent-search-message">
+                        Unable to search parents.
+                     </div>`;
+        }
+    }
+
+
+    function renderParentResults(parents) {
+
+        if (!parents || parents.length === 0) {
+
+            resultsContainer.innerHTML =
+                `<div class="parent-search-message">
+                        No matching parent or guardian found.
+                     </div>`;
+
+            resultsContainer.classList.add("open");
+
+            return;
+        }
+
+
+        resultsContainer.innerHTML =
+            parents.map(parent => {
+
+                /*
+                    ASP.NET normally sends camelCase:
+                    parentId
+                    guardianNumber
+                    fullName
+
+                    The fallback also supports snake_case.
+                */
+
+                const parentId =
+                    parent.parentId ??
+                    parent.parent_id ??
+                    "";
+
+                const fullName =
+                    parent.fullName ??
+                    parent.full_name ??
+                    "";
+
+                const guardianNumber =
+                    parent.guardianNumber ??
+                    parent.guardian_number ??
+                    "";
+
+                const phone =
+                    parent.phone ?? "";
+
+                const email =
+                    parent.email ?? "";
+
+
+                return `
+                        <button type="button"
+                                class="parent-result"
+                                data-id="${escapeHtml(parentId)}"
+                                data-name="${escapeHtml(fullName)}"
+                                data-guardian="${escapeHtml(guardianNumber)}"
+                                data-phone="${escapeHtml(phone)}"
+                                data-email="${escapeHtml(email)}">
+
+                            <div class="parent-result-info">
+
+                                <strong>
+                                    ${escapeHtml(fullName)}
+                                </strong>
+
+                                <span>
+                                    Guardian No:
+                                    ${escapeHtml(guardianNumber)}
+                                </span>
+
+                                ${phone
+                        ? `<span>
+                                           ${escapeHtml(phone)}
+                                       </span>`
+                        : ""
+                    }
+
+                                ${email
+                        ? `<span>
+                                           ${escapeHtml(email)}
+                                       </span>`
+                        : ""
+                    }
+
+                            </div>
+
+                            <span class="select-parent-text">
+                                Select
+                            </span>
+
+                        </button>
+                    `;
+
+            }).join("");
+
+
+        resultsContainer.classList.add("open");
+
+
+        document
+            .querySelectorAll(".parent-result")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        selectParent(
+                            this.dataset.id,
+                            this.dataset.name,
+                            this.dataset.guardian,
+                            this.dataset.phone
+                        );
+                    }
+                );
+            });
+    }
+
+
+    function selectParent(
+        id,
+        name,
+        guardianNumber,
+        phone) {
+
+        selectedParentId.value =
+            id;
+
+        selectedName.textContent =
+            name;
+
+        selectedDetails.textContent =
+            `${guardianNumber}${phone
+                ? " • " + phone
+                : ""
+            }`;
+
+        selectedCard.style.display =
+            "flex";
+
+        resultsContainer.innerHTML =
+            "";
+
+        resultsContainer.classList.remove("open");
+
+        searchInput.value =
+            "";
+
+        searchInput.style.display =
+            "none";
+    }
+
+
+    removeButton.addEventListener(
+        "click",
+        function () {
+
+            selectedParentId.value =
+                "";
+
+            selectedName.textContent =
+                "";
+
+            selectedDetails.textContent =
+                "";
+
+            selectedCard.style.display =
+                "none";
+
+            searchInput.style.display =
+                "block";
+
+            searchInput.value =
+                "";
+
+            searchInput.focus();
+        }
+    );
+
+
+    function escapeHtml(value) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent =
+            value ?? "";
+
+        return div.innerHTML;
+    }
+</script>

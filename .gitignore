@@ -1,0 +1,7 @@
+
+# ASP.NET / Visual Studio local files
+web/.vs/
+web/**/bin/
+web/**/obj/
+web/**/*.user
+web/**/*.suo

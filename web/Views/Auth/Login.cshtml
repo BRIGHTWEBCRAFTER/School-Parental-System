@@ -1,0 +1,301 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Log In";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>Log In - School-Parental System</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/login.css"
+          asp-append-version="true" />
+</head>
+
+<body>
+
+    <div class="login-page">
+
+        <!-- LEFT BRAND PANEL -->
+        <aside class="login-brand-panel">
+
+            <div class="brand-top">
+
+                <div class="login-brand-header">
+
+                    <div class="login-dbe-logo">
+                        <img src="~/images/dbe-logo.webp"
+                             alt="Department of Basic Education" />
+                    </div>
+
+                    <div class="login-system-name">
+                        School-Parental
+                        <br />
+                        System
+                    </div>
+
+                </div>
+
+                <div class="gold-line"></div>
+
+
+                <div class="welcome-copy">
+
+                    <h1>Welcome back</h1>
+
+                    <p>
+                        Secure access for school staff
+                        and administrators.
+                    </p>
+
+                </div>
+
+
+                <div class="benefits-list">
+
+                    <div class="benefit-item">
+
+                        <div class="benefit-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+
+                        <div>
+                            <strong>Safe &amp; Secure</strong>
+                            <span>Your school data is protected</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="benefit-item">
+
+                        <div class="benefit-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+
+                        <div>
+                            <strong>Connected Community</strong>
+                            <span>Schools, parents and teachers together</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="benefit-item">
+
+                        <div class="benefit-icon">
+                            <i class="bi bi-bar-chart-fill"></i>
+                        </div>
+
+                        <div>
+                            <strong>Better Learning Outcomes</strong>
+                            <span>Together for a brighter future</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Decorative background scene -->
+            <div class="school-art">
+
+                <div class="gold-sun"></div>
+
+                <div class="hill hill-back"></div>
+
+                <div class="hill hill-front"></div>
+
+            </div>
+
+
+            <div class="brand-footer">
+                Better People
+                <br />
+                Brighter Tomorrow
+            </div>
+
+        </aside>
+
+
+        <!-- RIGHT LOGIN AREA -->
+        <main class="login-content">
+
+            <div class="support-link">
+                <span>Need help?</span>
+                <a href="#">Contact Support</a>
+            </div>
+
+
+            <div class="login-content-inner">
+
+                <div class="portal-heading">
+
+                    <div class="portal-icon">
+                        <i class="bi bi-buildings-fill"></i>
+                    </div>
+
+                    <div>
+                        <strong>School-Parental System</strong>
+                        <span>Learn Today. Lead Tomorrow.</span>
+                    </div>
+
+                </div>
+
+
+                <section class="login-card">
+
+                    <div class="login-card-heading">
+
+                        <h2>Log In</h2>
+
+                        <p>
+                            Sign in to continue to your dashboard.
+                        </p>
+
+                    </div>
+
+
+                    <form asp-controller="Auth"
+                          asp-action="Login"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="validation-summary">
+                        </div>
+
+
+                        <div class="login-form-group">
+
+                            <label asp-for="Email"></label>
+
+                            <div class="login-input">
+
+                                <i class="bi bi-envelope"></i>
+
+                                <input asp-for="Email"
+                                       placeholder="Enter your email address"
+                                       autocomplete="email" />
+
+                            </div>
+
+                            <span asp-validation-for="Email"
+                                  class="field-validation-error">
+                            </span>
+
+                        </div>
+
+
+                        <div class="login-form-group">
+
+                            <label asp-for="Password"></label>
+
+                            <div class="login-input">
+
+                                <i class="bi bi-lock"></i>
+
+                                <input asp-for="Password"
+                                       id="loginPassword"
+                                       placeholder="Enter your password"
+                                       autocomplete="current-password" />
+
+                                <button type="button"
+                                        class="password-toggle"
+                                        id="passwordToggle"
+                                        aria-label="Show or hide password">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </button>
+
+                            </div>
+
+                            <span asp-validation-for="Password"
+                                  class="field-validation-error">
+                            </span>
+
+                        </div>
+
+
+                        <div class="login-options">
+
+                            <span class="secure-login">
+                                <i class="bi bi-shield-lock"></i>
+                                Secure login
+                            </span>
+
+                            <a asp-controller="Auth"
+                               asp-action="ForgotPassword"
+                               class="forgot-password">
+                                Forgot Password?
+                            </a>
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="login-submit">
+
+                            <span>Log In</span>
+
+                            <i class="bi bi-arrow-right"></i>
+
+                        </button>
+
+                    </form>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <script>
+
+        const passwordInput =
+            document.getElementById("loginPassword");
+
+        const passwordToggle =
+            document.getElementById("passwordToggle");
+
+        passwordToggle.addEventListener("click", function () {
+
+            const showingPassword =
+                passwordInput.type === "text";
+
+            passwordInput.type =
+                showingPassword
+                    ? "password"
+                    : "text";
+
+            passwordToggle.innerHTML =
+                showingPassword
+                    ? '<i class="bi bi-eye"></i>'
+                    : '<i class="bi bi-eye-slash"></i>';
+
+        });
+
+    </script>
+
+</body>
+</html>

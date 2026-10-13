@@ -1,0 +1,298 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.LearnersPageViewModel
+
+@{
+    ViewData["Title"] = "Learner Management";
+    Layout = "_SchoolAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+        <div>
+            <h2>Learners</h2>
+            <p>Manage learner records for your school.</p>
+        </div>
+
+        <a class="primary-action"
+           asp-controller="SchoolAdmin"
+           asp-action="AddLearner">
+
+            <i class="bi bi-person-plus-fill"></i>
+            Add Learner
+        </a>
+    </div>
+
+    <div class="learner-summary-grid">
+
+        <div class="summary-card">
+            <div class="summary-icon gold">
+                <i class="bi bi-people-fill"></i>
+            </div>
+
+            <div>
+                <span>Total Learners</span>
+                <strong>@Model.TotalLearners</strong>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-icon green-summary">
+                <i class="bi bi-person-check-fill"></i>
+            </div>
+
+            <div>
+                <span>Active Learners</span>
+                <strong>@Model.ActiveLearners</strong>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-icon muted-summary">
+                <i class="bi bi-person-dash-fill"></i>
+            </div>
+
+            <div>
+                <span>Inactive Learners</span>
+                <strong>@Model.InactiveLearners</strong>
+            </div>
+        </div>
+
+    </div>
+
+    <section class="panel learner-management-panel">
+
+        <div class="learner-toolbar">
+
+            <div class="table-search">
+                <i class="bi bi-search"></i>
+
+                <input type="text"
+                       placeholder="Search by learner name or admission number..." />
+            </div>
+
+            <div class="learner-filters">
+
+                <select>
+                    <option>All Grades</option>
+                    <option>Grade 8</option>
+                    <option>Grade 9</option>
+                    <option>Grade 10</option>
+                    <option>Grade 11</option>
+                    <option>Grade 12</option>
+                </select>
+
+                <select>
+                    <option>All Statuses</option>
+                    <option>Active</option>
+                    <option>Inactive</option>
+                </select>
+
+            </div>
+
+        </div>
+
+        <div class="table-wrapper learner-table-wrapper">
+
+            <table class="learner-table">
+
+                <thead>
+                    <tr>
+                        <th>Admission No.</th>
+                        <th>Learner</th>
+                        <th>Grade</th>
+                        <th>Class</th>
+                        <th>Gender</th>
+                        <th>Guardian</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var learner in Model.Learners)
+                    {
+                        <tr>
+
+                            <td>
+                                <strong>@learner.AdmissionNumber</strong>
+                            </td>
+
+                            <td>
+                                <div class="learner-name-cell">
+                                    <div class="learner-avatar">
+                                        @learner.FullName.Substring(0, 1)
+                                    </div>
+
+                                    <span>@learner.FullName</span>
+                                </div>
+                            </td>
+
+                            <td>@learner.Grade</td>
+
+                            <td>@learner.ClassName</td>
+
+                            <td>@learner.Gender</td>
+
+                            <td>@learner.GuardianName</td>
+
+                            <td>
+                                <span class="learner-status
+                                      @(learner.Status == "Active"
+                                          ? "active-status"
+                                          : "inactive-status")">
+                                    @learner.Status
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="learner-actions">
+
+                                    <button type="button"
+                                            class="more-actions-button"
+                                            aria-label="Learner actions">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+
+                                    <div class="learner-action-menu">
+
+                                        <a asp-controller="SchoolAdmin"
+                                           asp-action="LearnerDetails"
+                                           asp-route-id="@learner.Id"
+                                           class="action-icon view-action"
+                                           title="View learner">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+
+                                        <a asp-controller="SchoolAdmin"
+                                           asp-action="EditLearner"
+                                           asp-route-id="@learner.Id"
+                                           class="action-icon edit-action"
+                                           title="Edit learner">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+
+                                        @if (learner.Status == "Active")
+                                        {
+                                            <form asp-controller="SchoolAdmin"
+                                                  asp-action="DeactivateLearner"
+                                                  asp-route-id="@learner.Id"
+                                                  method="post">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="action-icon deactivate-action"
+                                                        title="Deactivate learner">
+                                                    <i class="bi bi-person-dash-fill"></i>
+                                                </button>
+
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-controller="SchoolAdmin"
+                                                  asp-action="ReactivateLearner"
+                                                  asp-route-id="@learner.Id"
+                                                  method="post">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="action-icon reactivate-action"
+                                                        title="Reactivate learner">
+                                                    <i class="bi bi-person-check-fill"></i>
+                                                </button>
+
+                                            </form>
+                                        }
+
+                                    </div>
+
+                                </div>
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</section>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="page-success-message">
+
+        <i class="bi bi-check-circle-fill"></i>
+
+        <span>
+            @TempData["SuccessMessage"]
+        </span>
+
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="page-error-message">
+
+        <i class="bi bi-exclamation-circle-fill"></i>
+
+        <span>
+            @TempData["ErrorMessage"]
+        </span>
+
+    </div>
+}
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const actionContainers =
+                document.querySelectorAll(".learner-actions");
+
+            actionContainers.forEach(container => {
+
+                const moreButton =
+                    container.querySelector(".more-actions-button");
+
+                moreButton.addEventListener("click", function (event) {
+
+                    event.stopPropagation();
+
+                    // Close every other learner's menu
+                    actionContainers.forEach(otherContainer => {
+                        if (otherContainer !== container) {
+                            otherContainer.classList.remove("open");
+                        }
+                    });
+
+                    // Toggle this learner's menu
+                    container.classList.toggle("open");
+                });
+
+                // Prevent clicks inside menu from triggering
+                // the document click handler
+                const menu =
+                    container.querySelector(".learner-action-menu");
+
+                menu.addEventListener("click", function (event) {
+                    event.stopPropagation();
+                });
+            });
+
+            // Clicking anywhere else restores all rows to ⋮
+            document.addEventListener("click", function () {
+                actionContainers.forEach(container => {
+                    container.classList.remove("open");
+                });
+            });
+
+        });
+    </script>
+}

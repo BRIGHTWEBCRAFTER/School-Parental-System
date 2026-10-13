@@ -1,0 +1,204 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.LearnerDetailsViewModel
+
+@{
+    ViewData["Title"] = "Learner Details";
+    Layout = "_SchoolAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+            <h2>Learner Details</h2>
+            <p>View learner, school and guardian information.</p>
+        </div>
+
+        <div class="details-heading-actions">
+
+            <a class="secondary-action"
+               asp-action="Learners">
+                <i class="bi bi-arrow-left"></i>
+                Back
+            </a>
+
+            <a class="primary-action"
+               asp-action="EditLearner"
+               asp-route-id="@Model.Id">
+                <i class="bi bi-pencil-square"></i>
+                Edit Learner
+            </a>
+            @if (Model.IsActive)
+            {
+                <form asp-action="DeactivateLearner"
+                      asp-route-id="@Model.Id"
+                      method="post"
+                      class="inline-form">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="danger-action">
+                        <i class="bi bi-person-dash-fill"></i>
+                        Deactivate Learner
+                    </button>
+
+                </form>
+            }
+            else
+            {
+                <form asp-action="ReactivateLearner"
+                      asp-route-id="@Model.Id"
+                      method="post"
+                      class="inline-form">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="reactivate-action">
+                        <i class="bi bi-person-check-fill"></i>
+                        Reactivate Learner
+                    </button>
+
+                </form>
+            }
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public IActionResult DeactivateLearner(string id)
+            {
+            // Supabase update later:
+            // is_active = false
+
+            TempData["SuccessMessage"] = "Learner deactivated successfully.";
+
+            return RedirectToAction(
+            nameof(LearnerDetails),
+            new { id }
+            );
+            }
+
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public IActionResult ReactivateLearner(string id)
+            {
+            // Supabase update later:
+            // is_active = true
+
+            TempData["SuccessMessage"] = "Learner reactivated successfully.";
+
+            return RedirectToAction(
+            nameof(LearnerDetails),
+            new { id }
+            );
+            }
+
+        </div>
+
+    </div>
+
+    <div class="learner-profile-card">
+
+        <div class="large-learner-avatar">
+            @Model.FullName.Substring(0, 1)
+        </div>
+
+        <div class="learner-profile-heading">
+
+            <h2>@Model.FullName</h2>
+
+            <p>
+                @Model.AdmissionNumber · @Model.Grade · @Model.ClassName
+            </p>
+
+            <span class="learner-status @(Model.IsActive ? "active-status" : "inactive-status")">
+                @(Model.IsActive ? "Active" : "Inactive")
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="details-grid">
+
+        <section class="form-card">
+
+            <div class="form-section-header">
+                <i class="bi bi-person-vcard"></i>
+
+                <div>
+                    <h3>Personal Information</h3>
+                    <p>Learner personal details.</p>
+                </div>
+            </div>
+
+            <div class="information-grid">
+
+                <div class="information-item">
+                    <span>Admission Number</span>
+                    <strong>@Model.AdmissionNumber</strong>
+                </div>
+
+                <div class="information-item">
+                    <span>Full Name</span>
+                    <strong>@Model.FullName</strong>
+                </div>
+
+                <div class="information-item">
+                    <span>Date of Birth</span>
+                    <strong>@Model.DateOfBirth?.ToString("dd MMMM yyyy")</strong>
+                </div>
+
+                <div class="information-item">
+                    <span>Gender</span>
+                    <strong>@Model.Gender</strong>
+                </div>
+
+                <div class="information-item">
+                    <span>Grade</span>
+                    <strong>@Model.Grade</strong>
+                </div>
+
+                <div class="information-item">
+                    <span>Class</span>
+                    <strong>@Model.ClassName</strong>
+                </div>
+
+                <div class="information-item full-information-item">
+                    <span>Address</span>
+                    <strong>@Model.Address</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="form-card">
+
+            <div class="form-section-header">
+                <i class="bi bi-person-hearts"></i>
+
+                <div>
+                    <h3>Guardian Information</h3>
+                    <p>Linked guardian information.</p>
+                </div>
+            </div>
+
+            <div class="information-grid">
+
+                <div class="information-item">
+                    <span>Guardian</span>
+                    <strong>@Model.GuardianName</strong>
+                </div>
+
+                <div class="information-item">
+                    <span>Relationship</span>
+                    <strong>@Model.Relationship</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</section>
