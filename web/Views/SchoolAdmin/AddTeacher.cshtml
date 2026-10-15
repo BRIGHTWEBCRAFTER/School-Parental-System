@@ -1,0 +1,292 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.AddTeacherViewModel
+
+@{
+    ViewData["Title"] = "Add Teacher";
+    Layout = "_SchoolAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+            <h2>Add Teacher</h2>
+
+            <p>
+                Register and invite a teacher to your school.
+            </p>
+        </div>
+
+
+        <a class="secondary-action"
+           asp-controller="SchoolAdmin"
+           asp-action="Teachers">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Teachers
+
+        </a>
+
+    </div>
+
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="AddTeacher"
+          method="post"
+          class="learner-form">
+
+        @Html.AntiForgeryToken()
+
+
+        <div asp-validation-summary="ModelOnly"
+             class="validation-summary">
+        </div>
+
+
+        <!-- ACCOUNT INFORMATION -->
+        <section class="form-card">
+
+            <div class="form-section-header">
+
+                <i class="bi bi-person-badge-fill"></i>
+
+                <div>
+                    <h3>Teacher Information</h3>
+
+                    <p>
+                        Enter the teacher's personal
+                        and employment details.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label asp-for="FullName"></label>
+
+                    <input asp-for="FullName"
+                           placeholder="Enter teacher full name" />
+
+                    <span asp-validation-for="FullName"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Employee ID</label>
+
+                    <input type="text"
+                           value="Generated automatically"
+                           readonly />
+
+                    <small>
+                        The system will assign the next available teacher number.
+                    </small>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label asp-for="Email"></label>
+
+                    <input asp-for="Email"
+                           type="email"
+                           placeholder="teacher@example.com" />
+
+                    <span asp-validation-for="Email"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Phone"></label>
+
+                    <input asp-for="Phone"
+                           placeholder="+27..." />
+
+                    <span asp-validation-for="Phone"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Specialization"></label>
+
+                    <input asp-for="Specialization"
+                           placeholder="e.g. Mathematics" />
+
+                    <span asp-validation-for="Specialization"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="JoiningDate"></label>
+
+                    <input asp-for="JoiningDate"
+                           type="date" />
+
+                    <span asp-validation-for="JoiningDate"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="DateOfBirth"></label>
+
+                    <input asp-for="DateOfBirth"
+                           type="date" />
+
+                    <span asp-validation-for="DateOfBirth"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Gender"></label>
+
+                    <select asp-for="Gender">
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="Gender"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="AlternativePhone"></label>
+
+                    <input asp-for="AlternativePhone"
+                           placeholder="Alternative contact number" />
+
+                    <span asp-validation-for="AlternativePhone"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label asp-for="Address"></label>
+
+                    <textarea asp-for="Address"
+                              rows="3"
+                              placeholder="Enter home address">
+                    </textarea>
+
+                    <span asp-validation-for="Address"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- INVITATION INFORMATION -->
+        <section class="form-card">
+
+            <div class="form-section-header">
+
+                <i class="bi bi-envelope-check-fill"></i>
+
+                <div>
+                    <h3>Account Invitation</h3>
+
+                    <p>
+                        The teacher will receive an email
+                        invitation to activate their account.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="teacher-invite-note">
+
+                <i class="bi bi-info-circle-fill"></i>
+
+                <div>
+                    <strong>
+                        No password is created here.
+                    </strong>
+
+                    <span>
+                        Supabase Auth will send the invitation
+                        to the teacher's email address.
+                    </span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div class="form-actions">
+
+            <a class="cancel-button"
+               asp-controller="SchoolAdmin"
+               asp-action="Teachers">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="primary-action">
+
+                <i class="bi bi-envelope-plus-fill"></i>
+                Invite Teacher
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>

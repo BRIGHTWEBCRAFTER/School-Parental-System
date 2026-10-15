@@ -28,22 +28,17 @@
                 <i class="bi bi-pencil-square"></i>
                 Edit Learner
             </a>
+
             @if (Model.IsActive)
             {
-                <form asp-action="DeactivateLearner"
-                      asp-route-id="@Model.Id"
-                      method="post"
-                      class="inline-form">
+                <button type="button"
+                        class="danger-action"
+                        id="openDeactivateModal">
 
-                    @Html.AntiForgeryToken()
+                    <i class="bi bi-person-dash-fill"></i>
+                    Deactivate Learner
 
-                    <button type="submit"
-                            class="danger-action">
-                        <i class="bi bi-person-dash-fill"></i>
-                        Deactivate Learner
-                    </button>
-
-                </form>
+                </button>
             }
             else
             {
@@ -62,61 +57,80 @@
 
                 </form>
             }
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public IActionResult DeactivateLearner(string id)
-            {
-            // Supabase update later:
-            // is_active = false
-
-            TempData["SuccessMessage"] = "Learner deactivated successfully.";
-
-            return RedirectToAction(
-            nameof(LearnerDetails),
-            new { id }
-            );
-            }
-
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public IActionResult ReactivateLearner(string id)
-            {
-            // Supabase update later:
-            // is_active = true
-
-            TempData["SuccessMessage"] = "Learner reactivated successfully.";
-
-            return RedirectToAction(
-            nameof(LearnerDetails),
-            new { id }
-            );
-            }
 
         </div>
 
     </div>
+
 
     <div class="learner-profile-card">
 
-        <div class="large-learner-avatar">
-            @Model.FullName.Substring(0, 1)
+        <div>
+            <label>Full Name</label>
+            <strong>@Model.FullName</strong>
         </div>
 
-        <div class="learner-profile-heading">
+        <div>
+            <label>Admission Number</label>
+            <strong>@Model.AdmissionNumber</strong>
+        </div>
 
-            <h2>@Model.FullName</h2>
+        <div>
+            <label>Date of Birth</label>
+            <strong>
+                @(Model.DateOfBirth.HasValue
+                    ? Model.DateOfBirth.Value.ToString("dd MMMM yyyy")
+                    : "Not provided")
+            </strong>
+        </div>
 
-            <p>
-                @Model.AdmissionNumber · @Model.Grade · @Model.ClassName
-            </p>
+        <div>
+            <label>Gender</label>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.Gender)
+                    ? "Not provided"
+                    : Model.Gender)
+            </strong>
+        </div>
 
-            <span class="learner-status @(Model.IsActive ? "active-status" : "inactive-status")">
-                @(Model.IsActive ? "Active" : "Inactive")
-            </span>
+        <div>
+            <label>Grade</label>
+            <strong>@Model.Grade</strong>
+        </div>
 
+        <div>
+            <label>Class</label>
+            <strong>@Model.ClassName</strong>
+        </div>
+
+        <div>
+            <label>Address</label>
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.Address)
+                    ? "Not provided"
+                    : Model.Address)
+            </strong>
+        </div>
+
+        <div>
+            <label>Status</label>
+
+            @if (Model.IsActive)
+            {
+                <span class="status-badge active">
+                    Active
+                </span>
+            }
+            else
+            {
+                <span class="status-badge inactive">
+                    Inactive
+                </span>
+            }
         </div>
 
     </div>
+
 
     <div class="details-grid">
 
@@ -127,7 +141,7 @@
 
                 <div>
                     <h3>Personal Information</h3>
-                    <p>Learner personal details.</p>
+                    <p>Learner personal and school details.</p>
                 </div>
             </div>
 
@@ -145,12 +159,20 @@
 
                 <div class="information-item">
                     <span>Date of Birth</span>
-                    <strong>@Model.DateOfBirth?.ToString("dd MMMM yyyy")</strong>
+                    <strong>
+                        @(Model.DateOfBirth.HasValue
+                            ? Model.DateOfBirth.Value.ToString("dd MMMM yyyy")
+                            : "Not provided")
+                    </strong>
                 </div>
 
                 <div class="information-item">
                     <span>Gender</span>
-                    <strong>@Model.Gender</strong>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.Gender)
+                            ? "Not provided"
+                            : Model.Gender)
+                    </strong>
                 </div>
 
                 <div class="information-item">
@@ -165,34 +187,70 @@
 
                 <div class="information-item full-information-item">
                     <span>Address</span>
-                    <strong>@Model.Address</strong>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.Address)
+                            ? "Not provided"
+                            : Model.Address)
+                    </strong>
                 </div>
 
             </div>
 
         </section>
 
+
         <section class="form-card">
 
             <div class="form-section-header">
-                <i class="bi bi-person-hearts"></i>
+                <i class="bi bi-people-fill"></i>
 
                 <div>
                     <h3>Guardian Information</h3>
-                    <p>Linked guardian information.</p>
+                    <p>Registered parent or guardian linked to this learner.</p>
                 </div>
             </div>
 
             <div class="information-grid">
 
                 <div class="information-item">
-                    <span>Guardian</span>
+                    <span>Parent / Guardian</span>
                     <strong>@Model.GuardianName</strong>
                 </div>
 
                 <div class="information-item">
+                    <span>Guardian Number</span>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.GuardianNumber)
+                            ? "Not available"
+                            : Model.GuardianNumber)
+                    </strong>
+                </div>
+
+                <div class="information-item">
                     <span>Relationship</span>
-                    <strong>@Model.Relationship</strong>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.Relationship)
+                            ? "Not available"
+                            : Model.Relationship)
+                    </strong>
+                </div>
+
+                <div class="information-item">
+                    <span>Phone Number</span>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.GuardianPhone)
+                            ? "Not provided"
+                            : Model.GuardianPhone)
+                    </strong>
+                </div>
+
+                <div class="information-item full-information-item">
+                    <span>Email Address</span>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.GuardianEmail)
+                            ? "Not provided"
+                            : Model.GuardianEmail)
+                    </strong>
                 </div>
 
             </div>
@@ -201,4 +259,150 @@
 
     </div>
 
+    
+
 </section>
+
+@if (Model.IsActive)
+{
+    <div id="deactivateModal"
+         class="confirmation-overlay">
+
+        <div class="confirmation-card"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="deactivateModalTitle">
+
+            <div class="confirmation-icon danger">
+                <i class="bi bi-trash3-fill"></i>
+            </div>
+
+            <h3 id="deactivateModalTitle">
+                Deactivate Learner?
+            </h3>
+
+            <p class="confirmation-message">
+                Are you sure you want to deactivate this learner?
+                The learner record will remain in the system,
+                but they will no longer be active.
+            </p>
+
+            <div class="confirmation-learner">
+
+                <span>Learner:</span>
+
+                <strong>
+                    @Model.FullName
+                </strong>
+
+            </div>
+
+            <div class="confirmation-actions">
+
+                <button type="button"
+                        class="confirmation-cancel"
+                        id="cancelDeactivate">
+
+                    Cancel
+
+                </button>
+
+
+                <form asp-controller="SchoolAdmin"
+                      asp-action="DeactivateLearner"
+                      asp-route-id="@Model.Id"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="confirmation-deactivate">
+                        Deactivate
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+<script>
+    const deactivateModal =
+        document.getElementById("deactivateModal");
+
+    const openDeactivateModal =
+        document.getElementById("openDeactivateModal");
+
+    const cancelDeactivate =
+        document.getElementById("cancelDeactivate");
+
+
+    if (openDeactivateModal && deactivateModal) {
+
+        openDeactivateModal.addEventListener(
+            "click",
+            function () {
+
+                deactivateModal.classList.add("show");
+
+                document.body.classList.add(
+                    "modal-open"
+                );
+            }
+        );
+    }
+
+
+    if (cancelDeactivate && deactivateModal) {
+
+        cancelDeactivate.addEventListener(
+            "click",
+            function () {
+
+                closeDeactivateModal();
+            }
+        );
+    }
+
+
+    if (deactivateModal) {
+
+        deactivateModal.addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target === deactivateModal) {
+
+                    closeDeactivateModal();
+                }
+            }
+        );
+    }
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Escape" &&
+                deactivateModal &&
+                deactivateModal.classList.contains("show")) {
+
+                closeDeactivateModal();
+            }
+        }
+    );
+
+
+    function closeDeactivateModal() {
+
+        deactivateModal.classList.remove("show");
+
+        document.body.classList.remove(
+            "modal-open"
+        );
+    }
+</script>

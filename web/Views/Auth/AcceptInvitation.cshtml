@@ -1,0 +1,617 @@
+﻿@{
+    ViewData["Title"] = "Accept Invitation";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>Accept Invitation - School-Parental System</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7f3e8;
+            color: #16352a;
+        }
+
+        .invite-card {
+            width: 100%;
+            max-width: 520px;
+            background: #fffdf7;
+            border-radius: 22px;
+            padding: 38px;
+            box-shadow: 0 15px 40px rgba(11, 74, 50, 0.10);
+        }
+
+        .invite-logo {
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 22px;
+            border-radius: 18px;
+            background: #ffe6a3;
+            color: #e89a00;
+            font-size: 30px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            color: #0b4a32;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            margin: 0 0 30px;
+            color: #71847b;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #16352a;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #ded7c8;
+            border-radius: 10px;
+            background: #ffffff;
+            font-size: 15px;
+            outline: none;
+        }
+
+            input:focus {
+                border-color: #0e5b3d;
+                box-shadow: 0 0 0 3px rgba(14, 91, 61, 0.10);
+            }
+
+        .password-wrap {
+            position: relative;
+        }
+
+            .password-wrap input {
+                padding-right: 48px;
+            }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #0b4a32;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .activate-button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 15px 18px;
+            border: none;
+            border-radius: 10px;
+            background: #f4b41a;
+            color: #073a28;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+            .activate-button:hover {
+                background: #e89a00;
+            }
+
+            .activate-button:disabled {
+                opacity: 0.65;
+                cursor: not-allowed;
+            }
+
+        .message {
+            display: none;
+            margin-bottom: 22px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+            .message.error {
+                display: block;
+                background: #fde8e8;
+                color: #a12626;
+            }
+
+            .message.success {
+                display: block;
+                background: #d9f2e3;
+                color: #08783e;
+            }
+
+        .password-note {
+            margin-top: -10px;
+            margin-bottom: 20px;
+            color: #71847b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .loading-area {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 22px;
+            color: #71847b;
+            font-size: 14px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <main class="invite-card">
+
+        <div class="invite-logo">
+            <i class="bi bi-person-check-fill"></i>
+        </div>
+
+
+        <h1>Welcome</h1>
+
+        <p class="subtitle">
+            Your school has invited you to the
+            School-Parental System.
+            Create a password to activate your account.
+        </p>
+
+
+        <div id="loadingArea"
+             class="loading-area">
+
+            <i class="bi bi-arrow-repeat"></i>
+
+            Checking your invitation...
+
+        </div>
+
+
+        <div id="message"
+             class="message">
+        </div>
+
+
+        <form id="passwordForm"
+              style="display:none;">
+
+            <div class="form-group">
+
+                <label for="password">
+                    New Password
+                </label>
+
+                <div class="password-wrap">
+
+                    <input id="password"
+                           type="password"
+                           minlength="8"
+                           autocomplete="new-password"
+                           required
+                           placeholder="Enter your new password" />
+
+                    <button type="button"
+                            class="toggle-password"
+                            data-target="password"
+                            aria-label="Show password">
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="confirmPassword">
+                    Confirm Password
+                </label>
+
+                <div class="password-wrap">
+
+                    <input id="confirmPassword"
+                           type="password"
+                           minlength="8"
+                           autocomplete="new-password"
+                           required
+                           placeholder="Enter your password again" />
+
+                    <button type="button"
+                            class="toggle-password"
+                            data-target="confirmPassword"
+                            aria-label="Show password">
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="password-note">
+
+                Use at least 8 characters.
+                A longer unique password is recommended.
+
+            </div>
+
+
+            <button id="activateButton"
+                    type="submit"
+                    class="activate-button">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+                Activate Account
+
+            </button>
+
+        </form>
+
+    </main>
+
+
+    <script type="module">
+
+        import {
+            createClient
+        } from "https://cdn.jsdelivr.net/npm/@@supabase/supabase-js@2/+esm";
+
+
+        const SUPABASE_URL =
+            "https://jdperpigajvtywmhvecb.supabase.co";
+
+
+        const SUPABASE_PUBLISHABLE_KEY =
+            "sb_publishable_p-RrhLWj83LXdWqBK8hf-w_xwOI3Wui";
+
+
+        const supabase =
+            createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY,
+                {
+                    auth: {
+                        persistSession: false,
+                        autoRefreshToken: false,
+                        detectSessionInUrl: false
+                    }
+                }
+            );
+
+
+        const loadingArea =
+            document.getElementById("loadingArea");
+
+        const passwordForm =
+            document.getElementById("passwordForm");
+
+        const message =
+            document.getElementById("message");
+
+        const password =
+            document.getElementById("password");
+
+        const confirmPassword =
+            document.getElementById("confirmPassword");
+
+        const activateButton =
+            document.getElementById("activateButton");
+
+
+        function showError(text) {
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                text;
+        }
+
+
+        function showSuccess(text) {
+
+            message.className =
+                "message success";
+
+            message.textContent =
+                text;
+        }
+
+
+        async function initialiseInvitation() {
+
+            const hash =
+                new URLSearchParams(
+                    window.location.hash.substring(1)
+                );
+
+
+            const error =
+                hash.get("error_description");
+
+
+            if (error) {
+
+                loadingArea.style.display =
+                    "none";
+
+                showError(
+                    decodeURIComponent(error)
+                );
+
+                return;
+            }
+
+
+            const accessToken =
+                hash.get("access_token");
+
+            const refreshToken =
+                hash.get("refresh_token");
+
+            const type =
+                hash.get("type");
+
+
+            if (!accessToken ||
+                !refreshToken) {
+
+                loadingArea.style.display =
+                    "none";
+
+                showError(
+                    "This invitation link is invalid, " +
+                    "expired, or has already been used."
+                );
+
+                return;
+            }
+
+
+            if (type && type !== "invite") {
+
+                loadingArea.style.display =
+                    "none";
+
+                showError(
+                    "This link is not a valid invitation."
+                );
+
+                return;
+            }
+
+
+            const {
+                data,
+                error: sessionError
+            } =
+                await supabase.auth.setSession({
+                    access_token: accessToken,
+                    refresh_token: refreshToken
+                });
+
+
+            if (sessionError ||
+                !data.session) {
+
+                loadingArea.style.display =
+                    "none";
+
+                showError(
+                    sessionError?.message ??
+                    "Unable to validate this invitation."
+                );
+
+                return;
+            }
+
+
+            /*
+             * Remove the tokens from the browser URL
+             * after Supabase has accepted the session.
+             */
+            history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+
+
+            loadingArea.style.display =
+                "none";
+
+            passwordForm.style.display =
+                "block";
+        }
+
+
+        passwordForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                message.className =
+                    "message";
+
+                message.textContent =
+                    "";
+
+
+                if (password.value.length < 8) {
+
+                    showError(
+                        "Your password must contain at least 8 characters."
+                    );
+
+                    return;
+                }
+
+
+                if (password.value !==
+                    confirmPassword.value) {
+
+                    showError(
+                        "The passwords do not match."
+                    );
+
+                    return;
+                }
+
+
+                activateButton.disabled =
+                    true;
+
+                activateButton.innerHTML =
+                    '<i class="bi bi-arrow-repeat"></i> Activating...';
+
+
+                const {
+                    error
+                } =
+                    await supabase.auth.updateUser({
+                        password: password.value
+                    });
+
+
+                if (error) {
+
+                    activateButton.disabled =
+                        false;
+
+                    activateButton.innerHTML =
+                        '<i class="bi bi-check-circle-fill"></i> Activate Account';
+
+
+                    showError(
+                        error.message
+                    );
+
+                    return;
+                }
+
+
+                showSuccess(
+                    "Your account has been activated successfully."
+                );
+
+
+                passwordForm.style.display =
+                    "none";
+
+
+                await supabase.auth.signOut();
+
+
+                setTimeout(
+                    function () {
+
+                        window.location.href =
+                            "/Auth/Login";
+
+                    },
+                    1800
+                );
+            }
+        );
+
+
+        document
+            .querySelectorAll(
+                ".toggle-password"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const input =
+                            document.getElementById(
+                                button.dataset.target
+                            );
+
+                        const icon =
+                            button.querySelector("i");
+
+
+                        if (input.type === "password") {
+
+                            input.type =
+                                "text";
+
+                            icon.className =
+                                "bi bi-eye-slash";
+
+                        }
+                        else {
+
+                            input.type =
+                                "password";
+
+                            icon.className =
+                                "bi bi-eye";
+                        }
+                    }
+                );
+            });
+
+
+        initialiseInvitation();
+
+    </script>
+
+</body>
+
+</html>

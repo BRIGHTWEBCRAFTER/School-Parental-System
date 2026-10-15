@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SchoolParentalSystem.Web.ViewModels;
 using SchoolParentalSystem.Web.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace SchoolParentalSystem.Web.Controllers;
 
@@ -10,146 +12,74 @@ public class SchoolAdminController : Controller
 {
     private readonly SchoolAdminLearnerService _learnerService;
     private readonly ILogger<SchoolAdminController> _logger;
+    private readonly SchoolAdminTeacherService _teacherService;
 
     public SchoolAdminController(
-        SchoolAdminLearnerService learnerService,
-        ILogger<SchoolAdminController> logger)
+    SchoolAdminLearnerService learnerService,
+    SchoolAdminTeacherService teacherService,
+    ILogger<SchoolAdminController> logger)
     {
         _learnerService = learnerService;
+        _teacherService = teacherService;
         _logger = logger;
     }
-    public IActionResult Dashboard()
+    [HttpGet]
+    public async Task<IActionResult> Dashboard()
     {
-        var model = new SchoolAdminDashboardViewModel
+        var schoolIdValue =
+            User.FindFirst("school_id")?.Value;
+
+        if (!Guid.TryParse(
+        schoolIdValue,
+        out var schoolId))
         {
-            AdminName = "School Admin",
-            SchoolName = "Goldfield High School",
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme);
 
-            TotalLearners = 248,
-            TotalTeachers = 34,
-            TotalClasses = 12,
-            AttendanceRate = 94.2m,
-            ActiveAnnouncements = 6,
+            HttpContext.Session.Clear();
 
-            AttendanceOverview =
-            [
-                new() { Date = "Sep 15", Percentage = 91 },
-                new() { Date = "Sep 16", Percentage = 95 },
-                new() { Date = "Sep 17", Percentage = 92 },
-                new() { Date = "Sep 18", Percentage = 89 },
-                new() { Date = "Sep 19", Percentage = 94 }
-            ],
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
 
-            RecentAnnouncements =
-            [
-                new()
-                {
-                    Title = "Parent-Teacher Meeting",
-                    Description = "Scheduled for Sep 28, 2026."
-                },
-                new()
-                {
-                    Title = "School Holiday Notice",
-                    Description = "School will be closed on Heritage Day."
-                },
-                new()
-                {
-                    Title = "Term 4 Assessment",
-                    Description = "Assessment schedules are now available."
-                }
-            ],
+        try
+        {
+            var adminName =
+                User.Identity?.Name ??
+                "School Admin";
 
-            UpcomingEvents =
-            [
-                new()
-                {
-                    Month = "SEP",
-                    Day = "22",
-                    Title = "Parent-Teacher Meeting"
-                },
-                new()
-                {
-                    Month = "SEP",
-                    Day = "25",
-                    Title = "Sports Day"
-                },
-                new()
-                {
-                    Month = "OCT",
-                    Day = "03",
-                    Title = "Career Guidance Seminar"
-                }
-            ],
+            var model =
+                await _learnerService
+                    .GetDashboardAsync(
+                        schoolId,
+                        adminName);
 
-            RecentActivities =
-            [
-                new()
-                {
-                    Description = "A learner was added to the system",
-                    TimeAgo = "10m ago",
-                    Type = "learner"
-                },
-                new()
-                {
-                    Description = "Attendance updated for Grade 10A",
-                    TimeAgo = "1h ago",
-                    Type = "attendance"
-                },
-                new()
-                {
-                    Description = "Term grades were updated",
-                    TimeAgo = "3h ago",
-                    Type = "grade"
-                },
-                new()
-                {
-                    Description = "A new announcement was posted",
-                    TimeAgo = "5h ago",
-                    Type = "announcement"
-                }
-            ],
+            return View(model);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme);
 
-            ClassPerformance =
-            [
-                new()
-                {
-                    ClassName = "Grade 8A",
-                    LearnerCount = 28,
-                    AverageGrade = 88.4m,
-                    Status = "Good"
-                },
-                new()
-                {
-                    ClassName = "Grade 9A",
-                    LearnerCount = 26,
-                    AverageGrade = 85.7m,
-                    Status = "Good"
-                },
-                new()
-                {
-                    ClassName = "Grade 10A",
-                    LearnerCount = 33,
-                    AverageGrade = 82.1m,
-                    Status = "Needs attention"
-                },
-                new()
-                {
-                    ClassName = "Grade 11A",
-                    LearnerCount = 27,
-                    AverageGrade = 89.2m,
-                    Status = "Good"
-                },
-                new()
-                {
-                    ClassName = "Grade 12A",
-                    LearnerCount = 35,
-                    AverageGrade = 91.5m,
-                    Status = "Excellent"
-                }
-            ]
-        };
+            HttpContext.Session.Clear();
 
-        return View(model);
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Unable to load School Admin dashboard.");
+
+            TempData["ErrorMessage"] =
+                "The dashboard could not be loaded.";
+
+            return RedirectToAction(
+                nameof(Learners));
+        }
     }
 
     public async Task<IActionResult> Learners()
@@ -207,45 +137,115 @@ public class SchoolAdminController : Controller
     }
 
 
-    public IActionResult LearnerDetails(string id)
+    [HttpGet]
+    public async Task<IActionResult>
+    LearnerDetails(Guid id)
     {
-        var model = new LearnerDetailsViewModel
-        {
-            Id = id,
-            AdmissionNumber = "GF-2026-001",
-            FullName = "Sandile Motone",
-            DateOfBirth = new DateTime(2010, 6, 15),
-            Gender = "Male",
-            Grade = "Grade 10",
-            ClassName = "Grade 10 A",
-            Address = "Welkom, Free State",
-            GuardianName = "Xolani mNgadi",
-            Relationship = "Guardian",
-            IsActive = true
-        };
+        var schoolIdValue =
+            User.FindFirst("school_id")?.Value;
 
-        return View(model);
+        if (!Guid.TryParse(
+                schoolIdValue,
+                out var schoolId))
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+
+
+        try
+        {
+            var model =
+                await _learnerService
+                    .GetLearnerDetailsAsync(
+                        id,
+                        schoolId);
+
+
+            if (model == null)
+            {
+                TempData["ErrorMessage"] =
+                    "The learner could not be found.";
+
+                return RedirectToAction(
+                    nameof(Learners));
+            }
+
+
+            return View(model);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Unable to load learner {LearnerId}.",
+                id);
+
+            TempData["ErrorMessage"] =
+                "The learner details could not be loaded.";
+
+            return RedirectToAction(
+                nameof(Learners));
+        }
     }
 
     [HttpGet]
-    public IActionResult EditLearner(string id)
+    public async Task<IActionResult> Teachers()
     {
-        var model = new EditLearnerViewModel
-        {
-            Id = id,
-            AdmissionNumber = "GF-2026-001",
-            FullName = "Sandile Motone",
-            DateOfBirth = new DateTime(2010, 6, 15),
-            Gender = "Male",
-            Grade = "Grade 10",
-            ClassName = "Grade 10 A",
-            Address = "Welkom, Free State",
-            GuardianName = "Xolani mNgadi",
-            Relationship = "Guardian",
-            IsActive = true
-        };
+        var schoolIdValue =
+            User.FindFirst("school_id")?.Value;
 
-        return View(model);
+        if (!Guid.TryParse(
+                schoolIdValue,
+                out var schoolId))
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+
+
+        try
+        {
+            var model =
+                await _teacherService
+                    .GetTeachersAsync(
+                        schoolId);
+
+            return View(model);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Unable to load teachers.");
+
+            TempData["ErrorMessage"] =
+                "Teachers could not be loaded.";
+
+            return RedirectToAction(
+                nameof(Dashboard));
+        }
+    }
+
+    [HttpGet]
+    public IActionResult AddTeacher()
+    {
+        return View(
+            new AddTeacherViewModel());
     }
 
     [HttpGet]
@@ -283,22 +283,157 @@ public class SchoolAdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult EditLearner(EditLearnerViewModel model)
+    public async Task<IActionResult> AddTeacher(
+    AddTeacherViewModel model)
     {
+        var schoolIdValue =
+            User.FindFirst("school_id")?.Value;
+
+        if (!Guid.TryParse(
+                schoolIdValue,
+                out var schoolId))
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+
+
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        // Real Supabase UPDATE will be added later.
 
-        TempData["SuccessMessage"] =
-            $"{model.FullName}'s learner record was updated.";
+        try
+        {
+            await _teacherService
+                .AddTeacherAsync(
+                    model,
+                    schoolId);
 
-        return RedirectToAction(
-            nameof(LearnerDetails),
-            new { id = model.Id }
-        );
+
+            TempData["SuccessMessage"] =
+                $"{model.FullName} was invited successfully as a teacher.";
+
+
+            return RedirectToAction(
+                nameof(Teachers));
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(
+                "",
+                ex.Message);
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Unable to add teacher.");
+
+            ModelState.AddModelError(
+                "",
+                "The teacher could not be added. " +
+                "Please check the details and try again.");
+
+            return View(model);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult>
+    EditLearner(
+        Guid id,
+        EditLearnerViewModel model)
+    {
+        var schoolIdValue =
+            User.FindFirst("school_id")?.Value;
+
+        if (!Guid.TryParse(
+                schoolIdValue,
+                out var schoolId))
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+
+
+        if (id != model.Id)
+        {
+            return BadRequest();
+        }
+
+
+        if (!ModelState.IsValid)
+        {
+            await PopulateEditLearnerFormAsync(
+                model,
+                schoolId);
+
+            return View(model);
+        }
+
+
+        try
+        {
+            await _learnerService
+                .UpdateLearnerAsync(
+                    model,
+                    schoolId);
+
+            TempData["SuccessMessage"] =
+                $"{model.FullName} was updated successfully.";
+
+            return RedirectToAction(
+                nameof(LearnerDetails),
+                new { id = model.Id });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+        catch (InvalidOperationException ex)
+        {
+            await PopulateEditLearnerFormAsync(
+                model,
+                schoolId);
+
+            ModelState.AddModelError(
+                "",
+                ex.Message);
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Unable to update learner {LearnerId}.",
+                model.Id);
+
+            await PopulateEditLearnerFormAsync(
+                model,
+                schoolId);
+
+            ModelState.AddModelError(
+                "",
+                "The learner could not be updated. Please try again.");
+
+            return View(model);
+        }
     }
 
     [HttpPost]
@@ -376,6 +511,218 @@ public class SchoolAdminController : Controller
                 "The learner could not be added. Please try again.");
 
             return View(model);
+        }
+    }
+    [HttpGet]
+    public async Task<IActionResult>
+    EditLearner(Guid id)
+    {
+        var schoolIdValue =
+            User.FindFirst("school_id")?.Value;
+
+        if (!Guid.TryParse(
+                schoolIdValue,
+                out var schoolId))
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+
+
+        try
+        {
+            var model =
+                await _learnerService
+                    .GetEditLearnerAsync(
+                        id,
+                        schoolId);
+
+            if (model == null)
+            {
+                TempData["ErrorMessage"] =
+                    "The learner could not be found.";
+
+                return RedirectToAction(
+                    nameof(Learners));
+            }
+
+            return View(model);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Unable to load learner {LearnerId} for editing.",
+                id);
+
+            TempData["ErrorMessage"] =
+                "The learner could not be loaded.";
+
+            return RedirectToAction(
+                nameof(Learners));
+        }
+    }
+    private async Task PopulateEditLearnerFormAsync(
+    EditLearnerViewModel model,
+    Guid schoolId)
+    {
+        model.AvailableClasses =
+            await _learnerService
+                .GetAvailableClassesAsync(
+                    schoolId);
+
+
+        if (model.ParentId.HasValue)
+        {
+            var parent =
+                await _learnerService
+                    .GetParentSelectionAsync(
+                        model.ParentId.Value,
+                        schoolId);
+
+            if (parent != null)
+            {
+                model.SelectedParentName =
+                    parent.FullName;
+
+                model.SelectedGuardianNumber =
+                    parent.GuardianNumber;
+
+                model.SelectedParentPhone =
+                    parent.Phone ?? "";
+
+                model.SelectedParentEmail =
+                    parent.Email ?? "";
+            }
+        }
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult>
+    DeactivateLearner(Guid id)
+    {
+        var schoolIdValue =
+            User.FindFirst("school_id")?.Value;
+
+        if (!Guid.TryParse(
+                schoolIdValue,
+                out var schoolId))
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+
+        try
+        {
+            await _learnerService
+                .SetLearnerActiveStatusAsync(
+                    id,
+                    schoolId,
+                    false);
+
+            TempData["SuccessMessage"] =
+                "Learner deactivated successfully.";
+
+            return RedirectToAction(
+                nameof(LearnerDetails),
+                new { id });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["ErrorMessage"] =
+                ex.Message;
+
+            return RedirectToAction(
+                nameof(Learners));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Unable to deactivate learner {LearnerId}.",
+                id);
+
+            TempData["ErrorMessage"] =
+                "The learner could not be deactivated.";
+
+            return RedirectToAction(
+                nameof(LearnerDetails),
+                new { id });
+        }
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult>
+    ReactivateLearner(Guid id)
+    {
+        var schoolIdValue =
+            User.FindFirst("school_id")?.Value;
+
+        if (!Guid.TryParse(
+                schoolIdValue,
+                out var schoolId))
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+
+        try
+        {
+            await _learnerService
+                .SetLearnerActiveStatusAsync(
+                    id,
+                    schoolId,
+                    true);
+
+            TempData["SuccessMessage"] =
+                "Learner reactivated successfully.";
+
+            return RedirectToAction(
+                nameof(LearnerDetails),
+                new { id });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToAction(
+                "Login",
+                "Auth");
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["ErrorMessage"] =
+                ex.Message;
+
+            return RedirectToAction(
+                nameof(Learners));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Unable to reactivate learner {LearnerId}.",
+                id);
+
+            TempData["ErrorMessage"] =
+                "The learner could not be reactivated.";
+
+            return RedirectToAction(
+                nameof(LearnerDetails),
+                new { id });
         }
     }
 }

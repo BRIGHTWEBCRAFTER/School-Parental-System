@@ -2,8 +2,8 @@
 
 public class SchoolAdminDashboardViewModel
 {
-    public string AdminName { get; set; } = "School Admin";
-    public string SchoolName { get; set; } = "Goldfield High School";
+    public string AdminName { get; set; } = "";
+    public string SchoolName { get; set; } = "";
 
     public int TotalLearners { get; set; }
     public int TotalTeachers { get; set; }

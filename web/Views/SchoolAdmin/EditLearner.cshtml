@@ -8,158 +8,382 @@
 <section class="dashboard-content">
 
     <div class="page-heading">
+
         <div>
             <h2>Edit Learner</h2>
-            <p>Register a new learner for your school.</p>
+            <p>Update learner, school and guardian information.</p>
         </div>
 
         <a class="secondary-action"
            asp-controller="SchoolAdmin"
-           asp-action="Learners">
+           asp-action="LearnerDetails"
+           asp-route-id="@Model.Id">
             <i class="bi bi-arrow-left"></i>
-            Back to Learners
+            Back to Details
         </a>
+
     </div>
 
-    <form asp-action="EditLearner"
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="EditLearner"
+          asp-route-id="@Model.Id"
           method="post"
-          class="learner-form"
-    input asp-for="Id" type="hidden" >
+          class="learner-form">
 
         @Html.AntiForgeryToken()
 
-        <div asp-validation-summary="ModelOnly"
-             class="validation-summary"></div>
+        <input asp-for="Id"
+               type="hidden" />
+
+        <div asp-validation-summary="All"
+             class="validation-summary">
+        </div>
+
 
         <section class="form-card">
 
             <div class="form-section-header">
+
                 <i class="bi bi-person-vcard"></i>
 
                 <div>
                     <h3>Learner Information</h3>
-                    <p>Enter the learner's personal and school details.</p>
+                    <p>Update the learner's personal and school details.</p>
                 </div>
+
             </div>
+
 
             <div class="form-grid">
 
                 <div class="form-group">
-                    <label asp-for="AdmissionNumber"></label>
+
+                    <label asp-for="AdmissionNumber">
+                        Admission Number
+                    </label>
+
                     <input asp-for="AdmissionNumber"
-                           placeholder="e.g. GF-2026-005" />
-                    <span asp-validation-for="AdmissionNumber"></span>
+                           readonly />
+
+                    <small>
+                        Admission number cannot be changed.
+                    </small>
+
                 </div>
 
+
                 <div class="form-group">
+
                     <label asp-for="FullName"></label>
+
                     <input asp-for="FullName"
                            placeholder="Enter learner full name" />
-                    <span asp-validation-for="FullName"></span>
+
+                    <span asp-validation-for="FullName"
+                          class="field-validation-error">
+                    </span>
+
                 </div>
 
+
                 <div class="form-group">
+
                     <label asp-for="DateOfBirth"></label>
-                    <input asp-for="DateOfBirth" />
-                    <span asp-validation-for="DateOfBirth"></span>
+
+                    <input asp-for="DateOfBirth"
+                           type="date" />
+
+                    <span asp-validation-for="DateOfBirth"
+                          class="field-validation-error">
+                    </span>
+
                 </div>
 
+
                 <div class="form-group">
+
                     <label asp-for="Gender"></label>
 
                     <select asp-for="Gender">
-                        <option value="">Select gender</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                        <option>Other</option>
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
                     </select>
 
-                    <span asp-validation-for="Gender"></span>
+                    <span asp-validation-for="Gender"
+                          class="field-validation-error">
+                    </span>
+
                 </div>
 
+
                 <div class="form-group">
+
                     <label asp-for="Grade"></label>
 
                     <select asp-for="Grade">
-                        <option value="">Select grade</option>
-                        <option>Grade 8</option>
-                        <option>Grade 9</option>
-                        <option>Grade 10</option>
-                        <option>Grade 11</option>
-                        <option>Grade 12</option>
+
+                        <option value="">
+                            Select grade
+                        </option>
+
+                        <option value="Grade 8">
+                            Grade 8
+                        </option>
+
+                        <option value="Grade 9">
+                            Grade 9
+                        </option>
+
+                        <option value="Grade 10">
+                            Grade 10
+                        </option>
+
+                        <option value="Grade 11">
+                            Grade 11
+                        </option>
+
+                        <option value="Grade 12">
+                            Grade 12
+                        </option>
+
                     </select>
 
-                    <span asp-validation-for="Grade"></span>
+                    <span asp-validation-for="Grade"
+                          class="field-validation-error">
+                    </span>
+
                 </div>
+
 
                 <div class="form-group">
-                    <label asp-for="ClassName"></label>
 
-                    <select asp-for="ClassName">
-                        <option value="">Select class</option>
-                        <option>Grade 8 A</option>
-                        <option>Grade 9 A</option>
-                        <option>Grade 10 A</option>
-                        <option>Grade 11 A</option>
-                        <option>Grade 12 A</option>
+                    <label asp-for="ClassId">
+                        Class
+                    </label>
+
+                    <select asp-for="ClassId">
+
+                        <option value="">
+                            Select class
+                        </option>
+
+                        @foreach (var schoolClass
+                        in Model.AvailableClasses)
+                        {
+                            <option value="@schoolClass.Id">
+                                @schoolClass.Name
+                            </option>
+                        }
+
                     </select>
+
+                    <span asp-validation-for="ClassId"
+                          class="field-validation-error">
+                    </span>
+
                 </div>
 
+
                 <div class="form-group full-width">
+
                     <label asp-for="Address"></label>
 
                     <textarea asp-for="Address"
                               rows="3"
-                              placeholder="Enter home address"></textarea>
+                              placeholder="Enter home address">
+                    </textarea>
+
+                    <span asp-validation-for="Address"
+                          class="field-validation-error">
+                    </span>
+
                 </div>
 
             </div>
 
         </section>
+
 
         <section class="form-card">
 
             <div class="form-section-header">
+
                 <i class="bi bi-person-hearts"></i>
 
                 <div>
                     <h3>Guardian Information</h3>
-                    <p>Link guardian details to this learner.</p>
+
+                    <p>
+                        Update the registered parent or guardian
+                        linked to this learner.
+                    </p>
                 </div>
+
             </div>
+
 
             <div class="form-grid">
 
-                <div class="form-group">
-                    <label asp-for="GuardianName"></label>
-                    <input asp-for="GuardianName"
-                           placeholder="Guardian full name" />
+                <div class="form-group parent-search-group">
+
+                    <label asp-for="ParentId">
+                        Parent / Guardian
+                    </label>
+
+
+                    <div class="parent-search-box"
+                         id="parentSearchBox"
+                         style="@(Model.ParentId.HasValue
+                             ? "display:none;"
+                             : "")">
+
+                        <i class="bi bi-search"></i>
+
+                        <input type="text"
+                               id="parentSearchInput"
+                               placeholder="Search name, guardian number, phone or email"
+                               autocomplete="off" />
+
+                    </div>
+
+
+                    <input asp-for="ParentId"
+                           type="hidden"
+                           id="selectedParentId" />
+
+
+                    <span asp-validation-for="ParentId"
+                          class="field-validation-error">
+                    </span>
+
+
+                    <div id="parentSearchResults"
+                         class="parent-search-results">
+                    </div>
+
+
+                    <div id="selectedParentCard"
+                         class="selected-parent-card"
+                         style="@(Model.ParentId.HasValue
+                             ? "display:flex;"
+                             : "display:none;")">
+
+                        <div class="selected-parent-icon">
+
+                            <i class="bi bi-person-check-fill"></i>
+
+                        </div>
+
+
+                        <div class="selected-parent-info">
+
+                            <strong id="selectedParentName">
+                                @Model.SelectedParentName
+                            </strong>
+
+                            <span id="selectedParentDetails">
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                Model.SelectedGuardianNumber))
+                                {
+                                    @Model.SelectedGuardianNumber
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                Model.SelectedParentPhone))
+                                {
+                                    <text>
+                                        • @Model.SelectedParentPhone
+                                    </text>
+                                }
+
+                            </span>
+
+                        </div>
+
+
+                        <button type="button"
+                                id="removeSelectedParent"
+                                class="remove-parent-button"
+                                title="Change parent or guardian">
+
+                            <i class="bi bi-x-lg"></i>
+
+                        </button>
+
+                    </div>
+
                 </div>
 
+
                 <div class="form-group">
+
                     <label asp-for="Relationship"></label>
 
                     <select asp-for="Relationship">
-                        <option value="">Select relationship</option>
-                        <option>Mother</option>
-                        <option>Father</option>
-                        <option>Guardian</option>
-                        <option>Grandparent</option>
-                        <option>Other</option>
+
+                        <option value="">
+                            Select relationship
+                        </option>
+
+                        <option value="Mother">
+                            Mother
+                        </option>
+
+                        <option value="Father">
+                            Father
+                        </option>
+
+                        <option value="Guardian">
+                            Guardian
+                        </option>
+
+                        <option value="Grandparent">
+                            Grandparent
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
                     </select>
+
+                    <span asp-validation-for="Relationship"
+                          class="field-validation-error">
+                    </span>
+
                 </div>
 
             </div>
 
         </section>
+
 
         <div class="form-actions">
 
             <a class="cancel-button"
                asp-controller="SchoolAdmin"
-               asp-action="Learners">
+               asp-action="LearnerDetails"
+               asp-route-id="@Model.Id">
                 Cancel
             </a>
+
 
             <button type="submit"
                     class="primary-action">
@@ -174,3 +398,288 @@
     </form>
 
 </section>
+
+
+<script>
+    const searchInput =
+        document.getElementById("parentSearchInput");
+
+    const searchBox =
+        document.getElementById("parentSearchBox");
+
+    const resultsContainer =
+        document.getElementById("parentSearchResults");
+
+    const selectedParentId =
+        document.getElementById("selectedParentId");
+
+    const selectedCard =
+        document.getElementById("selectedParentCard");
+
+    const selectedName =
+        document.getElementById("selectedParentName");
+
+    const selectedDetails =
+        document.getElementById("selectedParentDetails");
+
+    const removeButton =
+        document.getElementById("removeSelectedParent");
+
+    let searchTimer;
+
+
+    searchInput.addEventListener(
+        "input",
+        function () {
+
+            clearTimeout(searchTimer);
+
+            const query =
+                searchInput.value.trim();
+
+            if (query.length < 2) {
+
+                resultsContainer.innerHTML =
+                    "";
+
+                resultsContainer
+                    .classList.remove("open");
+
+                return;
+            }
+
+            searchTimer =
+                setTimeout(
+                    () => searchParents(query),
+                    300);
+        });
+
+
+    async function searchParents(query) {
+
+        resultsContainer.innerHTML =
+            `<div class="parent-search-message">
+                    Searching...
+                 </div>`;
+
+        resultsContainer
+            .classList.add("open");
+
+        try {
+
+            const response =
+                await fetch(
+                    `/SchoolAdmin/SearchParents?query=${encodeURIComponent(query)
+                    }`);
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Parent search failed.");
+            }
+
+
+            const parents =
+                await response.json();
+
+            renderParentResults(parents);
+
+        }
+        catch (error) {
+
+            console.error(
+                "Parent search error:",
+                error);
+
+            resultsContainer.innerHTML =
+                `<div class="parent-search-message">
+                        Unable to search parents.
+                     </div>`;
+        }
+    }
+
+
+    function renderParentResults(parents) {
+
+        if (!parents ||
+            parents.length === 0) {
+
+            resultsContainer.innerHTML =
+                `<div class="parent-search-message">
+                        No matching parent or guardian found.
+                     </div>`;
+
+            resultsContainer
+                .classList.add("open");
+
+            return;
+        }
+
+
+        resultsContainer.innerHTML =
+            parents.map(parent => {
+
+                const parentId =
+                    parent.parentId ??
+                    parent.parent_id ??
+                    "";
+
+                const fullName =
+                    parent.fullName ??
+                    parent.full_name ??
+                    "";
+
+                const guardianNumber =
+                    parent.guardianNumber ??
+                    parent.guardian_number ??
+                    "";
+
+                const phone =
+                    parent.phone ?? "";
+
+                const email =
+                    parent.email ?? "";
+
+
+                return `
+                        <button type="button"
+                                class="parent-result"
+                                data-id="${escapeHtml(parentId)}"
+                                data-name="${escapeHtml(fullName)}"
+                                data-guardian="${escapeHtml(guardianNumber)}"
+                                data-phone="${escapeHtml(phone)}"
+                                data-email="${escapeHtml(email)}">
+
+                            <div class="parent-result-info">
+
+                                <strong>
+                                    ${escapeHtml(fullName)}
+                                </strong>
+
+                                <span>
+                                    Guardian No:
+                                    ${escapeHtml(
+                    guardianNumber)}
+                                </span>
+
+                                ${phone
+                        ? `<span>
+                                               ${escapeHtml(phone)}
+                                           </span>`
+                        : ""
+                    }
+
+                                ${email
+                        ? `<span>
+                                               ${escapeHtml(email)}
+                                           </span>`
+                        : ""
+                    }
+
+                            </div>
+
+                            <span class="select-parent-text">
+                                Select
+                            </span>
+
+                        </button>
+                    `;
+
+            }).join("");
+
+
+        resultsContainer
+            .classList.add("open");
+
+
+        document
+            .querySelectorAll(
+                ".parent-result")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        selectParent(
+                            this.dataset.id,
+                            this.dataset.name,
+                            this.dataset.guardian,
+                            this.dataset.phone);
+                    });
+            });
+    }
+
+
+    function selectParent(
+        id,
+        name,
+        guardianNumber,
+        phone) {
+
+        selectedParentId.value =
+            id;
+
+        selectedName.textContent =
+            name;
+
+        selectedDetails.textContent =
+            `${guardianNumber}${phone
+                ? " • " + phone
+                : ""
+            }`;
+
+        selectedCard.style.display =
+            "flex";
+
+        searchBox.style.display =
+            "none";
+
+        resultsContainer.innerHTML =
+            "";
+
+        resultsContainer
+            .classList.remove("open");
+
+        searchInput.value =
+            "";
+    }
+
+
+    removeButton.addEventListener(
+        "click",
+        function () {
+
+            selectedParentId.value =
+                "";
+
+            selectedName.textContent =
+                "";
+
+            selectedDetails.textContent =
+                "";
+
+            selectedCard.style.display =
+                "none";
+
+            searchBox.style.display =
+                "flex";
+
+            searchInput.value =
+                "";
+
+            searchInput.focus();
+        });
+
+
+    function escapeHtml(value) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent =
+            value ?? "";
+
+        return div.innerHTML;
+    }
+</script>

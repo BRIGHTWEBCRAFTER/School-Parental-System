@@ -1,40 +1,60 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolParentalSystem.Web.ViewModels;
-
-public class EditLearnerViewModel
+namespace SchoolParentalSystem.Web.ViewModels
 {
-    public string Id { get; set; } = "";
+    public class EditLearnerViewModel
+    {
+        public Guid Id { get; set; }
 
-    [Required]
-    [Display(Name = "Admission Number")]
-    public string AdmissionNumber { get; set; } = "";
+        public string AdmissionNumber { get; set; } = "";
 
-    [Required]
-    [Display(Name = "Full Name")]
-    public string FullName { get; set; } = "";
 
-    [Required]
-    [DataType(DataType.Date)]
-    [Display(Name = "Date of Birth")]
-    public DateTime? DateOfBirth { get; set; }
+        [Required(ErrorMessage = "Full name is required.")]
+        [Display(Name = "Full Name")]
+        public string FullName { get; set; } = "";
 
-    [Required]
-    public string Gender { get; set; } = "";
 
-    [Required]
-    public string Grade { get; set; } = "";
+        [Required(ErrorMessage = "Date of birth is required.")]
+        [DataType(DataType.Date)]
+        [Display(Name = "Date of Birth")]
+        public DateTime? DateOfBirth { get; set; }
 
-    [Display(Name = "Class")]
-    public string ClassName { get; set; } = "";
 
-    public string Address { get; set; } = "";
+        [Required(ErrorMessage = "Gender is required.")]
+        public string Gender { get; set; } = "";
 
-    [Display(Name = "Guardian Name")]
-    public string GuardianName { get; set; } = "";
 
-    public string Relationship { get; set; } = "";
+        [Required(ErrorMessage = "Grade is required.")]
+        public string Grade { get; set; } = "";
 
-    [Display(Name = "Active Learner")]
-    public bool IsActive { get; set; } = true;
+
+        [Display(Name = "Class")]
+        public Guid? ClassId { get; set; }
+
+        public List<ClassOptionViewModel> AvailableClasses { get; set; } = [];
+
+
+        public string? Address { get; set; }
+
+
+        [Required(ErrorMessage = "Please select a parent or guardian.")]
+        [Display(Name = "Parent / Guardian")]
+        public Guid? ParentId { get; set; }
+
+
+        public string SelectedParentName { get; set; } = "";
+
+        public string SelectedGuardianNumber { get; set; } = "";
+
+        public string SelectedParentPhone { get; set; } = "";
+
+        public string SelectedParentEmail { get; set; } = "";
+
+
+        [Required(ErrorMessage = "Please select the relationship.")]
+        public string Relationship { get; set; } = "";
+
+
+        public bool IsActive { get; set; }
+    }
 }

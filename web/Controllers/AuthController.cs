@@ -495,4 +495,14 @@ public class AuthController : Controller
 
         _supabaseSession.Clear();
     }
+
+    /*=======================================
+     INVITATION LINK
+     =========================================*/
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult AcceptInvitation()
+    {
+        return View();
+    }
 }

@@ -1706,3 +1706,208 @@ td {
     color: #71847b;
     cursor: pointer;
 }
+
+/*=========================================
+    DEACTIVATE CONFIRMATION
+===========================================
+*/
+.confirmation-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(7, 58, 40, 0.42);
+    backdrop-filter: blur(3px);
+    z-index: 99999;
+}
+
+    .confirmation-overlay.show {
+        display: flex !important;
+    }
+
+.confirmation-card {
+    position: relative;
+    width: min(440px, 100%);
+    padding: 30px;
+    border-radius: 18px;
+    background: #fffdf7;
+    box-shadow: 0 24px 65px rgba(22, 53, 42, 0.28);
+    text-align: center;
+    z-index: 100000;
+}
+
+.confirmation-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 27px;
+}
+
+    .confirmation-icon.danger {
+        color: #b42318;
+        background: #fee4e2;
+    }
+
+.confirmation-card h3 {
+    margin: 0 0 10px;
+    color: #16352a;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.confirmation-message {
+    max-width: 350px;
+    margin: 0 auto 22px;
+    color: #71847b;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.confirmation-learner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 13px 16px;
+    border-radius: 9px;
+    background: #f1eee5;
+}
+
+    .confirmation-learner span {
+        color: #71847b;
+    }
+
+    .confirmation-learner strong {
+        color: #16352a;
+    }
+
+.confirmation-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+    .confirmation-actions form {
+        margin: 0;
+    }
+
+.confirmation-cancel,
+.confirmation-deactivate {
+    width: 100%;
+    min-height: 44px;
+    border: none;
+    border-radius: 9px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.confirmation-cancel {
+    color: #16352a;
+    background: #e5ebe7;
+}
+
+.confirmation-deactivate {
+    color: white;
+    background: #d92d20;
+}
+
+    .confirmation-deactivate:hover {
+        background: #b42318;
+    }
+
+body.modal-open {
+    overflow: hidden;
+}
+
+/* =========================================
+   DASHBOARD EMPTY STATES
+========================================= */
+
+.dashboard-empty-state {
+    min-height: 180px;
+    padding: 28px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+    .dashboard-empty-state i {
+        margin-bottom: 12px;
+        color: #0b4a32;
+        font-size: 28px;
+    }
+
+    .dashboard-empty-state strong {
+        margin-bottom: 5px;
+        color: #16352a;
+        font-size: 14px;
+    }
+
+    .dashboard-empty-state span {
+        max-width: 270px;
+        color: #71847b;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+
+/* =========================================
+   DISABLED QUICK ACTIONS
+========================================= */
+
+.quick-action-disabled {
+    cursor: default;
+    opacity: 0.62;
+}
+
+    .quick-action-disabled:hover {
+        transform: none;
+    }
+
+.status-dot.neutral {
+    background: #a6b0aa;
+}
+
+/*===========================================
+    TEACHER INVITE
+
+==============================================*/
+.teacher-invite-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    border-radius: 12px;
+    background: #f7f3e8;
+}
+
+    .teacher-invite-note > i {
+        margin-top: 2px;
+        color: #e89a00;
+        font-size: 20px;
+    }
+
+    .teacher-invite-note div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .teacher-invite-note strong {
+        color: #16352a;
+    }
+
+    .teacher-invite-note span {
+        color: #71847b;
+        font-size: 14px;
+        line-height: 1.5;
+    }

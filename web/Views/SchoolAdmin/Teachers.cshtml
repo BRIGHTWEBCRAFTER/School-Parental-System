@@ -1,0 +1,402 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.TeachersPageViewModel
+
+@{
+    ViewData["Title"] = "Teacher Management";
+    Layout = "_SchoolAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+            <h2>Teachers</h2>
+            <p>Manage teachers registered at your school.</p>
+        </div>
+
+        <a class="primary-action"
+           asp-controller="SchoolAdmin"
+           asp-action="AddTeacher">
+
+            <i class="bi bi-person-plus-fill"></i>
+            Add Teacher
+
+        </a>
+
+    </div>
+
+
+    <!-- SUMMARY CARDS -->
+    <div class="learner-summary-grid">
+
+        <div class="summary-card">
+
+            <div class="summary-icon gold">
+                <i class="bi bi-people-fill"></i>
+            </div>
+
+            <div>
+                <span>Total Teachers</span>
+                <strong>@Model.TotalTeachers</strong>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon green-summary">
+                <i class="bi bi-person-check-fill"></i>
+            </div>
+
+            <div>
+                <span>Active Teachers</span>
+                <strong>@Model.ActiveTeachers</strong>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon muted-summary">
+                <i class="bi bi-person-dash-fill"></i>
+            </div>
+
+            <div>
+                <span>Inactive Teachers</span>
+                <strong>@Model.InactiveTeachers</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TEACHER MANAGEMENT PANEL -->
+    <section class="panel learner-management-panel">
+
+        <div class="learner-toolbar">
+
+            <div class="table-search">
+
+                <i class="bi bi-search"></i>
+
+                <input type="text"
+                       id="teacherSearch"
+                       placeholder="Search by teacher name or employee ID..." />
+
+            </div>
+
+
+            <div class="learner-filters">
+
+                <select id="teacherSpecializationFilter">
+
+                    <option value="">
+                        All Specialisations
+                    </option>
+
+                    @foreach (var specialization in Model.Teachers
+                    .Where(x => !string.IsNullOrWhiteSpace(x.Specialization))
+                    .Select(x => x.Specialization)
+                    .Distinct()
+                    .OrderBy(x => x))
+                    {
+                        <option value="@specialization">
+                            @specialization
+                        </option>
+                    }
+
+                </select>
+
+
+                <select id="teacherStatusFilter">
+
+                    <option value="">
+                        All Statuses
+                    </option>
+
+                    <option value="Active">
+                        Active
+                    </option>
+
+                    <option value="Inactive">
+                        Inactive
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        @if (Model.Teachers.Any())
+        {
+            <div class="table-wrapper learner-table-wrapper">
+
+                <table class="learner-table"
+                       id="teachersTable">
+
+                    <thead>
+
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Teacher</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Specialization</th>
+                            <th>Joining Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var teacher in Model.Teachers)
+                        {
+                            <tr data-name="@teacher.FullName.ToLower()"
+                                data-employee="@teacher.EmployeeId.ToLower()"
+                                data-specialization="@teacher.Specialization.ToLower()"
+                                data-status="@teacher.Status">
+
+
+                                <!-- EMPLOYEE ID -->
+                                <td>
+                                    <strong>
+                                        @teacher.EmployeeId
+                                    </strong>
+                                </td>
+
+
+                                <!-- TEACHER -->
+                                <td>
+
+                                    <div class="learner-name-cell">
+
+                                        <div class="learner-avatar">
+
+                                            @(string.IsNullOrWhiteSpace(
+                                                teacher.FullName)
+                                                ? "T"
+                                                : teacher.FullName.Substring(
+                                                0,
+                                                1).ToUpper())
+
+                                        </div>
+
+                                        <span>
+                                            @teacher.FullName
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- EMAIL -->
+                                <td>
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        teacher.Email)
+                                        ? "Not provided"
+                                        : teacher.Email)
+
+                                </td>
+
+
+                                <!-- PHONE -->
+                                <td>
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        teacher.Phone)
+                                        ? "Not provided"
+                                        : teacher.Phone)
+
+                                </td>
+
+
+                                <!-- SPECIALIZATION -->
+                                <td>
+                                    @teacher.Specialization
+                                </td>
+
+
+                                <!-- JOINING DATE -->
+                                <td>
+
+                                    @(teacher.JoiningDate.HasValue
+                                        ? teacher.JoiningDate.Value
+                                        .ToString("dd MMM yyyy")
+                                        : "Not provided")
+
+                                </td>
+
+
+                                <!-- STATUS -->
+                                <td>
+
+                                    <span class="learner-status
+                                          @(teacher.Status == "Active"
+                                              ? "active-status"
+                                              : "inactive-status")">
+
+                                        @teacher.Status
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+                                <td>
+
+                                    <div class="learner-actions">
+
+                                        <button type="button"
+                                                class="more-actions-button"
+                                                aria-label="Teacher actions"
+                                                title="Teacher actions">
+
+                                            <i class="bi bi-three-dots-vertical"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="dashboard-empty-state">
+
+                <i class="bi bi-person-workspace"></i>
+
+                <strong>
+                    No teachers registered
+                </strong>
+
+                <span>
+                    Teachers added to this school
+                    will appear here.
+                </span>
+
+            </div>
+        }
+
+    </section>
+
+</section>
+
+
+<script>
+
+    const teacherSearch =
+        document.getElementById(
+            "teacherSearch"
+        );
+
+    const teacherStatusFilter =
+        document.getElementById(
+            "teacherStatusFilter"
+        );
+
+    const teacherSpecializationFilter =
+        document.getElementById(
+            "teacherSpecializationFilter"
+        );
+
+    const teacherRows =
+        document.querySelectorAll(
+            "#teachersTable tbody tr"
+        );
+
+
+    function filterTeachers() {
+
+        const searchValue =
+            teacherSearch
+                ?.value
+                .trim()
+                .toLowerCase() ?? "";
+
+        const statusValue =
+            teacherStatusFilter
+                ?.value ?? "";
+
+        const specializationValue =
+            teacherSpecializationFilter
+                ?.value
+                .toLowerCase() ?? "";
+
+
+        teacherRows.forEach(row => {
+
+            const name =
+                row.dataset.name ?? "";
+
+            const employee =
+                row.dataset.employee ?? "";
+
+            const status =
+                row.dataset.status ?? "";
+
+            const specialization =
+                row.dataset.specialization ?? "";
+
+
+            const matchesSearch =
+                !searchValue ||
+                name.includes(searchValue) ||
+                employee.includes(searchValue);
+
+            const matchesSpecialization =
+                !specializationValue ||
+                specialization === specializationValue;
+
+
+            const matchesStatus =
+                !statusValue ||
+                status === statusValue;
+
+
+            row.style.display =
+                matchesSearch &&
+                    matchesSpecialization &&
+                    matchesStatus
+                    ? ""
+                    : "none";
+
+            teacherSpecializationFilter?.addEventListener(
+                "change",
+                filterTeachers
+            );
+        });
+    }
+
+
+    teacherSearch?.addEventListener(
+        "input",
+        filterTeachers
+    );
+
+
+    teacherStatusFilter?.addEventListener(
+        "change",
+        filterTeachers
+    );
+
+</script>

@@ -82,6 +82,7 @@ builder.Services.AddSupabase(
 // Keeps the Supabase tokens attached to each web session.
 builder.Services.AddScoped<SupabaseSessionService>();
 builder.Services.AddScoped<SchoolAdminLearnerService>();
+builder.Services.AddScoped<SchoolAdminTeacherService>();
 
 
 var app = builder.Build();

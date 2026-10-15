@@ -5,7 +5,6 @@
     Layout = "_SchoolAdminLayout";
 }
 
-<!-- CONTENT -->
 <section class="dashboard-content">
 
     <!-- WELCOME -->
@@ -19,47 +18,66 @@
         </p>
     </div>
 
+
     <!-- STATS -->
     <div class="stats-grid">
 
         <div class="stat-card">
-            <div class="stat-icon blue">
+            <div class="stat-icon green">
                 <i class="bi bi-people-fill"></i>
             </div>
 
             <div>
                 <small>Total Learners</small>
-                <h3>@Model.TotalLearners.ToString("N0")</h3>
-                <span class="positive">↑ 12%</span>
-                <span class="muted">vs last month</span>
+
+                <h3>
+                    @Model.TotalLearners.ToString("N0")
+                </h3>
+
+                <span class="muted">
+                    Registered learners
+                </span>
             </div>
         </div>
 
+
         <div class="stat-card">
             <div class="stat-icon green">
-                <i class="bi bi-person-fill"></i>
+                <i class="bi bi-person-workspace"></i>
             </div>
 
             <div>
                 <small>Total Teachers</small>
-                <h3>@Model.TotalTeachers</h3>
-                <span class="positive">↑ 4%</span>
-                <span class="muted">vs last month</span>
+
+                <h3>
+                    @Model.TotalTeachers.ToString("N0")
+                </h3>
+
+                <span class="muted">
+                    Active teachers
+                </span>
             </div>
         </div>
 
+
         <div class="stat-card">
-            <div class="stat-icon purple">
+            <div class="stat-icon green">
                 <i class="bi bi-easel-fill"></i>
             </div>
 
             <div>
                 <small>Total Classes</small>
-                <h3>@Model.TotalClasses</h3>
-                <span class="positive">↑ 0%</span>
-                <span class="muted">vs last month</span>
+
+                <h3>
+                    @Model.TotalClasses.ToString("N0")
+                </h3>
+
+                <span class="muted">
+                    Active classes
+                </span>
             </div>
         </div>
+
 
         <div class="stat-card">
             <div class="stat-icon orange">
@@ -68,26 +86,38 @@
 
             <div>
                 <small>Attendance Rate</small>
-                <h3>@Model.AttendanceRate%</h3>
-                <span class="positive">↑ 2.1%</span>
-                <span class="muted">vs last month</span>
+
+                <h3>
+                    @Model.AttendanceRate.ToString("0.0")%
+                </h3>
+
+                <span class="muted">
+                    Based on recorded attendance
+                </span>
             </div>
         </div>
 
+
         <div class="stat-card">
-            <div class="stat-icon pink">
+            <div class="stat-icon orange">
                 <i class="bi bi-megaphone-fill"></i>
             </div>
 
             <div>
                 <small>Active Announcements</small>
-                <h3>@Model.ActiveAnnouncements</h3>
-                <span class="positive">↑ 50%</span>
-                <span class="muted">vs last month</span>
+
+                <h3>
+                    @Model.ActiveAnnouncements.ToString("N0")
+                </h3>
+
+                <span class="muted">
+                    Current announcements
+                </span>
             </div>
         </div>
 
     </div>
+
 
     <!-- MIDDLE GRID -->
     <div class="dashboard-grid three-columns">
@@ -100,38 +130,57 @@
                     <i class="bi bi-calendar3"></i>
                     Attendance Overview
                 </h3>
-
-                <a href="#">View All</a>
             </div>
 
-            <div class="attendance-chart">
+            @if (Model.AttendanceOverview.Any())
+            {
+                <div class="attendance-chart">
 
-                @foreach (var item in Model.AttendanceOverview)
-                {
-                    <div class="bar-column">
+                    @foreach (var item in Model.AttendanceOverview)
+                    {
+                        <div class="bar-column">
 
-                        <span class="percentage">
-                            @item.Percentage%
-                        </span>
+                            <span class="percentage">
+                                @item.Percentage.ToString("0.#")%
+                            </span>
 
-                        <div class="bar-track">
+                            <div class="bar-track">
 
-                            <div class="bar-fill"
-                                 style="height:@item.Percentage%;">
+                                <div class="bar-fill"
+                                     style="height:@item.Percentage%;">
+                                </div>
+
                             </div>
 
+                            <span class="bar-label">
+                                @item.Date
+                            </span>
+
                         </div>
+                    }
 
-                        <span class="bar-label">
-                            @item.Date
-                        </span>
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-empty-state">
 
-                    </div>
-                }
+                    <i class="bi bi-calendar-check"></i>
 
-            </div>
+                    <strong>
+                        No attendance data yet
+                    </strong>
+
+                    <span>
+                        Attendance information will appear
+                        once teachers begin recording it.
+                    </span>
+
+                </div>
+            }
 
         </section>
+
 
         <!-- ANNOUNCEMENTS -->
         <section class="panel">
@@ -141,31 +190,56 @@
                     <i class="bi bi-megaphone-fill"></i>
                     Recent Announcements
                 </h3>
-
-                <a href="#">View All</a>
             </div>
 
-            <div class="announcement-list">
+            @if (Model.RecentAnnouncements.Any())
+            {
+                <div class="announcement-list">
 
-                @foreach (var announcement in Model.RecentAnnouncements)
-                {
-                    <div class="announcement-row">
+                    @foreach (var announcement
+                   in Model.RecentAnnouncements)
+                    {
+                        <div class="announcement-row">
 
-                        <div class="small-icon announcement">
-                            <i class="bi bi-megaphone-fill"></i>
+                            <div class="small-icon announcement">
+                                <i class="bi bi-megaphone-fill"></i>
+                            </div>
+
+                            <div>
+                                <strong>
+                                    @announcement.Title
+                                </strong>
+
+                                <p>
+                                    @announcement.Description
+                                </p>
+                            </div>
+
                         </div>
+                    }
 
-                        <div>
-                            <strong>@announcement.Title</strong>
-                            <p>@announcement.Description</p>
-                        </div>
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-empty-state">
 
-                    </div>
-                }
+                    <i class="bi bi-megaphone"></i>
 
-            </div>
+                    <strong>
+                        No announcements yet
+                    </strong>
+
+                    <span>
+                        Recent school announcements
+                        will appear here.
+                    </span>
+
+                </div>
+            }
 
         </section>
+
 
         <!-- EVENTS -->
         <section class="panel">
@@ -175,31 +249,60 @@
                     <i class="bi bi-calendar-event-fill"></i>
                     Upcoming Events
                 </h3>
-
-                <a href="#">View All</a>
             </div>
 
-            <div class="events-list">
+            @if (Model.UpcomingEvents.Any())
+            {
+                <div class="events-list">
 
-                @foreach (var item in Model.UpcomingEvents)
-                {
-                    <div class="event-row">
+                    @foreach (var item
+                   in Model.UpcomingEvents)
+                    {
+                        <div class="event-row">
 
-                        <div class="event-date">
-                            <span>@item.Month</span>
-                            <strong>@item.Day</strong>
+                            <div class="event-date">
+
+                                <span>
+                                    @item.Month
+                                </span>
+
+                                <strong>
+                                    @item.Day
+                                </strong>
+
+                            </div>
+
+                            <span>
+                                @item.Title
+                            </span>
+
                         </div>
+                    }
 
-                        <span>@item.Title</span>
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-empty-state">
 
-                    </div>
-                }
+                    <i class="bi bi-calendar-event"></i>
 
-            </div>
+                    <strong>
+                        No upcoming events
+                    </strong>
+
+                    <span>
+                        Future school events
+                        will appear here.
+                    </span>
+
+                </div>
+            }
 
         </section>
 
     </div>
+
 
     <!-- BOTTOM GRID -->
     <div class="dashboard-grid bottom-grid">
@@ -212,32 +315,53 @@
                     <i class="bi bi-lightning-charge-fill"></i>
                     Recent Activity
                 </h3>
-
-                <a href="#">View All</a>
             </div>
 
-            <div class="activity-list">
+            @if (Model.RecentActivities.Any())
+            {
+                <div class="activity-list">
 
-                @foreach (var activity in Model.RecentActivities)
-                {
-                    <div class="activity-row">
+                    @foreach (var activity
+                   in Model.RecentActivities)
+                    {
+                        <div class="activity-row">
 
-                        <div class="activity-dot"></div>
+                            <div class="activity-dot">
+                            </div>
 
-                        <span class="activity-text">
-                            @activity.Description
-                        </span>
+                            <span class="activity-text">
+                                @activity.Description
+                            </span>
 
-                        <span class="activity-time">
-                            @activity.TimeAgo
-                        </span>
+                            <span class="activity-time">
+                                @activity.TimeAgo
+                            </span>
 
-                    </div>
-                }
+                        </div>
+                    }
 
-            </div>
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-empty-state">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <strong>
+                        No recent activity
+                    </strong>
+
+                    <span>
+                        Recent school activity
+                        will appear here.
+                    </span>
+
+                </div>
+            }
 
         </section>
+
 
         <!-- QUICK ACTIONS -->
         <section class="panel">
@@ -251,41 +375,77 @@
 
             <div class="quick-actions">
 
-                <a class="quick-action blue-action" href="#">
+                <a class="quick-action green-action"
+                   asp-controller="SchoolAdmin"
+                   asp-action="AddLearner">
+
                     <i class="bi bi-person-plus-fill"></i>
+
                     <span>
                         <strong>Add Learner</strong>
-                        <small>Register a new learner</small>
+
+                        <small>
+                            Register a new learner
+                        </small>
                     </span>
+
                 </a>
 
-                <a class="quick-action green-action" href="#">
-                    <i class="bi bi-person-plus-fill"></i>
+
+                <div class="quick-action
+                            green-action
+                            quick-action-disabled">
+
+                    <i class="bi bi-person-workspace"></i>
+
                     <span>
                         <strong>Add Teacher</strong>
-                        <small>Create a teacher account</small>
-                    </span>
-                </a>
 
-                <a class="quick-action purple-action" href="#">
+                        <small>
+                            Teacher management coming next
+                        </small>
+                    </span>
+
+                </div>
+
+
+                <div class="quick-action
+                            green-action
+                            quick-action-disabled">
+
                     <i class="bi bi-megaphone-fill"></i>
+
                     <span>
                         <strong>Create Announcement</strong>
-                        <small>Send updates to parents</small>
-                    </span>
-                </a>
 
-                <a class="quick-action orange-action" href="#">
+                        <small>
+                            Announcement management
+                        </small>
+                    </span>
+
+                </div>
+
+
+                <div class="quick-action
+                            green-action
+                            quick-action-disabled">
+
                     <i class="bi bi-file-earmark-bar-graph-fill"></i>
+
                     <span>
                         <strong>Generate Report</strong>
-                        <small>Attendance and grades</small>
+
+                        <small>
+                            Reports and analytics
+                        </small>
                     </span>
-                </a>
+
+                </div>
 
             </div>
 
         </section>
+
 
         <!-- PERFORMANCE -->
         <section class="panel performance-panel">
@@ -293,55 +453,95 @@
             <div class="panel-header">
                 <h3>
                     <i class="bi bi-bar-chart-fill"></i>
-                    Class Performance (Average Grade)
+                    Class Performance
                 </h3>
-
-                <a href="#">View All</a>
             </div>
 
-            <div class="table-wrapper">
+            @if (Model.ClassPerformance.Any())
+            {
+                <div class="table-wrapper">
 
-                <table>
+                    <table>
 
-                    <thead>
-                        <tr>
-                            <th>Class</th>
-                            <th>Learners</th>
-                            <th>Average Grade</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        @foreach (var item in Model.ClassPerformance)
-                        {
+                        <thead>
                             <tr>
-
-                                <td>@item.ClassName</td>
-
-                                <td>@item.LearnerCount</td>
-
-                                <td>@item.AverageGrade%</td>
-
-                                <td>
-                                    <span class="status-dot
-                                        @(item.Status == "Needs attention"
-                                            ? "warning"
-                                            : "good")">
-                                    </span>
-
-                                    @item.Status
-                                </td>
-
+                                <th>Class</th>
+                                <th>Learners</th>
+                                <th>Average Grade</th>
+                                <th>Status</th>
                             </tr>
-                        }
+                        </thead>
 
-                    </tbody>
+                        <tbody>
 
-                </table>
+                            @foreach (var item
+                           in Model.ClassPerformance)
+                            {
+                                <tr>
 
-            </div>
+                                    <td>
+                                        @item.ClassName
+                                    </td>
+
+                                    <td>
+                                        @item.LearnerCount
+                                    </td>
+
+                                    <td>
+                                        @if (item.Status == "No grade data")
+                                        {
+                                            <span class="muted">
+                                                —
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <text>
+                                                @item.AverageGrade.ToString("0.0")%
+                                            </text>
+                                        }
+                                    </td>
+
+                                    <td>
+
+                                        <span class="status-dot
+                                            @(item.Status == "Needs attention"
+                                                ? "warning"
+                                                : item.Status == "No grade data"
+                                                    ? "neutral"
+                                                    : "good")">
+                                        </span>
+
+                                        @item.Status
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-empty-state">
+
+                    <i class="bi bi-bar-chart"></i>
+
+                    <strong>
+                        No class performance data
+                    </strong>
+
+                    <span>
+                        Class performance will appear
+                        when classes and grades are available.
+                    </span>
+
+                </div>
+            }
 
         </section>
 

@@ -65,9 +65,13 @@
                     <span>Learners</span>
                 </a>
 
-                <a class="nav-item" href="#">
+                <a class="nav-item @(currentAction == "Teachers" ? "active" : "")"
+                   asp-controller="SchoolAdmin"
+                   asp-action="Teachers">
+
                     <i class="bi bi-person-workspace"></i>
                     <span>Teachers</span>
+
                 </a>
 
                 <a class="nav-item" href="#">
