@@ -1329,6 +1329,333 @@ Repository Link: https://github.com/BRIGHTWEBCRAFTER/School-Parental-System
 
 
 ---
+# PHASE 3 - SYSTEM DEVELOPMENT, IMPLEMENTATION AND FINAL DEMONSTRATION
+
+---
+
+## PROJECT PROGRESS - PHASE 3
+
+### Completed
+
+- Phase 1 SRS (requirements, stakeholder engagement, feasibility)
+- Phase 2 System Design (architecture, UML, ERD, wireframes, design alignment)
+- Supabase backend implementation (tables, relationships, Authentication)
+- Flutter mobile application development
+- ASP.NET Core web application development
+- Integration of Flutter and ASP.NET Core with one shared Supabase project
+- Final Microsoft Project schedule update
+- Final SRS update (Implementation and Final Prototype section)
+
+### Remaining / Outstanding
+
+- [LIST ANY INCOMPLETE FUNCTIONS HERE, or write "None"]
+- Final presentation and live demonstration
+- Individual contribution check (submitted separately by each student)
+
+---
+
+## PHASE 3 DELIVERABLES
+
+| # | Deliverable | Location | Status |
+|---|-------------|----------|--------|
+| 1 | Shared Supabase Backend (tables, keys, relationships, Auth, RLS) | database/ | [Complete] |
+| 2 | Flutter Mobile Application Source Code | mobile/ | [Complete] |
+| 3 | ASP.NET Core Web Application Source Code | web/ | [Complete] |
+| 4 | Backend Schema Scripts and Setup Instructions | database/ | [Complete] |
+| 5 | Final Updated SRS (Phases 1-3) as a single PDF | docs/SRS/ | [Complete] |
+| 6 | Updated Microsoft Project Schedule | project-management/microsoft-project/ | [Complete] |
+| 7 | Updated ITC327W Project Progress Tracker (Excel) | project-management/progress-tracker/ | [Complete] |
+| 8 | Final Source Code ZIP ("Group [Letter] Phase 3") | Blackboard submission | [Complete]|
+| 9 | GitHub Repository README | README.md | [Complete] |
+| 10 | Final Presentation and Live Demonstration | presentations/ | [Pending] |
+| 11 | Individual Contributions | docs/contributions/ | [pending] |
+
+---
+
+## IMPLEMENTATION AND FINAL PROTOTYPE
+
+### Overview of Implemented Components
+
+The Phase 3 prototype implements the approved Phase 1 requirements and Phase 2 designs as one integrated solution. The Flutter mobile application and the ASP.NET Core web application both use **one shared Supabase project**.
+
+| Component | Technology | Main Users | Source Location |
+|-----------|------------|------------|-----------------|
+| Mobile Application | Flutter (Android and iOS) | Parent | mobile/ |
+| Web Application | ASP.NET Core 8 | Super Admin, School Admin, Teacher | web/ |
+| Shared Backend | Supabase PostgreSQL, Supabase Auth, Row Level Security | All roles | database/ |
+
+### Shared Supabase Backend
+
+| Item | Implementation |
+|------|----------------|
+| Database | Supabase PostgreSQL |
+| Tables | Super_Admin, School, School_Admin, Parent, Student, Parent_Student, Class, Teacher, Subject, Attendance, Grade, Message [ADD ANY EXTRA TABLES, e.g. Announcement, Event] |
+| Keys and Relationships | Primary keys and foreign keys implemented as defined in the approved ERD |
+| Authentication | Supabase Auth (email/password), JWT tokens |
+| Access Control | Role-Based Access Control and Row Level Security using school_id filtering |
+| Storage | Supabase Storage (profile pictures, documents) [if implemented] |
+| Demonstration Data | Dummy data only (no real learner or parent information) |
+| Shared Use | Flutter and ASP.NET Core connect to the same Supabase project |
+
+### Flutter Mobile Application
+
+| Screen | Description | Linked Requirement | Status |
+|--------|-------------|--------------------|--------|
+| Login | Parent login with email and password | P1 | [Working] |
+| Parent Dashboard | Overview of child's information | P3 | [Working] |
+| Attendance View | Child's attendance records | P4 | [Working] |
+| Grades View | Subject grades and assessments | P5 | [Working] |
+| Announcements List | School announcements with read/unread status | P6, P10 | [Working]|
+| Events List | Upcoming school events | P9 | [Working] |
+| Learner Profile | Child's personal information | P3 | [Working]|
+| Messages | Send and receive messages with the school | P8 | [Working] |
+
+### ASP.NET Core Web Application
+
+| Page | Description | Linked Requirement | Status |
+|------|-------------|--------------------|--------|
+| Admin Login | Login for Super Admin, School Admin and Teacher | SA1, SA12, T1 | [Working] |
+| Super Admin Dashboard | Overview of all schools | SA2, SA7 | [Working] |
+| Manage Schools | Add, edit, delete schools | SA3, SA4, SA5 | [Working] |
+| School Admin Dashboard | Overview of a single school | SA13 | [Working]|
+| Manage Users | Manage students, parents, teachers | SA6, SA14, SA16 | [Working] |
+| Class Management | Create classes and assign students | SA18, SA19 | [Working] |
+| Teacher Dashboard | Overview of assigned classes | T3 | [Working] |
+| Mark Attendance | Record attendance for a class | T5 | [Working]|
+| Record Grades | Record and edit grades for students | T7, T8 | [Working] |
+| Create Announcement | Create and target announcements | SA22 | [Working]|
+| Create Event | Create school events | SA23 | [Working] |
+| Reports | Attendance and grade reports | SA20, SA21 | [Working] |
+| Messages | View and respond to messages | SA25 | [Working] |
+
+---
+
+## REQUIREMENTS TO IMPLEMENTATION TABLE
+
+| # | Approved Requirement | Implemented Function | Application | Status |
+|---|----------------------|----------------------|-------------|--------|
+| 1 | SA1, SA12, T1, P1 - Users can register and login | Email/password login using Supabase Auth | Flutter, ASP.NET | [Working] |
+| 2 | Role-Based Access Control | Role checks and Row Level Security policies | Flutter, ASP.NET, Supabase |[Working] |
+| 3 | SA3-SA5 - Super Admin manages schools | Add, edit and delete schools | ASP.NET | [Working] |
+| 4 | SA8 - Super Admin selects a school | School selector (Super Admin only) | ASP.NET | [Working] |
+| 5 | SA14, SA15 - School Admin manages students | Add and edit students | ASP.NET | [Working] |
+| 6 | SA16, SA17 - School Admin manages teachers | Add and edit teachers | ASP.NET | [Working] |
+| 7 | SA18, SA19 - Classes | Create classes and assign students | ASP.NET | [Working] |
+| 8 | T3, T4 - Teacher views assigned classes | Class and student lists | ASP.NET | [Working] |
+| 9 | T5, T6 - Teacher marks attendance | Mark Present / Absent / Late and view records | ASP.NET | [Working]|
+| 10 | T7, T8 - Teacher records grades | Record and edit grades (0-100) | ASP.NET | [Working] |
+| 11 | P3, P4 - Parent views children's attendance | Attendance View | Flutter |[Working]|
+| 12 | P3, P5 - Parent views children's grades | Grades View | Flutter | [Working] |
+| 13 | SA22, P6 - Announcements | Create (web) and view (mobile) announcements | ASP.NET, Flutter | [Working] |
+| 14 | SA23, P9 - Events | Create (web) and view (mobile) events | ASP.NET, Flutter | [Working] |
+| 15 | P10, SA25 - Read/Unread tracking | Read status stored and displayed | Flutter, ASP.NET | [Working]|
+| 16 | P11, SA24 - Parent Acknowledgement | Parent acknowledges; admin views status | Flutter, ASP.NET | [Working] |
+| 17 | SA20, SA21 - Reports | Attendance and grade reports | ASP.NET |[Working]|
+| 18 | NFR5, NFR7, NFR8 - Security | HTTPS, JWT expiry, Row Level Security | Supabase | [Working]|
+
+---
+
+## INTEGRATION AND SHARED PROCESSES
+
+### Shared Process 1: Data Submission and Retrieval (Attendance)
+
+#### Participants
+
+| Participant | Role |
+|-------------|------|
+| Teacher | Marks attendance |
+| ASP.NET Web Application | Submits attendance |
+| Supabase Database | Stores attendance records |
+| Flutter Mobile Application | Retrieves attendance |
+| Parent | Views attendance |
+
+#### Workflow
+
+1. Teacher logs into the ASP.NET web application
+2. Supabase Auth validates the credentials and returns a JWT token
+3. Teacher selects an assigned class and marks each student as Present, Absent, or Late
+4. Teacher clicks Save Attendance
+5. The application validates the teacher's role and class assignment
+6. Attendance records are saved to the Attendance table in Supabase
+7. Parent logs into the Flutter mobile application
+8. Parent opens Attendance View
+9. Flutter retrieves the attendance records from Supabase (Row Level Security limits results to the parent's own children)
+10. The same attendance values saved by the teacher are displayed to the parent
+
+#### Requirements Alignment
+
+| Requirement | Use Case |
+|-------------|----------|
+| T5 - Teacher can mark attendance for their classes | Mark Attendance |
+| T6 - Teacher can view attendance records | View Attendance |
+| P4 - Parent can view their children's attendance | View Attendance |
+
+---
+
+### Shared Process 2: Shared Update and Display (Grades)
+
+#### Participants
+
+| Participant | Role |
+|-------------|------|
+| Teacher | Records or updates a grade |
+| ASP.NET Web Application | Submits the grade |
+| Supabase Database | Stores and updates the grade record |
+| Flutter Mobile Application | Retrieves the updated grade |
+| Parent | Views grades |
+
+#### Workflow
+
+1. Teacher logs into the ASP.NET web application
+2. Teacher opens Record Grades for an assigned class
+3. Teacher enters or edits a student's grade (0-100) for a subject and term
+4. The application validates the teacher's role and the grade value
+5. The Grade record is created or updated in Supabase
+6. Parent opens Grades View in the Flutter mobile application
+7. Flutter retrieves the grade records from Supabase
+8. The updated grade is displayed and matches the value on the web application
+
+#### Requirements Alignment
+
+| Requirement | Use Case |
+|-------------|----------|
+| T7 - Teacher can record grades for students | Record Grades |
+| T8 - Teacher can edit grades | Record Grades |
+| P5 - Parent can view their children's grades | View Grades |
+
+---
+
+### Shared Process 3 (Optional): Communication (Announcements)
+
+1. School Admin creates an announcement on the ASP.NET web application and sets its priority (Normal, Important or Urgent)
+2. The announcement is saved to Supabase for the intended school and role
+3. Parent opens the Flutter app and sees the announcement marked as unread
+4. Parent opens the announcement; the read status is stored
+5. Parent acknowledges the announcement (once only)
+6. School Admin views the updated read and acknowledgement status on the web application
+
+| Requirement | Use Case |
+|-------------|----------|
+| SA22 - Create and manage announcements | Create Announcement |
+| SA24, SA25 - Acknowledgement and read statistics | View Reports |
+| P6, P10, P11 - View, read tracking, acknowledge | View Announcements |
+
+---
+
+## IMPLEMENTATION EVIDENCE
+
+| # | Evidence | Description | Location |
+|---|----------|-------------|----------|
+| 1 | Supabase Table Editor | Screenshot of implemented tables (no secret keys shown) | [INSERT SCREENSHOT] |
+| 2 | Supabase Authentication | Screenshot of Auth users and roles (no passwords shown) | [INSERT SCREENSHOT] |
+| 3 | Flutter Screens | Login, Dashboard, Attendance, Grades, Announcements | [INSERT SCREENSHOTS] |
+| 4 | ASP.NET Pages | Login, Dashboards, Mark Attendance, Record Grades, Class Management | [INSERT SCREENSHOTS] |
+| 5 | Shared Process 1 | Web attendance entry and matching mobile result | [INSERT SCREENSHOTS] |
+| 6 | Shared Process 2 | Web grade update and matching mobile result | [INSERT SCREENSHOTS] |
+
+---
+
+## APPROVED CHANGES DURING IMPLEMENTATION
+
+| ID | Original Design | Change Made | Reason |
+|----|-----------------|-------------|--------|
+| CH09 | ERD stored a password field on each user table | Passwords handled by Supabase Auth only | Security: credentials are not stored in application tables |
+| CH10 | [ORIGINAL DESIGN] | [CHANGE MADE] | [REASON] |
+| CH11 | [ORIGINAL DESIGN] | [CHANGE MADE] | [REASON] |
+
+---
+
+## KNOWN LIMITATIONS
+
+| # | Limitation | Impact |
+|---|------------|--------|
+| 1 | Academic prototype, not a production system | Not intended for real school data or full deployment |
+| 2 | Internet connectivity is required | System cannot be used offline |
+| 3 | Some parents may not have smartphones or mobile data | Schools should keep an alternative way to communicate |
+| 4 | [INCOMPLETE FUNCTION] | [IMPACT] |
+| 5 | [INCOMPLETE FUNCTION] | [IMPACT] |
+
+---
+
+## GITHUB REPOSITORY
+
+Repository Link: https://github.com/BRIGHTWEBCRAFTER/School-Parental-System
+
+| Folder | Contents |
+|--------|----------|
+| mobile/ | Flutter mobile application source code |
+| web/ | ASP.NET Core web application source code |
+| database/ | Supabase schema scripts, RLS policies and setup instructions |
+| docs/ | SRS, architecture, UML, ERD, wireframes, design alignment, design sources |
+| project-management/ | Microsoft Project file and Progress Tracker |
+| README.md | Project overview, setup and run instructions |
+
+No passwords, secret keys or confidential information are stored in the repository. The GitHub repository and the submitted ZIP represent the same version demonstrated to the panel.
+
+---
+
+## MICROSOFT PROJECT PLAN - PHASE 3
+
+### Project Schedule Screenshot
+
+[INSERT FINAL MICROSOFT PROJECT SCREENSHOT HERE]
+
+### Phase 3 Activities
+
+| Task | Activity | Start Date | End Date | Resource | Status |
+|------|----------|------------|----------|----------|--------|
+| 2.6 | Flutter, ASP.NET Core and Supabase Development Setup | 24 Sep 2026 | 30 Sep 2026 | All Group Members | [Complete] |
+| 2.7 | Authentication and Role-Based Access Control | 24 Sep 2026 | 30 Sep 2026 | LP Moshoeu, A Sithole | [Complete] |
+| 2.8 | Development Sprint 1 Complete (milestone) | 24 Sep 2026 | 24 Sep 2026 | All Group Members | [Complete] |
+| 2.9 | Development Sprint 2 and System Integration | 1 Oct 2026 | 7 Oct 2026 | | [Complete]|
+| 2.10 | Admin, Teacher and Parent Modules | 2 Oct 2026 | 8 Oct 2026 | All Group Members | [Complete] |
+| 2.11 | Attendance, Grades and Communication | 8 Oct 2026 | 14 Oct 2026 | All Group Members | [Complete]|
+| 3.1 | Prototype Completion | 8 Oct 2026 | 14 Oct 2026 | | [Complete] |
+| 3.2 | Manual and Functional Testing | 15 Oct 2026 | 21 Oct 2026 | All Group Members | [Complete]|
+| 3.3 | Security, RBAC and Usability Testing | 15 Oct 2026 | 21 Oct 2026 | All Group Members | [Complete] |
+| 3.4 | Bug Fixing, Corrections and Improvements | 15 Oct 2026 | 21 Oct 2026 | All Group Members | [Complete] |
+| 3.5 | Stakeholder Evaluation and Final Preparation | 15 Oct 2026 | 21 Oct 2026 | All Group Members | [Complete] |
+| 3.6 | Final Prototype Presentation | 22 Oct 2026 | 28 Oct 2026 | All Group Members | [Pending] |
+| 3.7 | Project Defence | 22 Oct 2026 | 24 Oct 2026 | All Group Members | [Pending] |
+| 3.8 | Project Closure and Final Group Reflection | 22 Oct 2026 | 28 Oct 2026 | All Group Members | [Pending] |
+| 3.9 | Final Project Submission (milestone) | 25 Oct 2026 | 25 Oct 2026 | All Group Members | [Pending] |
+
+### Microsoft Project File
+
+| File | Location |
+|------|----------|
+| SchoolPortal_Schedule.mpp | project-management/microsoft-project/ |
+
+---
+
+## PROJECT PROGRESS TRACKER - PHASE 3
+
+| File | Location |
+|------|----------|
+| ITC327W_Progress_Tracker.xlsx | project-management/progress-tracker/ |
+
+---
+
+## GROUP MEMBERS AND CONTRIBUTIONS - PHASE 3
+
+| Student Name | Student Number | Phase 3 Responsibility |
+|--------------|----------------|------------------------|
+| LP Moshoeu | 223046876 | [e.g. Team Leader, Authentication and flutter screens] |
+| A Sithole | 223000460 | [e.g. ASP.NET web pages ,supabase tables] |
+| MA Nkuna | 224000274 | [e.g. Supabase tables and SRS ,ASP.NET web pages ] |
+| ST Pheko | 223050336 | [e.g. Flutter screens and MS project] |
+| TMC Motone | 224027806 | [e.g. Integration and shared processes] |
+| PA Luthada | 222023335 | [e.g. powerpoint presentation ,flutter screens and GitHub] |
+
+---
+
+
+## PHASE 3 CONCLUSION
+
+Phase 3 delivers a working prototype of the School-Parental System in which the Flutter mobile application and the ASP.NET Core web application use one shared Supabase backend. The prototype demonstrates the main approved functions and at least two shared processes, in which information created or updated in one application is retrieved and displayed consistently in the other. Remaining limitations are recorded above.
+
+---
+
 
 ## REFERENCES
 
