@@ -1,0 +1,42 @@
+name: school_parental_system_app
+description: School-Parental System App
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  cupertino_icons: ^1.0.8
+  flutter:
+    sdk: flutter
+  image_picker: ^1.2.4
+  intl: ^0.19.0
+  provider: ^6.1.2
+  shared_preferences: ^2.2.3
+  supabase_flutter: ^2.5.6
+  url_launcher: ^6.3.0
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+  flutter_lints: ^4.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - asset/icon/
+    - asset/image/
+
+# ═══════════════════════════════════════════════
+# APP ICON CONFIG
+# ═══════════════════════════════════════════════
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "asset/icon/Background.jpg"
+  adaptive_icon_background: "#1A6FB5"
+  adaptive_icon_foreground: "asset/icon/Background.jpg"
+  remove_alpha_ios: true
