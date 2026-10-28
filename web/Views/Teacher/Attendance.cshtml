@@ -1,0 +1,530 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherAttendanceViewModel
+@using System.Linq
+
+@{
+    ViewData["Title"] = "Attendance";
+    Layout = "_TeacherLayout";
+
+    var selectedClassName = Model.Classes
+        .FirstOrDefault(c => c.Id == Model.SelectedClassId)
+        ?.Name ?? "Selected Class";
+}
+
+<link rel="stylesheet"
+      href="~/css/teacher/teacher-attendance.css"
+      asp-append-version="true" />
+
+<section class="dashboard-content teacher-attendance-page">
+
+    <!-- PAGE INTRODUCTION -->
+
+    <div class="ta-intro">
+        <div>
+            <h2>Attendance Management</h2>
+            <p>
+                Record, manage and review attendance
+                for your assigned class.
+            </p>
+        </div>
+
+        <span class="ta-readonly-badge">
+            <i class="bi bi-clipboard-check"></i>
+            Attendance Register
+        </span>
+    </div>
+
+    <!-- INFORMATION BANNER -->
+
+    <div class="ta-notice">
+        <i class="bi bi-info-circle"></i>
+
+        <p>
+            <strong>Daily Class Attendance:</strong>
+            Select your assigned class and attendance date.
+            Mark each learner as Present, Absent, Late or
+            Excused, then save the register.
+            Unmarked learners are not automatically
+            recorded as absent.
+        </p>
+    </div>
+
+    <!-- SUCCESS AND ERROR MESSAGES -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="ta-feedback ta-feedback-success"
+             role="status">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>@TempData["SuccessMessage"]</span>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="ta-feedback ta-feedback-error"
+             role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>@TempData["ErrorMessage"]</span>
+        </div>
+    }
+
+    @if (Model.DataLoadFailed)
+    {
+        <div class="ta-message">
+            <i class="bi bi-exclamation-triangle"></i>
+            Attendance information could not be loaded.
+            Please try again.
+        </div>
+    }
+    else if (!Model.HasTeacherProfile)
+    {
+        <div class="ta-message">
+            <i class="bi bi-person-exclamation"></i>
+            Your account does not have an active
+            Teacher profile. Please contact your
+            School Administrator.
+        </div>
+    }
+    else
+    {
+        <!-- CLASS AND DATE FILTERS -->
+
+        <section class="ta-card ta-filter-card">
+
+            <div class="ta-card-header">
+                <div>
+                    <h3>
+                        <i class="bi bi-calendar-check"></i>
+                        Attendance Register
+                    </h3>
+
+                    <p>Choose a class and attendance date.</p>
+                </div>
+            </div>
+
+            <form asp-controller="Teacher"
+                  asp-action="Attendance"
+                  method="get"
+                  class="ta-filter-form">
+
+                <div class="ta-field">
+                    <label for="classId">Select Class</label>
+
+                    <select id="classId"
+                            name="classId"
+                            required>
+
+                        <option value="">Choose a class</option>
+
+                        @foreach (var schoolClass in Model.Classes)
+                        {
+                            <option value="@schoolClass.Id"
+                                    selected="@(Model.SelectedClassId == schoolClass.Id ? "selected" : null)">
+                                @schoolClass.Name
+                                @(schoolClass.IsClassTeacher
+                                    ? "(Class Teacher)"
+                                    : "(Subject Teacher)")
+                            </option>
+                        }
+                    </select>
+                </div>
+
+
+                @if (Model.SelectedClassId.HasValue)
+                {
+                    <div class="ta-field">
+
+                        <label for="subjectId">
+                            Attendance Type / Subject
+                        </label>
+
+                        <select id="subjectId"
+                                name="subjectId"
+                                required="@(!Model.IsClassTeacher)">
+
+                            @if (Model.IsClassTeacher)
+                            {
+                                <option value=""
+                                        selected="@(Model.SelectedSubjectId == null ? "selected" : null)">
+                                    Daily Class Attendance
+                                </option>
+                            }
+                            else
+                            {
+                                <option value=""
+                                        disabled
+                                        selected="@(Model.SelectedSubjectId == null ? "selected" : null)">
+                                    Choose a subject
+                                </option>
+                            }
+
+                            @foreach (var subject in Model.SubjectOptions)
+                            {
+                                <option value="@subject.Id"
+                                        selected="@(Model.SelectedSubjectId == subject.Id ? "selected" : null)">
+                                    @subject.Name
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+                }
+
+
+                <div class="ta-field">
+                    <label for="attendanceDate">
+                        Attendance Date
+                    </label>
+
+                    <input type="date"
+                           id="attendanceDate"
+                           name="date"
+                           value="@Model.AttendanceDate.ToString("yyyy-MM-dd")"
+                           required />
+                </div>
+
+                <button type="submit"
+                        class="ta-primary-button">
+                    <i class="bi bi-search"></i>
+                    Load Register
+                </button>
+            </form>
+        </section>
+
+        <!-- EMPTY STATES -->
+        @if (Model.Classes.Count == 0)
+        {
+            <div class="ta-card ta-empty">
+                <i class="bi bi-easel"></i>
+                <h3>No assigned classes</h3>
+                <p>
+                    Your School Administrator has not
+                    assigned any active classes to you.
+                </p>
+            </div>
+        }
+        else if (!Model.SelectedClassId.HasValue)
+        {
+            <div class="ta-card ta-empty">
+                <i class="bi bi-calendar2-week"></i>
+                <h3>Select a class to begin</h3>
+                <p>
+                    Choose an assigned class and date
+                    to load its attendance register.
+                </p>
+            </div>
+        }
+
+        else if (!Model.CanLoadRegister)
+        {
+            <div class="ta-card ta-empty">
+
+                <i class="bi bi-book"></i>
+
+                <h3>
+                    @(Model.InvalidSubjectSelection
+                        ? "Subject Not Authorized"
+                        : "Select a Subject")
+                </h3>
+
+                <p>
+                    @if (Model.InvalidSubjectSelection)
+                    {
+                        <text>
+                            You are not assigned to this subject
+                            for the selected class.
+                            Please select an authorized subject.
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                            Choose a subject from your assigned
+                            subjects and click Load Register.
+                        </text>
+                    }
+                </p>
+
+            </div>
+        }
+
+        else
+        {
+            <!-- ATTENDANCE SUMMARY CARDS -->
+
+            <div class="ta-stat-grid">
+
+                <div class="ta-stat-card">
+                    <div class="ta-stat-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div>
+                        <span>Total Learners</span>
+                        <strong>@Model.TotalLearners</strong>
+                    </div>
+                </div>
+
+                <div class="ta-stat-card">
+                    <div class="ta-stat-icon present">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div>
+                        <span>Present</span>
+                        <strong>@Model.PresentCount</strong>
+                    </div>
+                </div>
+
+                <div class="ta-stat-card">
+                    <div class="ta-stat-icon absent">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                    <div>
+                        <span>Absent</span>
+                        <strong>@Model.AbsentCount</strong>
+                    </div>
+                </div>
+
+                <div class="ta-stat-card">
+                    <div class="ta-stat-icon late">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div>
+                        <span>Late</span>
+                        <strong>@Model.LateCount</strong>
+                    </div>
+                </div>
+
+                <div class="ta-stat-card">
+                    <div class="ta-stat-icon excused">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div>
+                        <span>Excused</span>
+                        <strong>@Model.ExcusedCount</strong>
+                    </div>
+                </div>
+
+                <div class="ta-stat-card">
+                    <div class="ta-stat-icon pending">
+                        <i class="bi bi-dash-circle"></i>
+                    </div>
+                    <div>
+                        <span>Not Marked</span>
+                        <strong>@Model.NotMarkedCount</strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- LEARNER REGISTER -->
+
+            <section class="ta-card ta-register-card">
+
+                <div class="ta-card-header">
+
+                    <div>
+                        <h3>
+                            <i class="bi bi-clipboard-check"></i>
+
+                            @selectedClassName —
+                            @(Model.IsSubjectAttendance
+                                ? Model.SelectedSubjectName + " Register"
+                                : "Daily Learner Register")
+
+                        </h3>
+
+                        <p>
+                            @Model.AttendanceDate.ToString("dd MMMM yyyy")
+                        </p>
+                    </div>
+
+                    <span class="ta-count">
+                        @Model.TotalLearners learners
+                    </span>
+                </div>
+
+                @if (Model.Learners.Count == 0)
+                {
+                    <div class="ta-empty">
+                        <i class="bi bi-person-x"></i>
+                        <h3>No enrolled learners found</h3>
+                        <p>
+                            No active learner enrollments
+                            were found for this class and
+                            academic year.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <!-- SAVE ATTENDANCE FORM -->
+
+                    <form asp-controller="Teacher"
+                          asp-action="SaveAttendance"
+                          asp-antiforgery="true"
+                          method="post"
+                          id="ta-save-form">
+
+                        <input type="hidden"
+                               name="ClassId"
+                               value="@Model.SelectedClassId.Value" />
+
+
+                        <input type="hidden"
+                               name="SubjectId"
+                               value="@Model.SelectedSubjectId" />
+
+
+                        <input type="hidden"
+                               name="AttendanceDate"
+                               value="@Model.AttendanceDate.ToString("yyyy-MM-dd")" />
+
+                        <div class="ta-table-wrapper">
+
+                            <table class="ta-table">
+
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Admission Number</th>
+                                        <th>Learner Name</th>
+                                        <th>Attendance Status</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    @for (var i = 0; i < Model.Learners.Count; i++)
+                                    {
+                                        var learner = Model.Learners[i];
+
+                                        <tr>
+
+                                            <td>@(i + 1)</td>
+
+                                            <td class="ta-admission">
+                                                @learner.AdmissionNumber
+                                            </td>
+
+                                            <td class="ta-learner-name">
+                                                <i class="bi bi-person-circle"></i>
+                                                @learner.FullName
+
+                                                <input type="hidden"
+                                                       name="Learners[@i].LearnerId"
+                                                       value="@learner.LearnerId" />
+                                            </td>
+
+                                            <!-- STATUS DROPDOWN -->
+
+                                            <td>
+                                                <select name="Learners[@i].Status"
+                                                        class="ta-status-select"
+                                                        aria-label="Attendance status for @learner.FullName"
+                                                        required>
+
+                                                    @if (!learner.AttendanceRecordId.HasValue)
+                                                    {
+                                                        <option value="Not marked"
+                                                                selected="@(learner.Status == "Not marked" ? "selected" : null)">
+                                                            Not marked
+                                                        </option>
+                                                    }
+
+                                                    @foreach (var choice in new[]
+                                                   {
+                                    "Present",
+                                    "Absent",
+                                    "Late",
+                                    "Excused"
+                                    })
+                                                    {
+                                                        <option value="@choice"
+                                                                selected="@(learner.Status == choice ? "selected" : null)">
+                                                            @choice
+                                                        </option>
+                                                    }
+
+                                                </select>
+                                            </td>
+
+                                            <!-- REMARKS -->
+
+                                            <td>
+                                                <input type="text"
+                                                       name="Learners[@i].Remarks"
+                                                       value="@learner.Remarks"
+                                                       class="ta-remarks-input"
+                                                       maxlength="255"
+                                                       placeholder="Optional remarks"
+                                                       aria-label="Remarks for @learner.FullName" />
+                                            </td>
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- REGISTER FOOTER -->
+
+                        <div class="ta-register-footer">
+                            <i class="bi bi-info-circle"></i>
+                            <span>
+                                Learners left as Not marked
+                                will not be saved as absent.
+                                Existing attendance records
+                                can be corrected by their
+                                marking teacher within
+                                seven days of creation.
+                            </span>
+                        </div>
+
+                        <!-- SAVE BUTTON -->
+
+                        <div class="ta-save-bar">
+
+                            <div class="ta-save-description">
+                                <strong>Save Attendance</strong>
+                                <span>
+                                    Your changes will be
+                                    recorded in Supabase.
+                                </span>
+                            </div>
+
+                            <button type="submit"
+                                    class="ta-primary-button ta-save-button">
+
+                                <i class="bi bi-floppy"></i>
+                                Save Attendance
+
+                            </button>
+
+                        </div>
+
+                    </form>
+                }
+
+            </section>
+
+            <!-- BOTTOM NOTICE -->
+
+            <div class="ta-bottom-note">
+                <i class="bi bi-shield-check"></i>
+                <span>
+
+                    Daily attendance can be marked by the designated
+                    class teacher. Subject attendance can be marked by
+                    teachers assigned to that subject and class.
+                    Existing records may be edited only by their
+                    original marking teacher within the permitted
+                    editing period.
+
+                </span>
+            </div>
+        }
+    }
+
+</section>

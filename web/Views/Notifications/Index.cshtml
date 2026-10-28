@@ -1,0 +1,125 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.TopbarNotificationsViewModel
+@{
+    ViewData["Title"] = "Notifications";
+    Layout = User.IsInRole("Super Admin") ? "_SuperAdminLayout" : (User.IsInRole("Teacher") ? "_TeacherLayout" : "_SchoolAdminLayout");
+}
+
+<style>
+    .school-notifications {
+        max-width: 1000px;
+        margin: 28px auto;
+        padding: 0 20px 40px;
+    }
+
+    .school-notifications-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 14px rgba(0,0,0,.05);
+    }
+
+    .school-notifications-heading {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .school-notification {
+        padding: 16px 0;
+        border-bottom: 1px solid #e8ede8;
+    }
+
+        .school-notification.unread {
+            padding-left: 12px;
+            border-left: 3px solid #0a6347;
+            background: #f4faf5;
+        }
+
+        .school-notification h3 {
+            font-size: 16px;
+            margin: 0 0 6px;
+        }
+
+        .school-notification p {
+            margin: 0 0 8px;
+            color: #5d7268;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .school-notification time {
+            color: #7e8d84;
+            font-size: 12px;
+        }
+
+    .school-notifications button {
+        padding: 9px 13px;
+        margin-top: 7px;
+        border: 0;
+        border-radius: 8px;
+        background: #094a37;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .school-notifications .notice-error {
+        color: #ae2424;
+    }
+</style>
+
+<section class="school-notifications">
+    <div class="school-notifications-card">
+        <div class="school-notifications-heading">
+            <div>
+                <h2><i class="bi bi-bell"></i> Notifications</h2>
+                <p>Unread: <strong>@Model.UnreadCount</strong></p>
+            </div>
+            @if (!Model.LoadFailed && Model.UnreadCount > 0)
+            {
+                <form asp-controller="Notifications" asp-action="MarkAllRead" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit">Mark all as read</button>
+                </form>
+            }
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <p role="status">@TempData["SuccessMessage"]</p>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <p class="notice-error" role="alert">@TempData["ErrorMessage"]</p>
+        }
+
+        @if (Model.LoadFailed)
+        {
+            <p class="notice-error">Could not load notifications. Please refresh the page.</p>
+        }
+        else if (Model.Notifications.Count == 0)
+        {
+            <p>No notifications found for your account.</p>
+        }
+        else
+        {
+            @foreach (var item in Model.Notifications)
+            {
+                <article class="school-notification @(item.IsRead ? "" : "unread")">
+                    <h3>@item.Title</h3>
+                    <p>@item.Message</p>
+                    <time>@item.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</time>
+                    @if (!item.IsRead)
+                    {
+                        <form asp-controller="Notifications" asp-action="MarkRead" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit">Mark as read</button>
+                        </form>
+                    }
+                </article>
+            }
+        }
+    </div>
+</section>

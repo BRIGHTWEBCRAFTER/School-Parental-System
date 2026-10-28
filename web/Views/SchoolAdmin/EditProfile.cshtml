@@ -1,0 +1,189 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.EditSchoolAdminProfileViewModel
+
+@{
+    ViewData["Title"] = "Edit Profile";
+    Layout = "_SchoolAdminLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-profile.css"
+      asp-append-version="true" />
+
+<section class="dashboard-content sa-profile-page">
+
+    <!-- =========================================
+         PAGE HEADING
+         ========================================= -->
+
+    <div class="sa-profile-heading">
+
+        <div>
+            <h2>Edit Profile</h2>
+
+            <p>
+                Update your personal information
+                and contact details.
+            </p>
+        </div>
+
+        <a asp-controller="SchoolAdmin"
+           asp-action="Profile"
+           class="sa-edit-back-button">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Profile
+
+        </a>
+
+    </div>
+
+
+    <!-- =========================================
+         EDIT PROFILE FORM
+         ========================================= -->
+
+    <div class="sa-edit-profile-container">
+
+        <section class="sa-profile-card">
+
+            <div class="sa-profile-card-header">
+
+                <div>
+                    <h3>
+                        <i class="bi bi-person-gear"></i>
+                        Personal Information
+                    </h3>
+
+                    <p>
+                        Manage your administrator
+                        profile information.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <form asp-controller="SchoolAdmin"
+                  asp-action="EditProfile"
+                  method="post"
+                  class="sa-edit-profile-form">
+
+                @Html.AntiForgeryToken()
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="sa-edit-validation-summary">
+                </div>
+
+
+                <!-- FULL NAME -->
+
+                <div class="sa-edit-form-group">
+
+                    <label asp-for="FullName">
+                        Full Name
+                        <span class="sa-required">*</span>
+                    </label>
+
+                    <div class="sa-edit-input-wrapper">
+
+                        <i class="bi bi-person"></i>
+
+                        <input asp-for="FullName"
+                               class="sa-edit-input"
+                               placeholder="Enter your full name"
+                               autocomplete="name" />
+
+                    </div>
+
+                    <span asp-validation-for="FullName"
+                          class="sa-edit-field-error">
+                    </span>
+
+                </div>
+
+
+                <!-- PHONE NUMBER -->
+
+                <div class="sa-edit-form-group">
+
+                    <label asp-for="Phone">
+                        Phone Number
+                    </label>
+
+                    <div class="sa-edit-input-wrapper">
+
+                        <i class="bi bi-telephone"></i>
+
+                        <input asp-for="Phone"
+                               type="tel"
+                               class="sa-edit-input"
+                               placeholder="Enter your phone number"
+                               autocomplete="tel" />
+
+                    </div>
+
+                    <span asp-validation-for="Phone"
+                          class="sa-edit-field-error">
+                    </span>
+
+                    <small class="sa-edit-field-help">
+                        You can leave this field empty
+                        if you do not have a contact number.
+                    </small>
+
+                </div>
+
+
+                <!-- INFORMATION NOTE -->
+
+                <div class="sa-edit-info-note">
+
+                    <i class="bi bi-info-circle"></i>
+
+                    <span>
+                        Your email address, account role,
+                        assigned school and account status
+                        cannot be changed here.
+                    </span>
+
+                </div>
+
+
+                <!-- FORM ACTIONS -->
+
+                <div class="sa-edit-form-actions">
+
+                    <a asp-controller="SchoolAdmin"
+                       asp-action="Profile"
+                       class="sa-edit-cancel-button">
+
+                        <i class="bi bi-x-lg"></i>
+                        Cancel
+
+                    </a>
+
+
+                    <button type="submit"
+                            class="sa-edit-save-button">
+
+                        <i class="bi bi-check2-circle"></i>
+                        Save Changes
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

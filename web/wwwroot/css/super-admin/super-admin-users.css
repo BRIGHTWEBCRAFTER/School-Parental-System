@@ -1,0 +1,336 @@
+﻿.users-page {
+    padding: 30px;
+}
+
+.users-header {
+    margin-bottom: 25px;
+}
+
+    .users-header h1 {
+        margin: 0;
+        color: #003f2f;
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .users-header p {
+        margin-top: 8px;
+        color: #777;
+    }
+
+
+/* ========================================
+   SUMMARY CARDS
+======================================== */
+
+.users-stats {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+    border: 1px solid #ebe5d8;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+.stat-label {
+    color: #777;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    color: #003f2f;
+    font-size: 27px;
+    font-weight: 700;
+}
+
+    .stat-value.active {
+        color: #198754;
+    }
+
+    .stat-value.inactive {
+        color: #b7791f;
+    }
+
+
+/* ========================================
+   ERROR MESSAGE
+======================================== */
+
+.users-error-message {
+    background: #ffe5e5;
+    color: #9b2424;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+
+/* ========================================
+   FILTERS
+======================================== */
+
+.filter-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+    border: 1px solid #ebe5d8;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr 1fr;
+    gap: 15px;
+    align-items: end;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+    .filter-item label {
+        color: #003f2f;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .filter-item input,
+    .filter-item select {
+        width: 100%;
+        box-sizing: border-box;
+        height: 43px;
+        border: 1px solid #d9d4c8;
+        border-radius: 9px;
+        padding: 0 12px;
+        font-size: 14px;
+        background: #ffffff;
+        color: #263c34;
+        outline: none;
+    }
+
+        .filter-item input:focus,
+        .filter-item select:focus {
+            border-color: #006747;
+            box-shadow: 0 0 0 3px rgba(0, 103, 71, 0.08);
+        }
+
+
+/* ========================================
+   USERS TABLE CARD
+======================================== */
+
+.users-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #ebe5d8;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+}
+
+.users-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 22px;
+    border-bottom: 1px solid #eee9de;
+}
+
+    .users-card-header h2 {
+        margin: 0;
+        font-size: 18px;
+        color: #003f2f;
+        font-weight: 700;
+    }
+
+.users-count {
+    color: #777;
+    font-size: 13px;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+
+/* ========================================
+   TABLE
+======================================== */
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .users-table th {
+        padding: 14px 16px;
+        text-align: left;
+        background: #f7f4eb;
+        color: #53645e;
+        font-size: 12px;
+        font-weight: 700;
+        border-bottom: 1px solid #ebe7da;
+    }
+
+    .users-table td {
+        padding: 15px 16px;
+        border-bottom: 1px solid #f0ece3;
+        color: #32483f;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    .users-table tbody tr:hover {
+        background: #fcfaf4;
+    }
+
+
+/* ========================================
+   USER NAME
+======================================== */
+
+.user-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 50%;
+    background: #ffd34d;
+    color: #003f2f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.name-text {
+    font-weight: 600;
+    color: #003f2f;
+}
+
+
+/* ========================================
+   ROLE
+======================================== */
+
+.role-badge {
+    display: inline-block;
+    background: #f3f0e7;
+    color: #3d514a;
+    border-radius: 20px;
+    padding: 6px 10px;
+    font-size: 12px;
+    line-height: 1.1;
+}
+
+
+/* ========================================
+   STATUS
+======================================== */
+
+.status-active,
+.status-inactive {
+    display: inline-block;
+    border-radius: 20px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-active {
+    background: #e2f4e9;
+    color: #087742;
+}
+
+.status-inactive {
+    background: #fff1d0;
+    color: #8b5e18;
+}
+
+
+/* ========================================
+   VIEW BUTTON
+======================================== */
+
+.view-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    text-decoration: none;
+    border: 1px solid #006747;
+    color: #006747;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 7px 11px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+    .view-button:hover {
+        background: #006747;
+        color: #ffffff;
+    }
+
+
+/* ========================================
+   EMPTY STATE
+======================================== */
+
+.no-users {
+    text-align: center;
+    padding: 35px;
+    color: #777;
+}
+
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 1200px) {
+    .users-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+    .filter-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .users-page {
+        padding: 20px 15px;
+    }
+
+    .users-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .users-stats {
+        grid-template-columns: 1fr;
+    }
+}

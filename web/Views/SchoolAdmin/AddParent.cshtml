@@ -1,0 +1,276 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.AddParentViewModel
+
+@{
+    ViewData["Title"] = "Add Parent";
+    Layout = "_SchoolAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+            <h2>Add Parent</h2>
+
+            <p>
+                Register and invite a parent or guardian
+                to your school.
+            </p>
+        </div>
+
+
+        <a class="secondary-action"
+           asp-controller="SchoolAdmin"
+           asp-action="Parents">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back to Parents
+
+        </a>
+
+    </div>
+
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="AddParent"
+          method="post"
+          class="learner-form">
+
+        @Html.AntiForgeryToken()
+
+
+        <div asp-validation-summary="ModelOnly"
+             class="validation-summary">
+        </div>
+
+
+        <!-- PARENT INFORMATION -->
+        <section class="form-card">
+
+            <div class="form-section-header">
+
+                <i class="bi bi-person-hearts"></i>
+
+                <div>
+
+                    <h3>Parent Information</h3>
+
+                    <p>
+                        Enter the parent or guardian's
+                        personal and contact details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- AUTO GENERATED NUMBER -->
+                <div class="form-group">
+
+                    <label>
+                        Guardian Number
+                    </label>
+
+
+                    <div class="automatic-field">
+
+                        <i class="bi bi-magic"></i>
+
+                        <span>
+                            Automatically generated when
+                            the parent is saved
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FULL NAME -->
+                <div class="form-group">
+
+                    <label asp-for="FullName"></label>
+
+                    <input asp-for="FullName"
+                           placeholder="Enter parent full name" />
+
+                    <span asp-validation-for="FullName"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <!-- EMAIL -->
+                <div class="form-group">
+
+                    <label asp-for="Email"></label>
+
+                    <input asp-for="Email"
+                           type="email"
+                           placeholder="parent@example.com" />
+
+                    <span asp-validation-for="Email"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <!-- PHONE -->
+                <div class="form-group">
+
+                    <label asp-for="Phone"></label>
+
+                    <input asp-for="Phone"
+                           placeholder="+27..." />
+
+                    <span asp-validation-for="Phone"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <!-- GENDER -->
+                <div class="form-group">
+
+                    <label asp-for="Gender"></label>
+
+                    <select asp-for="Gender">
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="Gender"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <!-- ALTERNATIVE PHONE -->
+                <div class="form-group">
+
+                    <label asp-for="AlternativePhone">
+                    </label>
+
+                    <input asp-for="AlternativePhone"
+                           placeholder="Alternative contact number" />
+
+                    <span asp-validation-for="AlternativePhone"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <!-- ADDRESS -->
+                <div class="form-group full-width">
+
+                    <label asp-for="Address"></label>
+
+                    <textarea asp-for="Address"
+                              rows="3"
+                              placeholder="Enter home address">
+                    </textarea>
+
+                    <span asp-validation-for="Address"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- INVITATION -->
+        <section class="form-card">
+
+            <div class="form-section-header">
+
+                <i class="bi bi-envelope-check-fill"></i>
+
+                <div>
+
+                    <h3>Account Invitation</h3>
+
+                    <p>
+                        The parent will receive an email
+                        invitation to activate their account.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="teacher-invite-note">
+
+                <i class="bi bi-info-circle-fill"></i>
+
+                <div>
+
+                    <strong>
+                        No password is created here.
+                    </strong>
+
+                    <span>
+                        Supabase Auth will send the invitation
+                        to the parent's email address.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div class="form-actions">
+
+            <a class="cancel-button"
+               asp-controller="SchoolAdmin"
+               asp-action="Parents">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="primary-action">
+
+                <i class="bi bi-envelope-plus-fill"></i>
+
+                Invite Parent
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>

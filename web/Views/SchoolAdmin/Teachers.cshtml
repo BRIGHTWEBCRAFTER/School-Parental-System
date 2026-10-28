@@ -159,9 +159,9 @@
 
                         @foreach (var teacher in Model.Teachers)
                         {
-                            <tr data-name="@teacher.FullName.ToLower()"
-                                data-employee="@teacher.EmployeeId.ToLower()"
-                                data-specialization="@teacher.Specialization.ToLower()"
+                            <tr data-name="@((teacher.FullName ?? "").ToLowerInvariant())"
+                                data-employee="@((teacher.EmployeeId ?? "").ToLowerInvariant())"
+                                data-specialization="@((teacher.Specialization ?? "").ToLowerInvariant())"
                                 data-status="@teacher.Status">
 
 
@@ -252,22 +252,86 @@
                                 </td>
 
 
-                                <!-- ACTIONS -->
+                                <!-- ACTION BUTTONS -->
                                 <td>
-
                                     <div class="learner-actions">
 
                                         <button type="button"
                                                 class="more-actions-button"
-                                                aria-label="Teacher actions"
-                                                title="Teacher actions">
+                                                aria-label="Teacher actions">
 
                                             <i class="bi bi-three-dots-vertical"></i>
 
                                         </button>
 
-                                    </div>
+                                        <div class="learner-action-menu">
 
+                                            <a asp-controller="SchoolAdmin"
+                                               asp-action="TeacherDetails"
+                                               asp-route-id="@teacher.Id"
+                                               class="action-icon view-action"
+                                               title="View teacher">
+
+                                                <i class="bi bi-eye-fill"></i>
+
+                                            </a>
+
+
+                                            <a asp-controller="SchoolAdmin"
+                                               asp-action="EditTeacher"
+                                               asp-route-id="@teacher.Id"
+                                               class="action-icon edit-action"
+                                               title="Edit teacher">
+
+                                                <i class="bi bi-pencil-fill"></i>
+
+                                            </a>
+
+
+                                            @if (teacher.Status == "Active")
+                                            {
+                                                <button type="button"
+                                                        class="action-icon deactivate-action open-deactivate-confirmation"
+                                                        title="Deactivate teacher"
+                                                        data-record-type="Teacher"
+                                                        data-record-name="@teacher.FullName"
+                                                        data-action="@Url.Action(
+                    "DeactivateTeacher",
+                    "SchoolAdmin",
+                    new
+                    {
+                        id = teacher.Id,
+                        returnUrl = "/SchoolAdmin/Teachers"
+                    })">
+
+                                                    <i class="bi bi-person-dash-fill"></i>
+
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <form asp-controller="SchoolAdmin"
+                                                      asp-action="ReactivateTeacher"
+                                                      asp-route-id="@teacher.Id"
+                                                      asp-route-returnUrl="/SchoolAdmin/Teachers"
+                                                      method="post">
+
+                                                    @Html.AntiForgeryToken()
+
+                                                    <button type="submit"
+                                                            class="action-icon reactivate-action"
+                                                            title="Reactivate teacher">
+
+                                                        <i class="bi bi-person-check-fill"></i>
+
+                                                    </button>
+
+                                                </form>
+                                            }
+
+                                        </div>
+
+                                    </div>
                                 </td>
 
                             </tr>
@@ -301,102 +365,219 @@
 
 </section>
 
+<partial name="_DeactivateConfirmation" />
 
-<script>
+@section Scripts {
 
-    const teacherSearch =
-        document.getElementById(
-            "teacherSearch"
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                // ==========================================
+                // TEACHER ACTION MENU
+                // ==========================================
+
+                const actionContainers =
+                    document.querySelectorAll(
+                        ".learner-actions"
+                    );
+
+
+                actionContainers.forEach(
+                    container => {
+
+                        const moreButton =
+                            container.querySelector(
+                                ".more-actions-button"
+                            );
+
+                        const menu =
+                            container.querySelector(
+                                ".learner-action-menu"
+                            );
+
+
+                        if (!moreButton || !menu) {
+                            return;
+                        }
+
+
+                        moreButton.addEventListener(
+                            "click",
+                            function (event) {
+
+                                event.stopPropagation();
+
+
+                                actionContainers.forEach(
+                                    otherContainer => {
+
+                                        if (otherContainer !==
+                                            container) {
+
+                                            otherContainer
+                                                .classList
+                                                .remove("open");
+                                        }
+
+                                    });
+
+
+                                container
+                                    .classList
+                                    .toggle("open");
+                            }
+                        );
+
+
+                        menu.addEventListener(
+                            "click",
+                            function (event) {
+
+                                event.stopPropagation();
+
+                            }
+                        );
+                    }
+                );
+
+
+                document.addEventListener(
+                    "click",
+                    function () {
+
+                        actionContainers.forEach(
+                            container => {
+
+                                container
+                                    .classList
+                                    .remove("open");
+
+                            }
+                        );
+                    }
+                );
+
+
+                // ==========================================
+                // TEACHER SEARCH AND FILTERS
+                // ==========================================
+
+                const teacherSearch =
+                    document.getElementById(
+                        "teacherSearch"
+                    );
+
+                const teacherStatusFilter =
+                    document.getElementById(
+                        "teacherStatusFilter"
+                    );
+
+                const teacherSpecializationFilter =
+                    document.getElementById(
+                        "teacherSpecializationFilter"
+                    );
+
+                const teacherRows =
+                    document.querySelectorAll(
+                        "#teachersTable tbody tr"
+                    );
+
+
+                function filterTeachers() {
+
+                    const searchValue =
+                        teacherSearch
+                            ?.value
+                            .trim()
+                            .toLowerCase() ?? "";
+
+
+                    const statusValue =
+                        teacherStatusFilter
+                            ?.value ?? "";
+
+
+                    const specializationValue =
+                        teacherSpecializationFilter
+                            ?.value
+                            .trim()
+                            .toLowerCase() ?? "";
+
+
+                    teacherRows.forEach(
+                        row => {
+
+                            const name =
+                                row.dataset.name ?? "";
+
+                            const employee =
+                                row.dataset.employee ?? "";
+
+                            const status =
+                                row.dataset.status ?? "";
+
+                            const specialization =
+                                row.dataset.specialization ?? "";
+
+
+                            const matchesSearch =
+                                !searchValue ||
+                                name.includes(
+                                    searchValue
+                                ) ||
+                                employee.includes(
+                                    searchValue
+                                );
+
+
+                            const matchesSpecialization =
+                                !specializationValue ||
+                                specialization ===
+                                specializationValue;
+
+
+                            const matchesStatus =
+                                !statusValue ||
+                                status ===
+                                statusValue;
+
+
+                            row.style.display =
+                                matchesSearch &&
+                                    matchesSpecialization &&
+                                    matchesStatus
+                                    ? ""
+                                    : "none";
+                        }
+                    );
+                }
+
+
+                teacherSearch?.addEventListener(
+                    "input",
+                    filterTeachers
+                );
+
+
+                teacherSpecializationFilter
+                    ?.addEventListener(
+                        "change",
+                        filterTeachers
+                    );
+
+
+                teacherStatusFilter
+                    ?.addEventListener(
+                        "change",
+                        filterTeachers
+                    );
+
+            }
         );
 
-    const teacherStatusFilter =
-        document.getElementById(
-            "teacherStatusFilter"
-        );
+    </script>
 
-    const teacherSpecializationFilter =
-        document.getElementById(
-            "teacherSpecializationFilter"
-        );
-
-    const teacherRows =
-        document.querySelectorAll(
-            "#teachersTable tbody tr"
-        );
-
-
-    function filterTeachers() {
-
-        const searchValue =
-            teacherSearch
-                ?.value
-                .trim()
-                .toLowerCase() ?? "";
-
-        const statusValue =
-            teacherStatusFilter
-                ?.value ?? "";
-
-        const specializationValue =
-            teacherSpecializationFilter
-                ?.value
-                .toLowerCase() ?? "";
-
-
-        teacherRows.forEach(row => {
-
-            const name =
-                row.dataset.name ?? "";
-
-            const employee =
-                row.dataset.employee ?? "";
-
-            const status =
-                row.dataset.status ?? "";
-
-            const specialization =
-                row.dataset.specialization ?? "";
-
-
-            const matchesSearch =
-                !searchValue ||
-                name.includes(searchValue) ||
-                employee.includes(searchValue);
-
-            const matchesSpecialization =
-                !specializationValue ||
-                specialization === specializationValue;
-
-
-            const matchesStatus =
-                !statusValue ||
-                status === statusValue;
-
-
-            row.style.display =
-                matchesSearch &&
-                    matchesSpecialization &&
-                    matchesStatus
-                    ? ""
-                    : "none";
-
-            teacherSpecializationFilter?.addEventListener(
-                "change",
-                filterTeachers
-            );
-        });
-    }
-
-
-    teacherSearch?.addEventListener(
-        "input",
-        filterTeachers
-    );
-
-
-    teacherStatusFilter?.addEventListener(
-        "change",
-        filterTeachers
-    );
-
-</script>
+}

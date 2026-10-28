@@ -1,0 +1,397 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.EventDetailsViewModel
+
+@{
+    ViewData["Title"] = "Event Details";
+
+    var startTime =
+        Model.StartTime.HasValue
+            ? Model.StartTime.Value.ToString("hh\\:mm")
+            : "—";
+
+    var endTime =
+        Model.EndTime.HasValue
+            ? Model.EndTime.Value.ToString("hh\\:mm")
+            : "—";
+
+    var createdDate =
+        Model.CreatedAt
+            .ToLocalTime()
+            .ToString("dd MMM yyyy HH:mm");
+
+    var eventDate =
+        Model.EventDate
+            .ToString("dd MMMM yyyy");
+
+    var fullEventDate =
+        Model.EventDate
+            .ToString("dddd, dd MMMM yyyy");
+}
+
+
+<style>
+
+    .sa-event-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 18px;
+    }
+
+    .sa-event-detail-item {
+        padding: 16px 18px;
+        border: 1px solid rgba(0, 77, 51, 0.10);
+        border-radius: 10px;
+        background: #fffdf7;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .sa-event-detail-item span {
+            font-size: 12px;
+            font-weight: 600;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .sa-event-detail-item strong {
+            font-size: 15px;
+            color: #003d2d;
+            font-weight: 700;
+        }
+
+    .sa-event-description {
+        margin-top: 18px;
+        padding: 20px;
+        border-radius: 10px;
+        background: #fffdf7;
+        border: 1px solid rgba(0, 77, 51, 0.10);
+        color: #23453b;
+        line-height: 1.7;
+        min-height: 90px;
+    }
+
+    @@media (max-width: 768px) {
+
+        .sa-event-detail-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+</style>
+
+
+<section class="sa-school-details-page">
+
+    <!-- =========================================
+         HEADER
+         ========================================= -->
+
+    <section class="sa-schools-header">
+
+        <div>
+
+            <a asp-controller="SuperAdmin"
+               asp-action="Events"
+               class="sa-back-link">
+
+                <i class="bi bi-arrow-left"></i>
+                Back to Events
+
+            </a>
+
+
+            <span class="sa-page-label"
+                  style="display:block; margin-top:12px;">
+
+                Event Details
+
+            </span>
+
+
+            <h2>
+                @Model.EventName
+            </h2>
+
+
+            <p>
+                View complete information about this event.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVENT INFORMATION
+         ========================================= -->
+
+    <section class="sa-school-details-card">
+
+        <div class="sa-detail-card-header">
+
+            <i class="bi bi-calendar-event-fill"></i>
+
+            <h3>
+                Event Information
+            </h3>
+
+        </div>
+
+
+        <div class="sa-event-detail-grid">
+
+            <div class="sa-event-detail-item">
+
+                <span>
+                    Event Name
+                </span>
+
+                <strong>
+                    @Model.EventName
+                </strong>
+
+            </div>
+
+
+            <div class="sa-event-detail-item">
+
+                <span>
+                    School
+                </span>
+
+                <strong>
+                    @Model.SchoolName
+                </strong>
+
+            </div>
+
+
+            <div class="sa-event-detail-item">
+
+                <span>
+                    Event Date
+                </span>
+
+                <strong>
+                    @eventDate
+                </strong>
+
+            </div>
+
+
+            <div class="sa-event-detail-item">
+
+                <span>
+                    Venue
+                </span>
+
+                <strong>
+
+                    @(string.IsNullOrWhiteSpace(Model.Venue)
+                                        ? "Not specified"
+                                        : Model.Venue)
+
+                </strong>
+
+            </div>
+
+
+            <div class="sa-event-detail-item">
+
+                <span>
+                    Start Time
+                </span>
+
+                <strong>
+                    @startTime
+                </strong>
+
+            </div>
+
+
+            <div class="sa-event-detail-item">
+
+                <span>
+                    End Time
+                </span>
+
+                <strong>
+                    @endTime
+                </strong>
+
+            </div>
+
+
+            <div class="sa-event-detail-item">
+
+                <span>
+                    Created
+                </span>
+
+                <strong>
+                    @createdDate
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         DESCRIPTION
+         ========================================= -->
+
+    <section class="sa-school-details-card">
+
+        <div class="sa-detail-card-header">
+
+            <i class="bi bi-card-text"></i>
+
+            <h3>
+                Event Description
+            </h3>
+
+        </div>
+
+
+        <div class="sa-event-description">
+
+            @if (string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <span>
+                    No description was provided for this event.
+                </span>
+            }
+            else
+            {
+                @Model.Description
+            }
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         SCHEDULE INFORMATION
+         ========================================= -->
+
+    <section class="sa-school-details-card">
+
+        <div class="sa-detail-card-header">
+
+            <i class="bi bi-clock-history"></i>
+
+            <h3>
+                Schedule Information
+            </h3>
+
+        </div>
+
+
+        <div class="sa-event-detail-grid">
+
+            <div class="sa-event-detail-item">
+
+                <span>
+                    Date
+                </span>
+
+                <strong>
+                    @fullEventDate
+                </strong>
+
+            </div>
+
+
+            <div class="sa-event-detail-item">
+
+                <span>
+                    Time
+                </span>
+
+                <strong>
+
+                    @if (Model.StartTime.HasValue &&
+                                        Model.EndTime.HasValue)
+                    {
+                        <text>
+                            @startTime - @endTime
+                        </text>
+                    }
+                    else if (Model.StartTime.HasValue)
+                    {
+                        <text>
+                            Starts at @startTime
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                            Time not specified
+                        </text>
+                    }
+
+                </strong>
+
+            </div>
+
+
+            <div class="sa-event-detail-item">
+
+                <span>
+                    School
+                </span>
+
+                <strong>
+                    @Model.SchoolName
+                </strong>
+
+            </div>
+
+
+            <div class="sa-event-detail-item">
+
+                <span>
+                    Venue
+                </span>
+
+                <strong>
+
+                    @(string.IsNullOrWhiteSpace(Model.Venue)
+                                        ? "Not specified"
+                                        : Model.Venue)
+
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         ACTIONS
+         ========================================= -->
+
+    <div class="sa-edit-actions">
+
+        <a asp-controller="SuperAdmin"
+           asp-action="Events"
+           class="sa-edit-cancel-button">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back to Events
+
+        </a>
+
+    </div>
+
+</section>

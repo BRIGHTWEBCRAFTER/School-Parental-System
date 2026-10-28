@@ -1,30 +1,296 @@
-﻿@{
-    var pageTitle = ViewData["Title"]?.ToString() ?? "School Admin";
-    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+﻿@using System.Security.Claims
+
+@inject SchoolParentalSystem.Web.Services.SchoolAdminProfileService ProfileService
+@inject SchoolParentalSystem.Web.Services.Teacher.TeacherProfileService TeacherProfileService
+
+@{
+    //
+    // Purpose : Get the current page details
+    //           and determine the logged-in role.
+    // Re-use  : School Admin and Teacher layouts.
+    //
+
+    var pageTitle =
+        ViewData["Title"]?.ToString() ?? "School Admin";
+
+    var currentAction =
+        ViewContext.RouteData.Values["action"]?.ToString();
+
+    var currentController =
+        ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+
+    var isTeacher = User.IsInRole("Teacher");
+
+    var portalController = isTeacher
+        ? "Teacher"
+        : "SchoolAdmin";
+
+    var portalRole = isTeacher
+        ? "Teacher"
+        : "School Admin";
+
+    var avatarInitials = isTeacher ? "T" : "SA";
+
+    string? topbarProfilePicture = null;
+
+    //
+    // Purpose : Retrieve the logged-in user's
+    //           identity and school identifier.
+    //
+
+    var userIdValue =
+        User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+    var schoolIdValue =
+        User.FindFirst("school_id")?.Value;
+
+
+    // ==========================================
+    // LOAD TEACHER PROFILE PICTURE
+    // ==========================================
+
+    if (isTeacher &&
+        Guid.TryParse(userIdValue, out var teacherUserId) &&
+        Guid.TryParse(schoolIdValue, out var teacherSchoolId))
+    {
+        try
+        {
+            var teacherProfile =
+                await TeacherProfileService.GetProfileAsync(
+                    teacherUserId,
+                    teacherSchoolId);
+
+            topbarProfilePicture =
+                teacherProfile.ProfilePicture;
+
+            avatarInitials =
+                teacherProfile.Initials;
+        }
+        catch
+        {
+            //
+            // If the picture cannot be loaded,
+            // display the Teacher's initials.
+            //
+        }
+    }
+
+
+    // ==========================================
+    // LOAD SCHOOL ADMIN PROFILE PICTURE
+    // ==========================================
+
+    if (!isTeacher &&
+        Guid.TryParse(userIdValue, out var userId) &&
+        Guid.TryParse(schoolIdValue, out var schoolId))
+    {
+        try
+        {
+            var profile =
+                await ProfileService.GetProfileAsync(
+                    userId,
+                    schoolId);
+
+            topbarProfilePicture =
+                profile.ProfilePicture;
+        }
+        catch
+        {
+            //
+            // Keep the top bar available even
+            // when the profile image cannot load.
+            //
+        }
+    }
 }
+
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>@pageTitle - School-Parental System</title>
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        @pageTitle - School-Parental System
+    </title>
+
+
+    <!-- ==========================================
+         BOOTSTRAP ICONS
+         ========================================== -->
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
+
+    <!-- ==========================================
+         MAIN DASHBOARD CSS
+         ========================================== -->
+
     <link rel="stylesheet"
           href="~/css/school-admin-dashboard.css"
           asp-append-version="true" />
+
+
+    <!-- ==========================================
+         TOP BAR PROFILE DROPDOWN STYLING
+         Re-use : Teacher and School Admin
+         ========================================== -->
+
+    <style>
+
+        /* =========================================
+                   PROFILE AVATAR
+                   ========================================= */
+
+        .profile-avatar {
+            overflow: hidden;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .topbar-profile-image {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+
+        /* =========================================
+                   PROFILE DROPDOWN LINKS
+                   ========================================= */
+
+        .profile-dropdown .profile-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 13px 16px;
+            box-sizing: border-box;
+            color: #073f32;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+
+            /* =========================================
+                   DROPDOWN ICONS
+                   ========================================= */
+
+            .profile-dropdown .profile-dropdown-item i {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 22px;
+                flex-shrink: 0;
+                font-size: 19px;
+            }
+
+
+            /* =========================================
+                   HOVER EFFECT
+                   ========================================= */
+
+            .profile-dropdown .profile-dropdown-item:hover {
+                background: #eaf4ed;
+                color: #073f32;
+            }
+
+
+            /* =========================================
+                   ACTIVE PROFILE PAGE
+                   ========================================= */
+
+            .profile-dropdown .profile-dropdown-item.active {
+                background: #eaf4ed;
+                color: #073f32;
+            }
+
+
+        /* =========================================
+                   DROPDOWN DIVIDER
+                   ========================================= */
+
+        .profile-dropdown-divider {
+            height: 1px;
+            margin: 8px 12px;
+            background: #e4e5df;
+        }
+
+
+        /* =========================================
+                   LOGOUT BUTTON
+                   ========================================= */
+
+        .profile-dropdown .profile-dropdown-logout {
+            color: #b42318;
+        }
+
+            .profile-dropdown .profile-dropdown-logout:hover {
+                background: #fff1f1;
+                color: #b42318;
+            }
+
+        .profile-dropdown form {
+            margin: 0;
+        }
+
+
+        /* =========================================
+                   DROPDOWN ARROW
+                   ========================================= */
+
+        .profile-chevron {
+            transition: transform 0.2s ease;
+        }
+
+        .profile-menu[open] .profile-chevron {
+            transform: rotate(180deg);
+        }
+
+
+        /* =========================================
+                   KEYBOARD ACCESSIBILITY
+                   ========================================= */
+
+        .profile-dropdown .profile-dropdown-item:focus-visible {
+            outline: 2px solid #d9aa35;
+            outline-offset: 2px;
+        }
+
+    </style>
+
+
+    <!-- ==========================================
+         PAGE-SPECIFIC STYLES
+         ========================================== -->
+    @await RenderSectionAsync("Styles", required: false)
+
 </head>
 
 <body>
 
+
     <div class="admin-shell">
 
         <!-- SIDEBAR -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="schoolAdminSidebar">
+            
 
             <div class="brand">
 
@@ -44,69 +310,209 @@
 
             <nav class="sidebar-nav">
 
-                <a class="nav-item @(currentAction == "Dashboard" ? "active" : "")"
-                   asp-controller="SchoolAdmin"
-                   asp-action="Dashboard">
-                    <i class="bi bi-grid-fill"></i>
-                    <span>Dashboard</span>
-                </a>
 
-                <a class="nav-item @(
-                currentAction == "Learners" ||
-                currentAction == "AddLearner" ||
-                currentAction == "LearnerDetails" ||
-                currentAction == "EditLearner"
-                ? "active"
-                : "")"
-                   asp-controller="SchoolAdmin"
-                   asp-action="Learners">
+                @if (isTeacher)
+                {
+                    <a class="nav-item @(currentAction == "Dashboard" ? "active" : "")"
+                       asp-controller="Teacher"
+                       asp-action="Dashboard">
 
-                    <i class="bi bi-people"></i>
-                    <span>Learners</span>
-                </a>
+                        <i class="bi bi-grid-fill"></i>
+                        <span>Dashboard</span>
 
-                <a class="nav-item @(currentAction == "Teachers" ? "active" : "")"
-                   asp-controller="SchoolAdmin"
-                   asp-action="Teachers">
+                    </a>
 
-                    <i class="bi bi-person-workspace"></i>
-                    <span>Teachers</span>
 
-                </a>
+                    <a class="nav-item @(currentAction == "AssignedClasses" ? "active" : "")"
+                       asp-controller="Teacher"
+                       asp-action="AssignedClasses">
 
-                <a class="nav-item" href="#">
-                    <i class="bi bi-easel"></i>
-                    <span>Classes</span>
-                </a>
+                        <i class="bi bi-easel"></i>
+                        <span>Assigned Classes</span>
 
-                <a class="nav-item" href="#">
-                    <i class="bi bi-person-hearts"></i>
-                    <span>Parents/Guardians</span>
-                </a>
+                    </a>
 
-                <a class="nav-item" href="#">
-                    <i class="bi bi-calendar-check"></i>
-                    <span>Attendance</span>
-                </a>
 
-                <a class="nav-item" href="#">
-                    <i class="bi bi-file-earmark-bar-graph"></i>
-                    <span>Grades</span>
-                </a>
 
-                <a class="nav-item" href="#">
-                    <i class="bi bi-chat-left-text"></i>
-                    <span>Communication</span>
-                </a>
+                    <a class="nav-item @(currentAction == "Attendance" ? "active" : "")"
+                       asp-controller="Teacher"
+                       asp-action="Attendance">
+
+                        <i class="bi bi-calendar-check"></i>
+                        <span>Attendance</span>
+
+                    </a>
+
+
+
+                    <a class="nav-item @(currentAction == "GradeRecording" ? "active" : "")"
+                       asp-controller="Teacher"
+                       asp-action="GradeRecording">
+
+                        <i class="bi bi-file-earmark-bar-graph"></i>
+                        <span>Grade Recording</span>
+
+                    </a>
+
+
+
+                    <!-- TEACHER COMMUNICATION -->
+
+                    <a class="nav-item @(currentAction == "Communication"
+                     ? "active" : "")"
+                       asp-controller="Teacher"
+                       asp-action="Communication">
+
+                        <i class="bi bi-chat-left-text-fill"></i>
+
+                        <span>Communication</span>
+
+                    </a>
+
+                }
+
+                @if (!isTeacher)
+                {
+
+
+                    <a class="nav-item @(currentAction == "Dashboard" ? "active" : "")"
+                    asp-controller="SchoolAdmin"
+                    asp-action="Dashboard">
+                        <i class="bi bi-grid-fill"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <a class="nav-item @(
+                        currentAction == "Learners" ||
+                        currentAction == "AddLearner" ||
+                        currentAction == "LearnerDetails" ||
+                        currentAction == "EditLearner"
+                        ? "active"
+                :       "")"
+                        asp-controller="SchoolAdmin"
+                        asp-action="Learners">
+
+                        <i class="bi bi-people"></i>
+                        <span>Learners</span>
+                    </a>
+
+
+                    <a class="nav-item @(currentAction == "Teachers" ||
+                     currentAction == "AddTeacher" ||
+                     currentAction == "EditTeacher" ||
+                     currentAction == "TeacherDetails"
+                     ? "active" : "")"
+                    asp-controller="SchoolAdmin"
+                    asp-action="Teachers">
+
+                        <i class="bi bi-person-workspace"></i>
+                        <span>Teachers</span>
+
+                    </a>
+
+
+                    <a class="nav-item @(currentAction == "Classes" ||
+                     currentAction == "AddClass" ||
+                     currentAction == "EditClass" ||
+                     currentAction == "ClassDetails"
+                     ? "active" : "")"
+                    asp-controller="SchoolAdmin"
+                    asp-action="Classes">
+
+                        <i class="bi bi-easel"></i>
+                        <span>Classes</span>
+
+                    </a>
+
+
+                    <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "SchoolAdminAcademics" ? "active" : "")"
+                       asp-controller="SchoolAdminAcademics"
+                       asp-action="Index">
+
+                        <i class="bi bi-calendar-week"></i>
+
+                        <span>Subjects &amp; Timetable</span>
+
+                    </a>
+
+
+
+                    <a class="nav-item @(currentAction == "Parents" ||
+                     currentAction == "AddParent" ||
+                     currentAction == "EditParent" ||
+                     currentAction == "ParentDetails"
+                     ? "active" : "")"
+                    asp-controller="SchoolAdmin"
+                    asp-action="Parents">
+
+                        <i class="bi bi-people-fill"></i>
+                        <span>Parents/Guardians</span>
+
+                    </a>
+
+
+                    <a class="nav-item @(currentAction == "Attendance"
+                     ? "active" : "")"
+                    asp-controller="SchoolAdmin"
+                    asp-action="Attendance">
+
+                        <i class="bi bi-calendar-check"></i>
+                        <span>Attendance</span>
+
+                    </a>
+
+
+                    <a class="nav-item @(currentAction == "Grades"
+                     ? "active" : "")"
+                    asp-controller="SchoolAdmin"
+                    asp-action="Grades">
+
+                        <i class="bi bi-file-earmark-bar-graph"></i>
+                        <span>Grades</span>
+
+                    </a>
+
+
+                    <a asp-controller="SchoolAdminTermReports"
+                       asp-action="Index"
+                       class="nav-item">
+
+                        <i class="bi bi-file-earmark-pdf"></i>
+
+                        <span>Term Reports</span>
+
+                    </a>
+
+
+
+                    <a class="nav-item @(currentAction == "Communication"
+                     ? "active" : "")"
+                    asp-controller="SchoolAdmin"
+                    asp-action="Communication">
+
+                        <i class="bi bi-chat-left-text"></i>
+                        <span>Communication</span>
+
+                    </a>
+
+                }
 
             </nav>
 
             <div class="sidebar-bottom">
 
-                <a class="nav-item" href="#">
+
+                <a class="nav-item @(currentAction == "Profile" ||
+                     currentAction == "EditProfile"
+                     ? "active" : "")"
+                   asp-controller="@portalController"
+                   asp-action="Profile">
+
                     <i class="bi bi-person-circle"></i>
                     <span>Profile</span>
+
                 </a>
+
 
                 <form asp-controller="Auth"
                       asp-action="Logout"
@@ -136,47 +542,245 @@
             <!-- TOP BAR -->
             <header class="topbar">
 
-                <div>
-                    <h1>@pageTitle</h1>
-                    <p>Manage today. Brighter tomorrows.</p>
-                </div>
+
+                    <div class="topbar-heading">
+
+                        <button type="button"
+                                id="sidebarToggle"
+                                class="sidebar-toggle"
+                                aria-label="Collapse sidebar"
+                                aria-controls="schoolAdminSidebar"
+                                aria-expanded="true"
+                                title="Collapse sidebar">
+
+                            <i class="bi bi-list"></i>
+
+                        </button>
+
+                        <div>
+                            <h1>@pageTitle</h1>
+                        <p>
+                            @(isTeacher
+                                ? "Teach today. Brighter tomorrows."
+                                : "Manage today. Brighter tomorrows.")
+                        </p>
+
+                        </div>
+
+                    </div>
+
 
                 <div class="topbar-right">
 
-                    <div class="search-box">
-                        <i class="bi bi-search"></i>
 
-                        <input type="text"
-                               placeholder="Search learners, teachers, classes..." />
-                    </div>
+                    <!-- SCHOOL ADMIN SEARCH -->
+                    @if (!isTeacher)
+                    {
+                        <form asp-controller="SchoolAdmin"
+                        asp-action="Search"
+                        method="get"
+                        class="search-box"
+                        role="search">
 
-                    <button class="notification-button"
-                            type="button">
+                            <button type="submit"
+                            class="search-submit"
+                            aria-label="Search">
 
-                        <i class="bi bi-bell"></i>
+                                <i class="bi bi-search"></i>
 
-                        <span class="notification-badge">
-                            6
-                        </span>
+                            </button>
 
-                    </button>
+                            <input type="search"
+                            name="query"
+                            placeholder="Search learners, teachers, classes..."
+                            aria-label="Search school records"
+                            maxlength="100"
+                            required />
 
-                    <div class="profile-summary">
+                        </form>
+                    }
 
-                        <div class="profile-avatar">
-                            SA
+
+                    @* TEACHER SEARCH *@
+
+
+                    @if (isTeacher)
+                    {
+                        <form asp-controller="Teacher"
+                              asp-action="AssignedClasses"
+                              method="get"
+                              class="search-box"
+                              role="search">
+
+                            <button type="submit"
+                                    class="search-submit"
+                                    aria-label="Search">
+
+                                <i class="bi bi-search"></i>
+                            </button>
+
+                            <input type="search"
+                                   name="query"
+                                   value="@(Context.Request.Query["query"].ToString())"
+                                   placeholder="Search my classes, subjects, learners..."
+                                   aria-label="Search my classes and learners"
+                                   maxlength="100"
+                                   required />
+
+                        </form>
+                    }
+
+
+
+
+                    <!--
+                        Purpose : Display real notifications from Supabase.
+                        Re-use  : School Admin and Teacher top bars.
+                    -->
+                    @await Component.InvokeAsync("TopbarNotifications")
+
+
+
+
+                    <!-- ==========================================
+                         PROFILE DROPDOWN
+                         Purpose : Display the logged-in user's
+                                   profile picture, name, role,
+                                   profile link and logout button.
+                         Re-use  : Teacher and School Admin top bar.
+                         ========================================== -->
+
+                    <details class="profile-menu" id="profileMenu">
+
+                        <!-- PROFILE SUMMARY -->
+
+                        <summary class="profile-summary">
+
+                            <!-- PROFILE PICTURE -->
+
+                            <div class="profile-avatar">
+
+                                @if (!string.IsNullOrWhiteSpace(topbarProfilePicture))
+                                {
+                                    <img src="@topbarProfilePicture"
+                                         alt="My Profile Picture"
+                                         class="topbar-profile-image" />
+                                }
+                                else
+                                {
+                                    <span>@avatarInitials</span>
+                                }
+
+                            </div>
+
+                            <!-- USER INFORMATION -->
+
+                            <div class="profile-info">
+
+                                <strong>
+                                    @(User.Identity?.Name ?? "User")
+                                </strong>
+
+                                <span>@portalRole</span>
+
+                            </div>
+
+                            <!-- DROPDOWN ARROW -->
+
+                            <i class="bi bi-chevron-down profile-chevron"></i>
+
+                        </summary>
+
+
+                        <!-- ==========================================
+                             DROPDOWN MENU
+                             ========================================== -->
+
+                        <div class="profile-dropdown">
+
+                            <!-- DROPDOWN HEADER -->
+
+                            <div class="profile-dropdown-header">
+
+                                <strong>
+                                    @(User.Identity?.Name ?? "User")
+                                </strong>
+
+                                <small>@portalRole</small>
+
+                            </div>
+
+                            <div class="profile-dropdown-divider"></div>
+
+
+                            <!-- ==========================================
+                                 MY PROFILE
+                                 ========================================== -->
+                            @if (isTeacher)
+                            {
+                                <!-- TEACHER PROFILE -->
+
+                                <a asp-controller="Teacher"
+                                   asp-action="Profile"
+                                   class="profile-dropdown-item @(currentController == "Teacher" &&
+                       (currentAction == "Profile" ||
+                        currentAction == "EditProfile")
+                       ? "active" : "")">
+
+                                    <i class="bi bi-person-circle"></i>
+
+                                    <span>My Profile</span>
+
+                                </a>
+                            }
+                            else
+                            {
+                                <!-- SCHOOL ADMIN PROFILE -->
+
+                                <a asp-controller="SchoolAdmin"
+                                   asp-action="Profile"
+                                   class="profile-dropdown-item @(currentController == "SchoolAdmin" &&
+                       (currentAction == "Profile" ||
+                        currentAction == "EditProfile")
+                       ? "active" : "")">
+
+                                    <i class="bi bi-person-circle"></i>
+
+                                    <span>My Profile</span>
+
+                                </a>
+                            }
+
+
+                            <div class="profile-dropdown-divider"></div>
+
+
+                            <!-- ==========================================
+                                 LOGOUT
+                                 ========================================== -->
+
+                            <form asp-controller="Auth"
+                                  asp-action="Logout"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="profile-dropdown-item profile-dropdown-logout">
+
+                                    <i class="bi bi-box-arrow-right"></i>
+
+                                    <span>Log Out</span>
+
+                                </button>
+
+                            </form>
+
                         </div>
 
-                        <div>
-                            <strong>
-                                @(User.Identity?.Name ?? "School Admin")
-                            </strong>
-                            <span>School Admin</span>
-                        </div>
+                    </details>
 
-                        <i class="bi bi-chevron-down"></i>
 
-                    </div>
 
                 </div>
 
@@ -187,6 +791,126 @@
         </main>
 
     </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const shell = document.querySelector(".admin-shell");
+            const sidebar = document.getElementById("schoolAdminSidebar");
+            const toggle = document.getElementById("sidebarToggle");
+
+            if (!shell || !sidebar || !toggle) {
+                return;
+            }
+
+            const storageKey = "@(isTeacher
+            ? "teacherSidebarCollapsed"
+                : "schoolAdminSidebarCollapsed")";
+
+            function setCollapsed(collapsed) {
+
+                shell.classList.toggle(
+                    "sidebar-collapsed",
+                    collapsed
+                );
+
+                toggle.setAttribute(
+                    "aria-expanded",
+                    String(!collapsed)
+                );
+
+                const label = collapsed
+                    ? "Expand sidebar"
+                    : "Collapse sidebar";
+
+                toggle.setAttribute("aria-label", label);
+                toggle.setAttribute("title", label);
+            }
+
+            // Restore the previous desktop preference.
+
+            let savedCollapsed = false;
+
+            try {
+                savedCollapsed =
+                    localStorage.getItem(storageKey) === "true";
+            }
+            catch {
+                // Continue without saved preferences.
+            }
+
+            setCollapsed(savedCollapsed);
+
+            // Toggle sidebar when button is clicked.
+
+            toggle.addEventListener("click", function () {
+
+                const collapsed =
+                    !shell.classList.contains("sidebar-collapsed");
+
+                setCollapsed(collapsed);
+
+                try {
+                    localStorage.setItem(
+                        storageKey,
+                        String(collapsed)
+                    );
+                }
+                catch {
+                    // Sidebar still works without localStorage.
+                }
+
+            });
+
+            // Show navigation tooltips when icons are hovered.
+
+            sidebar.querySelectorAll(
+                ".nav-item"
+            ).forEach(function (item) {
+
+                const label = item.querySelector("span");
+
+                if (label) {
+                    item.setAttribute(
+                        "title",
+                        label.textContent.trim()
+                    );
+                }
+
+            });
+
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const menu = document.getElementById("profileMenu");
+
+            if (!menu) return;
+
+            document.addEventListener("click", function (event) {
+
+                if (!menu.contains(event.target)) {
+                    menu.open = false;
+                }
+
+            });
+
+            document.addEventListener("keydown", function (event) {
+
+                if (event.key === "Escape") {
+                    menu.open = false;
+                }
+
+            });
+
+        });
+    </script>
+
+
 
     @await RenderSectionAsync("Scripts", required: false)
 

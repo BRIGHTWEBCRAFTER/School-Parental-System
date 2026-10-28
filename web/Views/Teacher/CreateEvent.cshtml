@@ -1,0 +1,620 @@
+﻿@using System.Linq
+@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherCreateEventViewModel
+
+@{
+    ViewData["Title"] = "Create Event";
+    Layout = "_TeacherLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-create-announcement.css"
+      asp-append-version="true" />
+
+<section class="dashboard-content">
+
+    <!-- PAGE HEADING -->
+
+    <div class="page-heading announcement-page-heading">
+
+        <div>
+            <h2>Create Event</h2>
+
+            <p>
+                Schedule an event for parents of learners
+                in your assigned classes.
+            </p>
+        </div>
+
+        <a asp-controller="Teacher"
+           asp-action="Events"
+           class="announcement-back-button">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Events
+
+        </a>
+
+    </div>
+
+    <!-- FEEDBACK -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- EVENT FORM -->
+
+    <form asp-controller="Teacher"
+          asp-action="CreateEvent"
+          method="post"
+          class="announcement-form">
+
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly"
+             class="announcement-validation-summary">
+        </div>
+
+        <!-- EVENT DETAILS -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-calendar-event-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Event Details</h3>
+
+                    <p>
+                        Enter the event information,
+                        date and venue.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="announcement-form-grid">
+
+                <!-- EVENT NAME -->
+
+                <div class="announcement-field full-width">
+
+                    <label asp-for="EventName">
+                        Event Name
+                    </label>
+
+                    <input asp-for="EventName"
+                           maxlength="150"
+                           placeholder="Enter event name"
+                           required />
+
+                    <span asp-validation-for="EventName"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+                <!-- DESCRIPTION -->
+
+                <div class="announcement-field full-width">
+
+                    <label asp-for="Description">
+                        Description
+                    </label>
+
+                    <textarea asp-for="Description"
+                              rows="5"
+                              placeholder="Enter event details or additional information..."></textarea>
+
+                    <span asp-validation-for="Description"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+                <!-- EVENT DATE -->
+
+                <div class="announcement-field">
+
+                    <label asp-for="EventDate">
+                        Event Date
+                    </label>
+
+                    <input asp-for="EventDate"
+                           type="date"
+                           asp-format="{0:yyyy-MM-dd}"
+                           min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           required />
+
+                    <span asp-validation-for="EventDate"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+                <!-- VENUE -->
+
+                <div class="announcement-field">
+
+                    <label asp-for="Venue">
+                        Venue
+                    </label>
+
+                    <input asp-for="Venue"
+                           placeholder="e.g. Classroom or School Hall" />
+
+                    <span asp-validation-for="Venue"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+                <!-- START TIME -->
+
+                <div class="announcement-field">
+
+                    <label asp-for="StartTime">
+                        Start Time
+                    </label>
+
+                    <input asp-for="StartTime"
+                           type="time"
+                           value="@(Model.StartTime.HasValue
+                               ? Model.StartTime.Value.ToString(@"hh\:mm")
+                               : "")" />
+
+                    <span asp-validation-for="StartTime"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+                <!-- END TIME -->
+
+                <div class="announcement-field">
+
+                    <label asp-for="EndTime">
+                        End Time
+                    </label>
+
+                    <input asp-for="EndTime"
+                           type="time"
+                           value="@(Model.EndTime.HasValue
+                               ? Model.EndTime.Value.ToString(@"hh\:mm")
+                               : "")" />
+
+                    <span asp-validation-for="EndTime"
+                          class="field-validation">
+                    </span>
+
+                    <small>
+                        If both times are entered,
+                        the end time must be later
+                        than the start time.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- TARGET AUDIENCE -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Target Audience</h3>
+
+                    <p>
+                        Select an assigned class or
+                        one eligible parent.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="announcement-form-grid">
+
+                <!-- TARGET TYPE -->
+
+                <div class="announcement-field">
+
+                    <label asp-for="TargetType">
+                        Target Type
+                    </label>
+
+                    <select asp-for="TargetType"
+                            id="teacherEventTargetType"
+                            required>
+
+                        <option value="Class">
+                            Class (All Linked Parents)
+                        </option>
+
+                        <option value="Specific Users">
+                            Specific User (One Parent)
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="TargetType"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+                <!-- TARGET CLASS -->
+
+                <div class="announcement-field">
+
+                    <label asp-for="TargetClassId">
+                        Target Class
+                    </label>
+
+                    <select asp-for="TargetClassId"
+                            id="teacherEventTargetClass"
+                            required>
+
+                        <option value="">
+                            Select assigned class
+                        </option>
+
+                        @foreach (var schoolClass in Model.Classes)
+                        {
+                            <option value="@schoolClass.Id">
+                                @schoolClass.DisplayName
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="TargetClassId"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+                <!-- SPECIFIC PARENT -->
+
+                <div class="announcement-field"
+                     id="teacherEventParentSection"
+                     hidden>
+
+                    <label asp-for="ParentUserId">
+                        Select Parent
+                    </label>
+
+                    <select asp-for="ParentUserId"
+                            id="teacherEventTargetParent">
+
+                        <option value="">
+                            Select one parent
+                        </option>
+
+                        @foreach (var parent in Model.Parents)
+                        {
+                            <option value="@parent.UserId"
+                                    data-class-id="@parent.ClassId">
+                                @parent.ParentName — @parent.LearnerNames
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="ParentUserId"
+                          class="field-validation">
+                    </span>
+
+                    <small id="teacherEventParentHelp">
+                        Select a class to see eligible parents.
+                    </small>
+
+                </div>
+
+            </div>
+
+            @if (!Model.Classes.Any())
+            {
+                <div class="alert alert-warning">
+
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+
+                    No assigned classes found.
+                    Please contact your School Administrator.
+
+                </div>
+            }
+
+        </section>
+
+        <!-- EVENT NOTIFICATION -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-bell-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Event Notification</h3>
+
+                    <p>
+                        The event's target audience determines
+                        which parents can be notified.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="details-no-ack"
+                 style="display:flex;
+                        align-items:center;
+                        gap:8px;
+                        padding:12px;
+                        border-radius:8px;
+                        background:#f7f3e8;
+                        color:#66766f;
+                        font-size:12px;">
+
+                <i class="bi bi-info-circle-fill"></i>
+
+                <span>
+                    Class events target linked parents
+                    in an assigned class.
+                    Specific User events target one
+                    eligible parent.
+                </span>
+
+            </div>
+
+        </section>
+
+        <!-- FORM ACTIONS -->
+
+        <div class="announcement-form-actions">
+
+            <a asp-controller="Teacher"
+               asp-action="Events"
+               class="announcement-cancel-button">
+
+                Cancel
+
+            </a>
+
+            <button type="submit"
+                    id="teacherEventSubmit"
+                    class="announcement-submit-button"
+                    disabled>
+
+                <i class="bi bi-calendar-plus"></i>
+                Create Event
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // ELEMENT REFERENCES
+
+            const targetType =
+                document.getElementById("teacherEventTargetType");
+
+            const targetClass =
+                document.getElementById("teacherEventTargetClass");
+
+            const parentSection =
+                document.getElementById("teacherEventParentSection");
+
+            const parentSelect =
+                document.getElementById("teacherEventTargetParent");
+
+            const parentHelp =
+                document.getElementById("teacherEventParentHelp");
+
+            const submitButton =
+                document.getElementById("teacherEventSubmit");
+
+            if (!targetType || !targetClass ||
+                !parentSection || !parentSelect) {
+                return;
+            }
+
+            // SAVE PARENTS LOADED BY RAZOR
+
+            const allParents = Array.from(
+                parentSelect.querySelectorAll(
+                    "option[data-class-id]")
+            ).map(option => ({
+
+                id: option.value,
+
+                classId: (
+                    option.dataset.classId || ""
+                ).trim().toLowerCase(),
+
+                name: option.textContent.trim()
+
+            }));
+
+            // SAVE INITIAL PARENT SELECTION
+
+            let selectedParentId = parentSelect.value;
+
+            function updateSubmitButton() {
+
+                if (!submitButton) {
+                    return;
+                }
+
+                const isSpecific =
+                    targetType.value === "Specific Users";
+
+                const hasClass =
+                    targetClass.value.trim() !== "";
+
+                const hasParent =
+                    parentSelect.value.trim() !== "";
+
+                const hasAssignedClasses =
+                    targetClass.options.length > 1;
+
+                submitButton.disabled =
+                    !hasAssignedClasses ||
+                    !hasClass ||
+                    (isSpecific && !hasParent);
+            }
+
+            function updateParentSelection(resetParent) {
+
+                const isSpecific =
+                    targetType.value === "Specific Users";
+
+                const selectedClass =
+                    targetClass.value.trim().toLowerCase();
+
+                if (resetParent) {
+                    selectedParentId = "";
+                }
+
+                // SHOW OR HIDE PARENT SELECTION
+
+                parentSection.hidden = !isSpecific;
+
+                parentSection.style.display =
+                    isSpecific ? "block" : "none";
+
+                // CLEAR CURRENT OPTIONS
+
+                parentSelect.replaceChildren(
+                    new Option("Select one parent", "")
+                );
+
+                // FILTER BY ASSIGNED CLASS
+
+                const matchingParents = isSpecific
+                    ? allParents.filter(parent =>
+                        parent.classId === selectedClass)
+                    : [];
+
+                // ADD ELIGIBLE PARENTS
+
+                matchingParents.forEach(parent => {
+
+                    const option = new Option(
+                        parent.name,
+                        parent.id
+                    );
+
+                    parentSelect.add(option);
+                });
+
+                // RESTORE SELECTED PARENT
+
+                if (selectedParentId &&
+                    matchingParents.some(
+                        parent => parent.id === selectedParentId)) {
+
+                    parentSelect.value = selectedParentId;
+                }
+
+                // ENABLE / DISABLE PARENT SELECTOR
+
+                parentSelect.disabled =
+                    !isSpecific ||
+                    !selectedClass ||
+                    matchingParents.length === 0;
+
+                parentSelect.required = isSpecific;
+
+                // HELP MESSAGE
+
+                if (parentHelp) {
+
+                    if (!isSpecific) {
+
+                        parentHelp.textContent = "";
+
+                    }
+                    else if (!selectedClass) {
+
+                        parentHelp.textContent =
+                            "Select an assigned class first.";
+
+                    }
+                    else if (matchingParents.length === 0) {
+
+                        parentHelp.textContent =
+                            "No eligible parents were loaded for this class.";
+
+                    }
+                    else {
+
+                        parentHelp.textContent =
+                            matchingParents.length +
+                            " eligible parent(s) available.";
+                    }
+                }
+
+                updateSubmitButton();
+            }
+
+            // TARGET TYPE CHANGED
+
+            targetType.addEventListener(
+                "change",
+                function () {
+                    updateParentSelection(true);
+                }
+            );
+
+            // CLASS CHANGED
+
+            targetClass.addEventListener(
+                "change",
+                function () {
+                    updateParentSelection(true);
+                }
+            );
+
+            // PARENT CHANGED
+
+            parentSelect.addEventListener(
+                "change",
+                function () {
+                    selectedParentId = parentSelect.value;
+                    updateSubmitButton();
+                }
+            );
+
+            // INITIALIZE
+
+            updateParentSelection(false);
+
+        });
+    </script>
+}

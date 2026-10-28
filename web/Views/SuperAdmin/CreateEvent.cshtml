@@ -1,0 +1,438 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.CreateEventViewModel
+
+@{
+    ViewData["Title"] = "Create Event";
+}
+
+<section class="sa-edit-school-page">
+
+    <!-- HEADER -->
+
+    <section class="sa-schools-header">
+
+        <div>
+
+            <a asp-controller="SuperAdmin"
+               asp-action="Dashboard"
+               class="sa-back-link">
+
+                <i class="bi bi-arrow-left"></i>
+                Back to Dashboard
+
+            </a>
+
+
+            <span class="sa-page-label"
+                  style="display:block; margin-top:12px;">
+                Events
+            </span>
+
+
+            <h2>Create Event</h2>
+
+            <p>
+                Create an event for a specific school
+                or all registered schools.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- FORM -->
+
+    <form asp-controller="SuperAdmin"
+          asp-action="CreateEvent"
+          method="post"
+          id="eventForm"
+          class="sa-edit-school-form">
+
+        @Html.AntiForgeryToken()
+
+
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger">
+        </div>
+
+
+        <!-- EVENT INFORMATION -->
+
+        <section class="sa-school-details-card">
+
+            <div class="sa-detail-card-header">
+
+                <i class="bi bi-calendar-event-fill"></i>
+
+                <h3>Event Information</h3>
+
+            </div>
+
+
+            <div class="sa-edit-form-grid">
+
+
+                <!-- EVENT NAME -->
+
+                <div class="sa-edit-field sa-edit-full">
+
+                    <label asp-for="EventName">
+                        Event Name
+                    </label>
+
+                    <input asp-for="EventName"
+                           placeholder="Enter event name" />
+
+                    <span asp-validation-for="EventName"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- EVENT DATE -->
+
+                <div class="sa-edit-field">
+
+                    <label asp-for="EventDate">
+                        Event Date
+                    </label>
+
+                    <input asp-for="EventDate"
+                           type="date" />
+
+                    <span asp-validation-for="EventDate"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- VENUE -->
+
+                <div class="sa-edit-field">
+
+                    <label asp-for="Venue">
+                        Venue
+                    </label>
+
+                    <input asp-for="Venue"
+                           placeholder="Enter event venue" />
+
+                </div>
+
+
+                <!-- START TIME -->
+
+                <div class="sa-edit-field">
+
+                    <label asp-for="StartTime">
+                        Start Time
+                    </label>
+
+                    <input asp-for="StartTime"
+                           type="time" />
+
+                </div>
+
+
+                <!-- END TIME -->
+
+                <div class="sa-edit-field">
+
+                    <label asp-for="EndTime">
+                        End Time
+                    </label>
+
+                    <input asp-for="EndTime"
+                           type="time" />
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="sa-edit-field sa-edit-full">
+
+                    <label asp-for="Description">
+                        Description
+                    </label>
+
+                    <textarea asp-for="Description"
+                              rows="6"
+                              placeholder="Enter event description...">
+                    </textarea>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECIPIENTS -->
+
+        <section class="sa-school-details-card">
+
+            <div class="sa-detail-card-header">
+
+                <i class="bi bi-buildings-fill"></i>
+
+                <h3>Event Recipients</h3>
+
+            </div>
+
+
+            <div class="sa-edit-form-grid">
+
+
+                <!-- TARGET -->
+
+                <div class="sa-edit-field">
+
+                    <label asp-for="Target">
+                        Send To
+                    </label>
+
+                    <select asp-for="Target"
+                            id="eventTarget">
+
+                        @foreach (var target in Model.Targets)
+                        {
+                            <option value="@target">
+                                @target
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- SCHOOL -->
+
+                <div class="sa-edit-field"
+                     id="eventSchoolSelection">
+
+                    <label asp-for="SchoolId">
+                        Select School
+                    </label>
+
+                    <select asp-for="SchoolId">
+
+                        <option value="">
+                            Select a school
+                        </option>
+
+                        @foreach (var school in Model.Schools)
+                        {
+                            <option value="@school.Id">
+                                @school.Name
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACTIONS -->
+
+        <div class="sa-edit-actions">
+
+            <a asp-controller="SuperAdmin"
+               asp-action="Dashboard"
+               class="sa-edit-cancel-button">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="super-primary-button">
+
+                <i class="bi bi-calendar-plus"></i>
+
+                Create Event
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+<!-- CONFIRMATION -->
+
+<div id="eventConfirmModal"
+     class="sa-confirm-overlay"
+     style="display:none;">
+
+    <div class="sa-confirm-box">
+
+        <div class="sa-confirm-icon">
+
+            <i class="bi bi-calendar-event-fill"></i>
+
+        </div>
+
+        <h3>Create Event?</h3>
+
+        <p>
+            Are you sure you want to create this event?
+        </p>
+
+
+        <div class="sa-confirm-actions">
+
+            <button type="button"
+                    id="cancelEvent"
+                    class="sa-edit-cancel-button">
+
+                No
+
+            </button>
+
+
+            <button type="button"
+                    id="confirmEvent"
+                    class="super-primary-button">
+
+                Yes
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const target =
+                    document.getElementById(
+                        "eventTarget");
+
+                const schoolSelection =
+                    document.getElementById(
+                        "eventSchoolSelection");
+
+                const form =
+                    document.getElementById(
+                        "eventForm");
+
+                const modal =
+                    document.getElementById(
+                        "eventConfirmModal");
+
+                const cancelButton =
+                    document.getElementById(
+                        "cancelEvent");
+
+                const confirmButton =
+                    document.getElementById(
+                        "confirmEvent");
+
+                let confirmed =
+                    false;
+
+
+                // ------------------------------------------
+                // SCHOOL SELECTION
+                // ------------------------------------------
+
+                function updateSchoolSelection() {
+
+                    if (!target ||
+                        !schoolSelection) {
+                        return;
+                    }
+
+
+                    if (target.value ===
+                        "Specific School") {
+
+                        schoolSelection.style.display =
+                            "";
+
+                    }
+                    else {
+
+                        schoolSelection.style.display =
+                            "none";
+                    }
+                }
+
+
+                updateSchoolSelection();
+
+
+                if (target) {
+
+                    target.addEventListener(
+                        "change",
+                        updateSchoolSelection);
+                }
+
+
+                // ------------------------------------------
+                // CONFIRMATION
+                // ------------------------------------------
+
+                form.addEventListener(
+                    "submit",
+                    function (event) {
+
+                        if (confirmed) {
+                            return;
+                        }
+
+
+                        event.preventDefault();
+
+                        modal.style.display =
+                            "flex";
+                    });
+
+
+                cancelButton.addEventListener(
+                    "click",
+                    function () {
+
+                        modal.style.display =
+                            "none";
+                    });
+
+
+                confirmButton.addEventListener(
+                    "click",
+                    function () {
+
+                        confirmed =
+                            true;
+
+                        modal.style.display =
+                            "none";
+
+                        form.requestSubmit();
+                    });
+
+            });
+
+    </script>
+}

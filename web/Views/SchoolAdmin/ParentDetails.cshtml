@@ -1,0 +1,1051 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.ParentDetailsViewModel
+
+
+@{
+    ViewData["Title"] = "Parent Details";
+    Layout = "_SchoolAdminLayout";
+
+    var nameParts =
+        (Model.FullName ?? "")
+            .Split(
+                ' ',
+                StringSplitOptions.RemoveEmptyEntries);
+
+    var initials =
+        string.Concat(
+            nameParts
+                .Take(2)
+                .Select(x =>
+                    char.ToUpperInvariant(x[0])));
+
+    if (string.IsNullOrWhiteSpace(initials))
+    {
+        initials = "?";
+    }
+
+
+    var linkedLearnerCount =
+        Model.LinkedLearners?.Count ?? 0;
+
+    var linkedLearnerText =
+        linkedLearnerCount == 1
+            ? "1 linked learner"
+            : $"{linkedLearnerCount} linked learners";
+
+
+    var contactVerifiedText =
+        Model.ContactLastVerified.HasValue
+            ? Model.ContactLastVerified.Value
+                .ToString("dd MMM yyyy")
+            : "Never verified";
+
+
+    string contactAgeText;
+    string contactAgeClass;
+
+
+    if (!Model.ContactLastVerified.HasValue)
+    {
+        contactAgeText =
+            "Contact details need verification";
+
+        contactAgeClass =
+            "needs-verification";
+    }
+    else
+    {
+        var verifiedDate =
+            Model.ContactLastVerified.Value.Date;
+
+        var today =
+            DateTime.Today;
+
+        var totalDays =
+            Math.Max(
+                0,
+                (today - verifiedDate).Days);
+
+
+        if (totalDays >= 365)
+        {
+            var years =
+                totalDays / 365;
+
+            contactAgeText =
+                years == 1
+                    ? "Over 12 months ago"
+                    : $"Over {years} years ago";
+
+            contactAgeClass =
+                "outdated";
+        }
+        else if (totalDays >= 180)
+        {
+            var months =
+                Math.Max(
+                    6,
+                    totalDays / 30);
+
+            contactAgeText =
+                $"About {months} months ago";
+
+            contactAgeClass =
+                "review-soon";
+        }
+        else if (totalDays == 0)
+        {
+            contactAgeText =
+                "Verified today";
+
+            contactAgeClass =
+                "current";
+        }
+        else
+        {
+            contactAgeText =
+                $"{totalDays} day{(totalDays == 1 ? "" : "s")} ago";
+
+            contactAgeClass =
+                "current";
+        }
+    }
+}
+
+<section class="dashboard-content">
+
+    <!-- =====================================================
+         PAGE HEADING
+         ===================================================== -->
+
+    <div class="detail-page-heading">
+
+        <div>
+
+            <h2>Parent Details</h2>
+
+            <p>
+                View parent, guardian and linked learner information.
+            </p>
+
+        </div>
+
+
+        <div class="detail-heading-actions">
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="Parents"
+               class="detail-back-action">
+
+                <i class="bi bi-arrow-left"></i>
+                Back
+
+            </a>
+
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="EditParent"
+               asp-route-id="@Model.Id"
+               class="detail-edit-action">
+
+                <i class="bi bi-pencil-square"></i>
+                Edit Parent
+
+            </a>
+
+
+            @if (Model.IsActive)
+            {
+                <button type="button"
+                        class="detail-danger-action"
+                        id="openDeactivateModal">
+
+                    <i class="bi bi-person-dash-fill"></i>
+                    Deactivate Parent
+
+                </button>
+            }
+            else
+            {
+                <form asp-controller="SchoolAdmin"
+                      asp-action="ReactivateParent"
+                      asp-route-id="@Model.Id"
+                      asp-route-returnUrl="@Context.Request.Path"
+                      method="post"
+                      class="inline-form">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="detail-reactivate-action">
+
+                        <i class="bi bi-person-check-fill"></i>
+                        Reactivate Parent
+
+                    </button>
+
+                </form>
+            }
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PARENT IDENTITY HERO
+         ===================================================== -->
+
+    <section class="detail-profile-hero">
+
+        <div class="detail-avatar">
+
+            @initials
+
+        </div>
+
+
+        <div class="detail-identity">
+
+            <div class="detail-name-row">
+
+                <h3>
+                    @Model.FullName
+                </h3>
+
+
+                <span class="detail-status
+                      @(Model.IsActive
+                          ? "active"
+                          : "inactive")">
+
+                    @(Model.IsActive
+                        ? "Active"
+                        : "Inactive")
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-meta">
+
+                <span>
+                    @Model.GuardianNumber
+                </span>
+
+
+                <span class="detail-meta-dot">
+                    •
+                </span>
+
+
+                <span>
+                    Parent / Guardian
+                </span>
+
+
+                <span class="detail-meta-dot">
+                    •
+                </span>
+
+
+                <span>
+                    @linkedLearnerText
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- CONTACT VERIFICATION - FAR RIGHT -->
+        <div class="detail-contact-verification @contactAgeClass">
+
+            <span class="detail-verification-label">
+                Contact Last Verified
+            </span>
+
+
+            <strong class="detail-verification-date">
+                @contactVerifiedText
+            </strong>
+
+
+            <span class="detail-verification-age">
+
+                @if (contactAgeClass == "outdated")
+                {
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                }
+                else if (contactAgeClass == "current")
+                {
+                    <i class="bi bi-check-circle-fill"></i>
+                }
+                else
+                {
+                    <i class="bi bi-clock-fill"></i>
+                }
+
+                @contactAgeText
+
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         INFORMATION AREA
+         ===================================================== -->
+
+    <div class="detail-content-grid">
+
+
+        <!-- =================================================
+             PARENT INFORMATION
+             ================================================= -->
+
+        <section class="detail-card">
+
+            <div class="detail-card-header">
+
+                <div class="detail-card-icon">
+
+                    <i class="bi bi-person-vcard"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h3>
+                        Parent Information
+                    </h3>
+
+                    <p>
+                        Personal and contact details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="detail-definition-grid">
+
+
+                <!-- FULL NAME -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-person-badge"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Full Name
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @Model.FullName
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- GUARDIAN NUMBER -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-hash"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Guardian Number
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @Model.GuardianNumber
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-telephone"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Phone Number
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Phone)
+                                ? "Not provided"
+                                : Model.Phone)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ALTERNATIVE PHONE -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-phone"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Alternative Phone
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.AlternativePhone)
+                                ? "Not provided"
+                                : Model.AlternativePhone)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- GENDER -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-person"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Gender
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Gender)
+                                ? "Not provided"
+                                : Model.Gender)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ADDRESS -->
+
+                <div class="detail-field full-width">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Address
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Address)
+                                ? "Not provided"
+                                : Model.Address)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             ACCOUNT INFORMATION
+             ================================================= -->
+
+        <aside class="detail-card">
+
+            <div class="detail-card-header">
+
+                <div class="detail-card-icon">
+
+                    <i class="bi bi-shield-check"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h3>
+                        Account Information
+                    </h3>
+
+                    <p>
+                        Parent account and access details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="detail-side-fields">
+
+
+                <!-- EMAIL -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-envelope"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Email Address
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Email)
+                                ? "Not provided"
+                                : Model.Email)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-check-circle"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Account Status
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(Model.IsActive
+                                ? "Active"
+                                : "Inactive")
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-person-gear"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Role
+                        </span>
+
+                        <strong class="detail-field-value">
+                            Parent
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LINKED LEARNERS -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-people"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Linked Learners
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @linkedLearnerCount
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+    <!-- =====================================================
+         LINKED LEARNERS
+         ===================================================== -->
+
+    <section class="detail-card detail-linked-card">
+
+        <div class="detail-card-header">
+
+            <div class="detail-card-icon">
+
+                <i class="bi bi-people-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <h3>
+                    Linked Learners
+                </h3>
+
+                <p>
+                    Learners registered under this parent
+                    or guardian.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        @if (Model.LinkedLearners.Any())
+        {
+            <div class="table-wrapper learner-table-wrapper">
+
+                <table class="learner-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Admission No.
+                            </th>
+
+                            <th>
+                                Learner
+                            </th>
+
+                            <th>
+                                Grade
+                            </th>
+
+                            <th>
+                                Relationship
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                View
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var learner
+                       in Model.LinkedLearners)
+                        {
+                            <tr>
+
+                                <td>
+
+                                    <strong>
+                                        @learner.AdmissionNumber
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="learner-name-cell">
+
+                                        <div class="learner-avatar">
+
+                                            @(string.IsNullOrWhiteSpace(
+                                                learner.FullName)
+                                                ? "L"
+                                                : learner.FullName
+                                                .Substring(0, 1)
+                                                .ToUpper())
+
+                                        </div>
+
+
+                                        <span>
+                                            @learner.FullName
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+                                    @learner.Grade
+                                </td>
+
+
+                                <td>
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        learner.Relationship)
+                                        ? "Not specified"
+                                        : learner.Relationship)
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="learner-status
+                                          @(learner.Status == "Active"
+                                              ? "active-status"
+                                              : "inactive-status")">
+
+                                        @learner.Status
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <a asp-controller="SchoolAdmin"
+                                       asp-action="LearnerDetails"
+                                       asp-route-id="@learner.LearnerId"
+                                       class="action-icon view-action"
+                                       title="View learner">
+
+                                        <i class="bi bi-eye-fill"></i>
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="dashboard-empty-state">
+
+                <i class="bi bi-person-lines-fill"></i>
+
+                <strong>
+                    No linked learners
+                </strong>
+
+                <span>
+                    This parent or guardian is not currently
+                    linked to a learner.
+                </span>
+
+            </div>
+        }
+
+    </section>
+
+</section>
+
+
+
+<!-- =========================================================
+     DEACTIVATE CONFIRMATION
+     ========================================================= -->
+@if (Model.IsActive)
+{
+    <div id="deactivateModal"
+         class="confirmation-overlay">
+
+        <div class="confirmation-card"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="deactivateModalTitle">
+
+
+            <div class="confirmation-icon danger">
+
+                <i class="bi bi-trash3-fill"></i>
+
+            </div>
+
+
+            <h3 id="deactivateModalTitle">
+
+                Deactivate Parent?
+
+            </h3>
+
+
+            <p class="confirmation-message">
+
+                Are you sure you want to deactivate this parent?
+                Their record and learner links will remain
+                in the system, but the account will no longer
+                be active.
+
+            </p>
+
+
+            <div class="confirmation-record">
+
+                <span>
+                    Parent:
+                </span>
+
+                <strong>
+                    @Model.FullName
+                </strong>
+
+            </div>
+
+
+            <div class="confirmation-actions">
+
+                <button type="button"
+                        class="confirmation-cancel"
+                        id="cancelDeactivate">
+
+                    Cancel
+
+                </button>
+
+
+                <form asp-controller="SchoolAdmin"
+                      asp-action="DeactivateParent"
+                      asp-route-id="@Model.Id"
+                      asp-route-returnUrl="@Context.Request.Path"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+
+                    <button type="submit"
+                            class="confirmation-deactivate">
+
+                        Deactivate
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+
+
+<script>
+
+    const deactivateModal =
+        document.getElementById(
+            "deactivateModal"
+        );
+
+    const openDeactivateModal =
+        document.getElementById(
+            "openDeactivateModal"
+        );
+
+    const cancelDeactivate =
+        document.getElementById(
+            "cancelDeactivate"
+        );
+
+
+    if (openDeactivateModal &&
+        deactivateModal) {
+
+        openDeactivateModal.addEventListener(
+            "click",
+            function () {
+
+                deactivateModal
+                    .classList
+                    .add("show");
+
+                document.body
+                    .classList
+                    .add("modal-open");
+
+            }
+        );
+    }
+
+
+    if (cancelDeactivate &&
+        deactivateModal) {
+
+        cancelDeactivate.addEventListener(
+            "click",
+            function () {
+
+                closeDeactivateModal();
+
+            }
+        );
+    }
+
+
+    if (deactivateModal) {
+
+        deactivateModal.addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target ===
+                    deactivateModal) {
+
+                    closeDeactivateModal();
+
+                }
+
+            }
+        );
+    }
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Escape" &&
+                deactivateModal &&
+                deactivateModal
+                    .classList
+                    .contains("show")) {
+
+                closeDeactivateModal();
+
+            }
+
+        }
+    );
+
+
+    function closeDeactivateModal() {
+
+        if (!deactivateModal) {
+            return;
+        }
+
+
+        deactivateModal
+            .classList
+            .remove("show");
+
+        document.body
+            .classList
+            .remove("modal-open");
+
+    }
+
+</script>

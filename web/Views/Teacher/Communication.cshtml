@@ -1,0 +1,1494 @@
+﻿@using System.Linq
+@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherCommunicationViewModel
+
+@{
+    ViewData["Title"] = "Communication Management";
+    Layout = "_TeacherLayout";
+
+    var importantNotices = Model.Announcements
+        .Where(x =>
+            x.Priority == "Important" ||
+            x.Priority == "Urgent")
+        .Take(4)
+        .ToList();
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-communication.css"
+      asp-append-version="true" />
+
+<link rel="stylesheet"
+      href="~/css/teacher/teacher-communication-schooladmin.css"
+      asp-append-version="true" />
+
+
+<!-- ==========================================
+     DELETE ANNOUNCEMENT STYLING
+     ========================================== -->
+
+<style>
+    /* DELETE BUTTON */
+
+    .teacher-delete-announcement-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 8px 13px;
+        border: 1px solid #f1c7c7;
+        border-radius: 8px;
+        background: #fff5f5;
+        color: #b52d32;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: 0.2s ease;
+        white-space: nowrap;
+    }
+
+        .teacher-delete-announcement-button:hover {
+            background: #b52d32;
+            color: #fff;
+            border-color: #b52d32;
+        }
+
+        .teacher-delete-announcement-button:focus-visible {
+            outline: 3px solid #d9aa35;
+            outline-offset: 2px;
+        }
+
+    /* ACTION BUTTON ALIGNMENT */
+
+    .teacher-communication-page
+    .communication-action-buttons {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+
+    .teacher-communication-page
+    .communication-actions-cell {
+        white-space: nowrap;
+    }
+
+    .teacher-edit-announcement-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 8px 13px;
+        border: 1px solid #d7e4dd;
+        border-radius: 8px;
+        background: #f0f7f2;
+        color: #073f32;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: 0.2s ease;
+    }
+
+        .teacher-edit-announcement-button:hover {
+            background: #073f32;
+            color: #fff;
+            border-color: #073f32;
+        }
+
+    /* ==========================================
+           MODAL OVERLAY
+           ========================================== */
+
+    .teacher-delete-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(8, 32, 25, 0.65);
+    }
+
+        .teacher-delete-modal-overlay[hidden] {
+            display: none !important;
+        }
+
+    /* ==========================================
+           MODAL CARD
+           ========================================== */
+
+    .teacher-delete-modal {
+        width: 100%;
+        max-width: 470px;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        padding: 30px;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 22px 65px rgba(0, 0, 0, 0.22);
+        text-align: center;
+    }
+
+    /* MODAL ICON */
+
+    .teacher-delete-modal-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #fff0f0;
+        color: #be3030;
+        font-size: 27px;
+    }
+
+    /* MODAL HEADING */
+
+    .teacher-delete-modal h3 {
+        margin: 0 0 12px;
+        color: #073f32;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .teacher-delete-modal p {
+        margin: 0 0 20px;
+        color: #63736b;
+        font-size: 14px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+        .teacher-delete-modal p strong {
+            color: #073f32;
+        }
+
+    /* ==========================================
+           WARNING PANEL
+           ========================================== */
+
+    .teacher-delete-modal-warning {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        padding: 14px;
+        margin-bottom: 24px;
+        border: 1px solid #f5d6ac;
+        border-radius: 9px;
+        background: #fff9ed;
+        text-align: left;
+    }
+
+        .teacher-delete-modal-warning i {
+            flex-shrink: 0;
+            color: #b97919;
+            font-size: 18px;
+        }
+
+        .teacher-delete-modal-warning span {
+            color: #805c23;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+    /* ==========================================
+           MODAL ACTIONS
+           ========================================== */
+
+    .teacher-delete-modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .teacher-delete-cancel-button,
+    .teacher-delete-confirm-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 43px;
+        padding: 11px 17px;
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 650;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    /* CANCEL */
+
+    .teacher-delete-cancel-button {
+        border: 1px solid #dce3dc;
+        background: #fff;
+        color: #073f32;
+    }
+
+        .teacher-delete-cancel-button:hover {
+            background: #eef5ef;
+        }
+
+    /* CONFIRM DELETE */
+
+    .teacher-delete-confirm-button {
+        border: 1px solid #b52d32;
+        background: #b52d32;
+        color: #fff;
+    }
+
+        .teacher-delete-confirm-button:hover {
+            background: #962328;
+            border-color: #962328;
+        }
+
+        .teacher-delete-confirm-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+    /* ==========================================
+           RESPONSIVE
+           ========================================== */
+
+    @@media (max-width: 768px) {
+
+        .teacher-communication-page
+        .communication-action-buttons {
+            gap: 6px;
+        }
+
+        .teacher-delete-announcement-button,
+        .teacher-edit-announcement-button {
+            padding: 7px 10px;
+            font-size: 12px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+
+        .teacher-delete-modal {
+            padding: 24px 18px;
+        }
+
+        .teacher-delete-modal-actions {
+            flex-direction: column;
+        }
+
+            .teacher-delete-modal-actions button {
+                width: 100%;
+            }
+    }
+</style>
+
+
+<section class="dashboard-content teacher-communication-page">
+
+    <!-- ==========================================
+         PAGE HEADING
+         ========================================== -->
+
+    <div class="page-heading communication-page-heading">
+
+        <div>
+            <h2>Communication Management</h2>
+
+            <p>
+                Manage announcements, parent communication
+                and engagement in your assigned classes.
+            </p>
+        </div>
+
+        <a asp-controller="Teacher"
+           asp-action="CreateAnnouncement"
+           class="create-announcement-button">
+
+            <i class="bi bi-plus-lg"></i>
+            Create Announcement
+
+        </a>
+
+    </div>
+
+
+    <!-- ==========================================
+         FEEDBACK MESSAGES
+         ========================================== -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="communication-info-banner"
+             role="status">
+
+            <i class="bi bi-check-circle-fill"></i>
+
+            <p>
+                @TempData["SuccessMessage"]
+            </p>
+
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="communication-info-banner teacher-communication-error"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill"></i>
+
+            <p>
+                @TempData["ErrorMessage"]
+            </p>
+
+        </div>
+    }
+
+
+    <!-- ==========================================
+         INFORMATION BANNER
+         ========================================== -->
+
+    <div id="teacherCommunicationInfoBanner"
+         class="communication-info-banner">
+
+        <div class="communication-info-icon">
+            <i class="bi bi-info-circle-fill"></i>
+        </div>
+
+        <p>
+            Send announcements to parents linked to learners
+            in your assigned classes, or select one specific
+            parent. Monitor read and acknowledgement activity.
+        </p>
+
+        <button type="button"
+                class="communication-info-close"
+                aria-label="Dismiss information"
+                onclick="document.getElementById('teacherCommunicationInfoBanner').style.display='none'">
+
+            <i class="bi bi-x-lg"></i>
+
+        </button>
+
+    </div>
+
+
+    <!-- ==========================================
+         PROFILE / DATA VALIDATION
+         ========================================== -->
+    @if (Model.DataLoadFailed)
+    {
+        <div class="communication-empty-state">
+
+            <h3>Unable to load communication</h3>
+
+            <p>
+                Reload the page or contact your
+                School Administrator.
+            </p>
+
+        </div>
+    }
+    else if (!Model.HasTeacherProfile)
+    {
+        <div class="communication-empty-state">
+
+            <h3>Teacher profile unavailable</h3>
+
+            <p>
+                Contact your School Administrator
+                to verify your Teacher profile.
+            </p>
+
+        </div>
+    }
+    else
+    {
+
+        <!-- ==========================================
+             SEARCH AND FILTERS
+             ========================================== -->
+
+        <form asp-controller="Teacher"
+              asp-action="Communication"
+              method="get"
+              class="communication-filter-bar">
+
+            <!-- SEARCH -->
+
+            <div class="communication-search">
+
+                <i class="bi bi-search"></i>
+
+                <input type="search"
+                       name="search"
+                       value="@Model.SearchTerm"
+                       placeholder="Search communication..."
+                       aria-label="Search communication" />
+
+            </div>
+
+
+            <!-- PRIORITY -->
+
+            <div class="communication-filter">
+
+                <i class="bi bi-flag"></i>
+
+                <select name="priority"
+                        aria-label="Filter by priority">
+
+                    <option value="">All Priorities</option>
+
+                    @foreach (var priority in Model.Priorities)
+                    {
+                        if (Model.SelectedPriority == priority)
+                        {
+                            <option value="@priority" selected>
+                                @priority
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@priority">
+                                @priority
+                            </option>
+                        }
+                    }
+
+                </select>
+
+            </div>
+
+
+            <!-- TARGET TYPE -->
+
+            <div class="communication-filter">
+
+                <i class="bi bi-bullseye"></i>
+
+                <select name="targetType"
+                        aria-label="Filter by target type">
+
+                    <option value="">All Targets</option>
+
+                    @foreach (var target in Model.TargetTypes)
+                    {
+                        if (Model.SelectedTarget == target)
+                        {
+                            <option value="@target" selected>
+                                @target
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@target">
+                                @target
+                            </option>
+                        }
+                    }
+
+                </select>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="communication-filter">
+
+                <i class="bi bi-circle-half"></i>
+
+                <select name="status"
+                        aria-label="Filter by status">
+
+                    <option value="">All Statuses</option>
+
+                    @if (Model.SelectedStatus == "Active")
+                    {
+                        <option value="Active" selected>
+                            Active
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="Active">
+                            Active
+                        </option>
+                    }
+
+                    @if (Model.SelectedStatus == "Expired")
+                    {
+                        <option value="Expired" selected>
+                            Expired
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="Expired">
+                            Expired
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+
+            <!-- APPLY FILTERS -->
+
+            <button type="submit"
+                    class="communication-filter-button">
+
+                <i class="bi bi-funnel-fill"></i>
+                Apply Filters
+
+            </button>
+
+
+            <!-- CLEAR FILTERS -->
+
+            <a asp-controller="Teacher"
+               asp-action="Communication"
+               class="communication-clear-button">
+
+                Clear
+
+            </a>
+
+        </form>
+
+
+        <!-- ==========================================
+             COMMUNICATION SUMMARY
+             ========================================== -->
+
+        <div id="statistics"
+             class="communication-summary-grid">
+
+            <!-- TOTAL ANNOUNCEMENTS -->
+
+            <div class="communication-summary-card total">
+
+                <div class="communication-summary-icon">
+                    <i class="bi bi-megaphone-fill"></i>
+                </div>
+
+                <div>
+                    <span>Total Announcements</span>
+
+                    <strong>
+                        @Model.TotalAnnouncements
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <!-- READ RATE -->
+
+            <div class="communication-summary-card read">
+
+                <div class="communication-summary-icon">
+                    <i class="bi bi-eye-fill"></i>
+                </div>
+
+                <div>
+                    <span>Read Rate</span>
+
+                    <strong>
+                        @Model.ReadRate.ToString("0.0")%
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <!-- IMPORTANT / URGENT -->
+
+            <div class="communication-summary-card important">
+
+                <div class="communication-summary-icon">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+
+                <div>
+                    <span>Important / Urgent</span>
+
+                    <strong>
+                        @Model.ImportantNoticeCount
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <!-- ACKNOWLEDGED -->
+
+            <div class="communication-summary-card acknowledged">
+
+                <div class="communication-summary-icon">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+
+                <div>
+                    <span>Acknowledged</span>
+
+                    <strong>
+                        @Model.TotalAcknowledged
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==========================================
+             COMMUNICATION TABS
+             ========================================== -->
+
+        <div class="communication-tabs">
+
+            <!-- ANNOUNCEMENTS -->
+
+            <a asp-controller="Teacher"
+               asp-action="Communication"
+               class="communication-tab active"
+               aria-current="page">
+
+                <i class="bi bi-megaphone"></i>
+                Announcements
+
+            </a>
+
+
+            <!-- EVENTS -->
+
+            <a asp-controller="Teacher"
+               asp-action="Events"
+               class="communication-tab">
+
+                <i class="bi bi-calendar-event"></i>
+                Events
+
+            </a>
+
+
+            <!-- STATISTICS -->
+
+            <a asp-controller="Teacher"
+               asp-action="CommunicationStatistics"
+               class="communication-tab">
+
+                <i class="bi bi-bar-chart"></i>
+                Statistics
+
+            </a>
+
+        </div>
+
+
+        <!-- ==========================================
+             ANNOUNCEMENTS TABLE
+             ========================================== -->
+
+        <section id="announcements"
+                 class="communication-panel">
+
+            <div class="communication-panel-header">
+
+                <div>
+
+                    <h3>
+                        <i class="bi bi-chat-left-text-fill"></i>
+                        Announcements
+                    </h3>
+
+                    <p>
+                        Announcements you've sent and
+                        recipient engagement.
+                    </p>
+
+                </div>
+
+
+                <div class="communication-result-count">
+
+                    @Model.TotalAnnouncements
+
+                    @(Model.TotalAnnouncements == 1
+                        ? "announcement"
+                        : "announcements")
+
+                </div>
+
+            </div>
+
+
+            @if (Model.Announcements.Any())
+            {
+                <div class="communication-table-wrapper">
+
+                    <table class="communication-table">
+
+                        <thead>
+                            <tr>
+                                <th>Announcement</th>
+                                <th>Priority</th>
+                                <th>Target</th>
+                                <th>Sent</th>
+                                <th>Read</th>
+                                <th>Acknowledged</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+
+                            @foreach (var announcement in Model.Announcements)
+                            {
+                                <tr>
+
+                                    <!-- =====================================
+                                         ANNOUNCEMENT
+                                         ===================================== -->
+
+                                    <td>
+
+                                        <div class="announcement-cell">
+
+                                            <div class="announcement-icon">
+
+                                                <i class="bi bi-megaphone"></i>
+
+                                            </div>
+
+
+                                            <div class="announcement-details">
+
+                                                <strong>
+                                                    @announcement.Title
+                                                </strong>
+
+                                                <span>
+                                                    @announcement.Content
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- =====================================
+                                         PRIORITY
+                                         ===================================== -->
+
+                                    <td>
+
+                                        <span class="priority-badge @announcement.Priority.ToLowerInvariant()">
+
+                                            @announcement.Priority
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- =====================================
+                                         TARGET
+                                         ===================================== -->
+
+                                    <td>
+
+                                        @announcement.TargetDisplay
+
+                                    </td>
+
+
+                                    <!-- =====================================
+                                         SENT DATE
+                                         ===================================== -->
+
+                                    <td>
+
+                                        <div class="communication-date">
+
+                                            <strong>
+                                                @announcement.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                                            </strong>
+
+                                            <span>
+                                                @announcement.CreatedAt.ToLocalTime().ToString("HH:mm")
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- =====================================
+                                         READ
+                                         ===================================== -->
+
+                                    <td>
+
+                                        <div class="engagement-value">
+
+                                            <strong>
+
+                                                @announcement.ReadCount
+                                                /
+                                                @announcement.RecipientCount
+
+                                            </strong>
+
+                                            <span>read</span>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- =====================================
+                                         ACKNOWLEDGED
+                                         ===================================== -->
+
+                                    <td>
+
+                                        @if (announcement.AcknowledgementRequired)
+                                        {
+                                            <div class="engagement-value">
+
+                                                <strong>
+
+                                                    @announcement.AcknowledgedCount
+                                                    /
+                                                    @announcement.RecipientCount
+
+                                                </strong>
+
+                                                <span>acknowledged</span>
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="communication-muted">
+                                                N/A
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- =====================================
+                                         STATUS
+                                         ===================================== -->
+
+                                    <td>
+
+                                        <span class="communication-status @announcement.Status.ToLowerInvariant()">
+
+                                            @announcement.Status
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- =====================================
+                                         ACTION BUTTONS
+                                         ===================================== -->
+
+                                    <td class="communication-actions-cell">
+
+                                        <div class="communication-action-buttons">
+
+
+                                            <!-- VIEW ANNOUNCEMENT -->
+
+                                            <a asp-controller="Teacher"
+                                               asp-action="AnnouncementDetails"
+                                               asp-route-id="@announcement.Id"
+                                               class="communication-view-button"
+                                               title="View Announcement"
+                                               aria-label="View @announcement.Title">
+
+                                                <i class="bi bi-eye"></i>
+
+                                                <span>View</span>
+
+                                            </a>
+
+
+                                            <!-- EDIT ANNOUNCEMENT -->
+
+                                            <a asp-controller="Teacher"
+                                               asp-action="EditAnnouncement"
+                                               asp-route-id="@announcement.Id"
+                                               class="teacher-edit-announcement-button"
+                                               title="Edit Announcement"
+                                               aria-label="Edit @announcement.Title">
+
+                                                <i class="bi bi-pencil-square"></i>
+
+                                                <span>Edit</span>
+
+                                            </a>
+
+
+                                            <!-- DELETE ANNOUNCEMENT -->
+
+                                            <button type="button"
+                                                    class="teacher-delete-announcement-button"
+                                                    data-announcement-id="@announcement.Id"
+                                                    data-announcement-title="@announcement.Title"
+                                                    title="Delete Announcement"
+                                                    aria-label="Delete @announcement.Title">
+
+                                                <i class="bi bi-trash3"></i>
+
+                                                <span>Delete</span>
+
+                                            </button>
+
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <!-- =====================================
+                     EMPTY ANNOUNCEMENTS
+                     ===================================== -->
+
+                <div class="communication-empty-state">
+
+                    <div class="communication-empty-icon">
+
+                        <i class="bi bi-megaphone"></i>
+
+                    </div>
+
+                    <h3>No announcements found</h3>
+
+                    <p>
+                        There are no announcements matching
+                        the selected filters.
+                    </p>
+
+                </div>
+            }
+
+        </section>
+
+
+        <!-- ==========================================
+             LOWER SUMMARY PANELS
+             ========================================== -->
+
+        <div class="communication-bottom-grid">
+
+
+            <!-- =====================================
+                 IMPORTANT NOTICES
+                 ===================================== -->
+
+            <section class="communication-mini-panel">
+
+                <div class="communication-mini-header">
+
+                    <div>
+
+                        <h3>
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                            Recent Important Notices
+                        </h3>
+
+                        <p>
+                            Latest important and urgent
+                            communication.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                @if (importantNotices.Any())
+                {
+                    <div class="notice-list">
+
+                        @foreach (var notice in importantNotices)
+                        {
+                            <div class="notice-item">
+
+                                <div class="notice-priority @notice.Priority.ToLowerInvariant()">
+
+                                    <i class="bi bi-exclamation-lg"></i>
+
+                                </div>
+
+
+                                <div class="notice-content">
+
+                                    <strong>
+                                        @notice.Title
+                                    </strong>
+
+                                    <span>
+
+                                        @notice.TargetDisplay
+
+                                        ·
+
+                                        @notice.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <div class="mini-empty-state">
+                        No important notices available.
+                    </div>
+                }
+
+            </section>
+
+
+            <!-- =====================================
+                 PARENT ENGAGEMENT
+                 ===================================== -->
+
+            <section class="communication-mini-panel">
+
+                <div class="communication-mini-header">
+
+                    <div>
+
+                        <h3>
+                            <i class="bi bi-people-fill"></i>
+                            Parent Engagement
+                        </h3>
+
+                        <p>
+                            Engagement with announcements
+                            you've sent.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="teacher-engagement-summary">
+
+                    <!-- RECIPIENTS -->
+
+                    <div>
+                        <span>Recipients</span>
+
+                        <strong>
+                            @Model.TotalRecipients
+                        </strong>
+                    </div>
+
+
+                    <!-- READ -->
+
+                    <div>
+                        <span>Read</span>
+
+                        <strong>
+                            @Model.TotalRead
+                        </strong>
+                    </div>
+
+
+                    <!-- ACKNOWLEDGED -->
+
+                    <div>
+                        <span>Acknowledged</span>
+
+                        <strong>
+                            @Model.TotalAcknowledged
+                        </strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+    }
+
+</section>
+
+
+<!-- ==========================================
+     DELETE ANNOUNCEMENT CONFIRMATION MODAL
+     ========================================== -->
+
+<div id="teacherDeleteAnnouncementModal"
+     class="teacher-delete-modal-overlay"
+     hidden>
+
+    <div class="teacher-delete-modal"
+         role="alertdialog"
+         aria-modal="true"
+         aria-labelledby="teacherDeleteModalTitle"
+         aria-describedby="teacherDeleteModalDescription">
+
+        <!-- DELETE ICON -->
+
+        <div class="teacher-delete-modal-icon">
+
+            <i class="bi bi-trash3"></i>
+
+        </div>
+
+
+        <!-- MODAL TITLE -->
+
+        <h3 id="teacherDeleteModalTitle">
+            Delete Announcement?
+        </h3>
+
+
+        <!-- DESCRIPTION -->
+
+        <p id="teacherDeleteModalDescription">
+
+            Are you sure you want to delete
+
+            <strong id="teacherDeleteAnnouncementName">
+            </strong>?
+
+        </p>
+
+
+        <!-- WARNING -->
+
+        <div class="teacher-delete-modal-warning">
+
+            <i class="bi bi-exclamation-triangle"></i>
+
+            <span>
+                This action cannot be undone.
+                The announcement, associated recipient
+                records and notifications will be
+                permanently deleted.
+            </span>
+
+        </div>
+
+
+        <!-- DELETE FORM -->
+
+        <form asp-controller="Teacher"
+              asp-action="DeleteAnnouncement"
+              method="post"
+              asp-antiforgery="false"
+              id="teacherDeleteAnnouncementForm">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="id"
+                   id="teacherDeleteAnnouncementId" />
+
+
+            <!-- ACTIONS -->
+
+            <div class="teacher-delete-modal-actions">
+
+                <!-- CANCEL -->
+
+                <button type="button"
+                        id="teacherCancelDeleteAnnouncement"
+                        class="teacher-delete-cancel-button">
+
+                    Cancel
+
+                </button>
+
+
+                <!-- CONFIRM DELETE -->
+
+                <button type="submit"
+                        id="teacherConfirmDeleteAnnouncement"
+                        class="teacher-delete-confirm-button">
+
+                    <i class="bi bi-trash3"></i>
+                    Delete Announcement
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     DELETE ANNOUNCEMENT JAVASCRIPT
+     ========================================== -->
+@section Scripts
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // =====================================
+            // ELEMENT REFERENCES
+            // =====================================
+
+            const modal = document.getElementById(
+                "teacherDeleteAnnouncementModal");
+
+            const announcementIdInput =
+                document.getElementById(
+                    "teacherDeleteAnnouncementId");
+
+            const announcementName =
+                document.getElementById(
+                    "teacherDeleteAnnouncementName");
+
+            const cancelButton =
+                document.getElementById(
+                    "teacherCancelDeleteAnnouncement");
+
+            const confirmButton =
+                document.getElementById(
+                    "teacherConfirmDeleteAnnouncement");
+
+            const deleteForm =
+                document.getElementById(
+                    "teacherDeleteAnnouncementForm");
+
+            const deleteButtons =
+                document.querySelectorAll(
+                    ".teacher-delete-announcement-button");
+
+
+            if (!modal ||
+                !announcementIdInput ||
+                !announcementName ||
+                !cancelButton ||
+                !confirmButton ||
+                !deleteForm) {
+                return;
+            }
+
+
+            let lastFocusedButton = null;
+            let previousBodyOverflow = "";
+
+
+            // =====================================
+            // OPEN DELETE MODAL
+            // =====================================
+
+            function openDeleteModal(button) {
+
+                const id =
+                    button.dataset.announcementId;
+
+                const title =
+                    button.dataset.announcementTitle;
+
+                if (!id) {
+                    return;
+                }
+
+                lastFocusedButton = button;
+
+                announcementIdInput.value = id;
+
+                announcementName.textContent =
+                    title || "this announcement";
+
+                confirmButton.disabled = false;
+
+                previousBodyOverflow =
+                    document.body.style.overflow;
+
+                modal.hidden = false;
+
+                document.body.style.overflow =
+                    "hidden";
+
+                cancelButton.focus();
+            }
+
+
+            // =====================================
+            // CLOSE DELETE MODAL
+            // =====================================
+
+            function closeDeleteModal() {
+
+                modal.hidden = true;
+
+                announcementIdInput.value = "";
+
+                document.body.style.overflow =
+                    previousBodyOverflow;
+
+                if (lastFocusedButton &&
+                    lastFocusedButton.isConnected) {
+
+                    lastFocusedButton.focus();
+                }
+            }
+
+
+            // =====================================
+            // DELETE BUTTON EVENTS
+            // =====================================
+
+            deleteButtons.forEach(function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        openDeleteModal(button);
+
+                    }
+                );
+
+            });
+
+
+            // =====================================
+            // CANCEL DELETE
+            // =====================================
+
+            cancelButton.addEventListener(
+                "click",
+                closeDeleteModal
+            );
+
+
+            // =====================================
+            // CLICK OUTSIDE MODAL
+            // =====================================
+
+            modal.addEventListener(
+                "click",
+                function (event) {
+
+                    if (event.target === modal) {
+
+                        closeDeleteModal();
+
+                    }
+
+                }
+            );
+
+
+            // =====================================
+            // ESCAPE KEY AND FOCUS TRAP
+            // =====================================
+
+            document.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (modal.hidden) {
+                        return;
+                    }
+
+                    // ESCAPE CLOSES MODAL
+
+                    if (event.key === "Escape") {
+
+                        event.preventDefault();
+
+                        closeDeleteModal();
+
+                        return;
+                    }
+
+                    // KEEP KEYBOARD FOCUS
+                    // INSIDE THE CONFIRMATION MODAL
+
+                    if (event.key === "Tab") {
+
+                        const first = cancelButton;
+                        const last = confirmButton;
+
+                        if (event.shiftKey &&
+                            document.activeElement === first) {
+
+                            event.preventDefault();
+
+                            last.focus();
+
+                        }
+                        else if (
+                            !event.shiftKey &&
+                            document.activeElement === last) {
+
+                            event.preventDefault();
+
+                            first.focus();
+                        }
+                    }
+
+                }
+            );
+
+
+            // =====================================
+            // PREVENT DOUBLE SUBMISSION
+            // =====================================
+
+            deleteForm.addEventListener(
+                "submit",
+                function (event) {
+
+                    if (!announcementIdInput.value) {
+
+                        event.preventDefault();
+
+                        return;
+                    }
+
+                    confirmButton.disabled = true;
+
+                }
+            );
+
+        });
+    </script>
+}

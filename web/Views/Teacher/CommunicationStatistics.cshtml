@@ -1,0 +1,564 @@
+﻿@using System.Linq
+@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherCommunicationViewModel
+
+@{
+    ViewData["Title"] = "Communication Statistics";
+    Layout = "_TeacherLayout";
+
+    // ==========================================
+    // TEACHER ANNOUNCEMENTS
+    // ==========================================
+
+    var notices = Model.Announcements;
+
+    var total = notices.Count;
+
+    var active = notices.Count(x =>
+        x.Status == "Active");
+
+    var expired = total - active;
+
+    // ==========================================
+    // TARGET AUDIENCE
+    // ==========================================
+
+    var classAnnouncements = notices.Count(x =>
+        x.TargetType == "Class");
+
+    var specificParentAnnouncements = notices.Count(x =>
+        x.TargetType == "Specific Users");
+
+    // ==========================================
+    // RECIPIENT ENGAGEMENT
+    // ==========================================
+
+    var recipientCount = notices.Sum(x =>
+        x.RecipientCount);
+
+    var readCount = notices.Sum(x =>
+        x.ReadCount);
+
+    var unreadCount = Math.Max(
+        0,
+        recipientCount - readCount);
+
+    // ==========================================
+    // ACKNOWLEDGEMENTS
+    // ==========================================
+
+    var required = notices
+        .Where(x => x.AcknowledgementRequired)
+        .Sum(x => x.RecipientCount);
+
+    var ackCount = notices
+        .Where(x => x.AcknowledgementRequired)
+        .Sum(x => x.AcknowledgedCount);
+
+    var pending = Math.Max(
+        0,
+        required - ackCount);
+
+    var readRate = recipientCount == 0
+        ? 0m
+        : Math.Round(
+            100m * readCount / recipientCount,
+            1);
+
+    var ackRate = required == 0
+        ? 0m
+        : Math.Round(
+            100m * ackCount / required,
+            1);
+
+    // ==========================================
+    // PRIORITY COUNTS
+    // ==========================================
+
+    var normalCount = notices.Count(x =>
+        x.Priority == "Normal");
+
+    var importantCount = notices.Count(x =>
+        x.Priority == "Important");
+
+    var urgentCount = notices.Count(x =>
+        x.Priority == "Urgent");
+
+    // ==========================================
+    // MONTHLY ACTIVITY - LAST SIX MONTHS
+    // ==========================================
+
+    var today = DateTime.Today;
+
+    var currentMonth = new DateTime(
+        today.Year,
+        today.Month,
+        1);
+
+    var monthly = Enumerable.Range(0, 6)
+        .Select(index =>
+        {
+            var month = currentMonth.AddMonths(
+                index - 5);
+
+            return new
+            {
+                Label = month.ToString("MMM yyyy"),
+
+                Count = notices.Count(a =>
+                {
+                    var createdDate =
+                        a.CreatedAt.ToLocalTime();
+
+                    return createdDate.Year == month.Year &&
+                           createdDate.Month == month.Month;
+                })
+            };
+        })
+        .ToList();
+
+    var maxCount = Math.Max(
+        1,
+        monthly
+            .Select(x => x.Count)
+            .DefaultIfEmpty(0)
+            .Max());
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-communication-statistics.css"
+      asp-append-version="true" />
+
+<link rel="stylesheet"
+      href="~/css/school-admin-communication.css"
+      asp-append-version="true" />
+
+<link rel="stylesheet"
+      href="~/css/teacher/teacher-communication-schooladmin.css"
+      asp-append-version="true" />
+
+<main class="cs-page teacher-communication-page">
+
+    <!-- PAGE HEADING -->
+
+    <div class="cs-heading">
+
+        <div>
+            <h2>Communication Statistics</h2>
+
+            <p>
+                Monitor announcements, parent engagement
+                and communication activity in your
+                assigned classes.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- COMMUNICATION TABS -->
+
+    <div class="communication-tabs">
+
+        <a asp-controller="Teacher"
+           asp-action="Communication"
+           class="communication-tab">
+
+            <i class="bi bi-megaphone"></i>
+            Announcements
+
+        </a>
+
+        <span class="communication-tab teacher-tab-disabled"
+              aria-disabled="true"
+              title="Teacher Events is not connected yet">
+
+            <i class="bi bi-calendar-event"></i>
+            Events
+
+        </span>
+
+        <a asp-controller="Teacher"
+           asp-action="CommunicationStatistics"
+           class="communication-tab active"
+           aria-current="page">
+
+            <i class="bi bi-bar-chart"></i>
+            Statistics
+
+        </a>
+
+    </div>
+
+    @if (Model.DataLoadFailed || !Model.HasTeacherProfile)
+    {
+        <div class="communication-empty-state">
+
+            <h3>Statistics unavailable</h3>
+
+            <p>
+                Check your Teacher profile
+                and reload the page.
+            </p>
+
+        </div>
+    }
+    else
+    {
+        <!-- ==========================================
+             ANNOUNCEMENT OVERVIEW
+             ========================================== -->
+
+        <div class="cs-section-title">
+
+            <h3>Announcement Overview</h3>
+
+            <p>
+                Announcements you've sent to assigned
+                classes or specific parents.
+            </p>
+
+        </div>
+
+        <div class="cs-stats-grid">
+
+            <!-- TOTAL ANNOUNCEMENTS -->
+
+            <div class="cs-stat-card">
+
+                <div class="cs-stat-icon green">
+                    <i class="bi bi-megaphone"></i>
+                </div>
+
+                <span>Total Announcements</span>
+
+                <strong>@total</strong>
+
+                <small>Your sent announcements</small>
+
+            </div>
+
+            <!-- ACTIVE ANNOUNCEMENTS -->
+
+            <div class="cs-stat-card">
+
+                <div class="cs-stat-icon gold">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+
+                <span>Active Announcements</span>
+
+                <strong>@active</strong>
+
+                <small>Not yet expired</small>
+
+            </div>
+
+            <!-- EXPIRED ANNOUNCEMENTS -->
+
+            <div class="cs-stat-card">
+
+                <div class="cs-stat-icon muted">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+
+                <span>Expired Announcements</span>
+
+                <strong>@expired</strong>
+
+                <small>Past their expiry date</small>
+
+            </div>
+
+        </div>
+
+        <!-- ==========================================
+             RECIPIENT ENGAGEMENT
+             ========================================== -->
+
+        <div class="cs-section-title">
+
+            <h3>Recipient Engagement</h3>
+
+            <p>
+                Read activity and acknowledgement progress
+                for your announcements.
+            </p>
+
+        </div>
+
+        <div class="cs-two-column">
+
+            <!-- READ RATE -->
+
+            <section class="cs-panel">
+
+                <div class="cs-panel-heading">
+
+                    <h4>Announcement Read Rate</h4>
+
+                    <i class="bi bi-eye"></i>
+
+                </div>
+
+                <div class="cs-large-percentage">
+                    @readRate.ToString("0.0")%
+                </div>
+
+                <div class="cs-progress-track">
+
+                    <div class="cs-progress-fill"
+                         style="width: @(Math.Clamp(readRate, 0m, 100m).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture))%">
+                    </div>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>Read recipient records</span>
+
+                    <strong>@readCount</strong>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>Unread recipient records</span>
+
+                    <strong>@unreadCount</strong>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>Total recipient records</span>
+
+                    <strong>@recipientCount</strong>
+
+                </div>
+
+            </section>
+
+            <!-- ACKNOWLEDGEMENT RATE -->
+
+            <section class="cs-panel">
+
+                <div class="cs-panel-heading">
+
+                    <h4>Acknowledgement Rate</h4>
+
+                    <i class="bi bi-check2-all"></i>
+
+                </div>
+
+                <div class="cs-large-percentage">
+                    @ackRate.ToString("0.0")%
+                </div>
+
+                <div class="cs-progress-track">
+
+                    <div class="cs-progress-fill gold"
+                         style="width: @(Math.Clamp(ackRate, 0m, 100m).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture))%">
+                    </div>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>Acknowledged</span>
+
+                    <strong>@ackCount</strong>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>Pending acknowledgements</span>
+
+                    <strong>@pending</strong>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>Required acknowledgements</span>
+
+                    <strong>@required</strong>
+
+                </div>
+
+            </section>
+
+        </div>
+
+        <!-- ==========================================
+             PRIORITY AND TARGET AUDIENCE
+             ========================================== -->
+
+        <div class="cs-two-column">
+
+            <!-- ANNOUNCEMENT PRIORITIES -->
+
+            <section class="cs-panel">
+
+                <div class="cs-panel-heading">
+
+                    <h4>Announcement Priorities</h4>
+
+                    <i class="bi bi-flag"></i>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>
+                        <i class="cs-dot normal"></i>
+                        Normal
+                    </span>
+
+                    <strong>@normalCount</strong>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>
+                        <i class="cs-dot important"></i>
+                        Important
+                    </span>
+
+                    <strong>@importantCount</strong>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>
+                        <i class="cs-dot urgent"></i>
+                        Urgent
+                    </span>
+
+                    <strong>@urgentCount</strong>
+
+                </div>
+
+            </section>
+
+            <!-- TEACHER TARGET AUDIENCE -->
+
+            <section class="cs-panel">
+
+                <div class="cs-panel-heading">
+
+                    <h4>Target Audience Overview</h4>
+
+                    <i class="bi bi-people"></i>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>
+                        <i class="bi bi-building"></i>
+                        Assigned Classes
+                    </span>
+
+                    <strong>@Model.Classes.Count</strong>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>
+                        <i class="bi bi-people-fill"></i>
+                        Class Announcements
+                    </span>
+
+                    <strong>@classAnnouncements</strong>
+
+                </div>
+
+                <div class="cs-detail-row">
+
+                    <span>
+                        <i class="bi bi-person-fill"></i>
+                        Specific Parent Announcements
+                    </span>
+
+                    <strong>@specificParentAnnouncements</strong>
+
+                </div>
+
+            </section>
+
+        </div>
+
+        <!-- ==========================================
+             MONTHLY COMMUNICATION ACTIVITY
+             ========================================== -->
+
+        <section class="cs-panel cs-activity-panel">
+
+            <div class="cs-panel-heading">
+
+                <div>
+
+                    <h4>Monthly Communication Activity</h4>
+
+                    <p>
+                        Class and specific-parent announcements
+                        created over the last six calendar months.
+                    </p>
+
+                </div>
+
+                <i class="bi bi-graph-up"></i>
+
+            </div>
+
+            <div class="cs-chart-legend">
+
+                <span>
+                    <i class="cs-dot normal"></i>
+                    Announcements
+                </span>
+
+            </div>
+
+            <div class="cs-monthly-chart">
+
+                @foreach (var month in monthly)
+                {
+                    var announcementHeight =
+                    Math.Round(
+                    month.Count * 100.0 /
+                    maxCount);
+
+                    <div class="cs-month">
+
+                        <div class="cs-bars">
+
+                            <div class="cs-bar announcement"
+                                 style="height: @(announcementHeight)%"
+                                 title="@month.Count announcements"
+                                 role="img"
+                                 aria-label="@month.Label: @month.Count announcements">
+                            </div>
+
+                        </div>
+
+                        <div class="cs-month-label">
+                            @month.Label
+                        </div>
+
+                        <div class="cs-month-counts">
+                            @month.Count
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+        </section>
+    }
+
+</main>

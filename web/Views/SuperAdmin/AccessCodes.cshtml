@@ -1,0 +1,508 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.SuperAdminAccessCodeViewModel
+
+@{
+    ViewData["Title"] = "Access Codes";
+    Layout = "_SuperAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <!-- =========================================
+         PAGE HEADING
+         ========================================= -->
+
+    <div class="page-heading">
+        <div>
+            <h2>
+                School Admin Registration Codes
+            </h2>
+
+            <p>
+                Generate a secure registration code for a
+                School Administrator.
+            </p>
+        </div>
+    </div>
+
+
+    <!-- =========================================
+         ERRORS
+         ========================================= -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger"
+             style="
+                    border-radius: 10px;
+                    margin-bottom: 20px;">
+
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+
+
+    <!-- =========================================
+         GENERATED CODE SUCCESS
+         ========================================= -->
+    @if (Model != null &&
+        Model.CodeGeneratedSuccessfully &&
+        !string.IsNullOrWhiteSpace(Model.GeneratedCode))
+    {
+        <div style="
+                background: #eaf7ef;
+                border: 1px solid #b8dfc5;
+                border-radius: 14px;
+                padding: 24px;
+                margin-bottom: 20px;">
+
+            <div style="
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 14px;">
+
+                <i class="bi bi-check-circle-fill"
+                   style="
+                            color: #198754;
+                            font-size: 26px;">
+                </i>
+
+
+                <div style="width: 100%;">
+
+                    <h4 style="
+                            color: #155724;
+                            margin-bottom: 8px;">
+
+                        Registration Code Generated Successfully
+
+                    </h4>
+
+
+                    <p style="
+                            color: #3d6048;
+                            margin-bottom: 18px;">
+
+                        A new School Admin registration code
+                        has been created for:
+
+                        <strong>
+                            @Model.GeneratedSchoolName
+                        </strong>
+
+                    </p>
+
+
+                    <!-- CODE BOX -->
+
+                    <div style="
+                            background: #ffffff;
+                            border: 2px solid #28a745;
+                            border-radius: 10px;
+                            padding: 18px;
+                            max-width: 500px;
+                            margin-bottom: 16px;">
+
+                        <label style="
+                                display: block;
+                                text-transform: uppercase;
+                                font-size: 12px;
+                                font-weight: 700;
+                                letter-spacing: 1px;
+                                color: #6c757d;
+                                margin-bottom: 8px;">
+
+                            Registration Code
+
+                        </label>
+
+
+                        <div style="
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;">
+
+                            <input type="text"
+                                   id="generatedCodeInput"
+                                   value="@Model.GeneratedCode"
+                                   readonly
+                                   style="
+                                            flex: 1;
+                                            border: none;
+                                            outline: none;
+                                            background: transparent;
+                                            font-size: 1.7rem;
+                                            font-weight: 700;
+                                            letter-spacing: 4px;
+                                            color: #155724;" />
+
+
+                            <button type="button"
+                                    id="copyGeneratedCodeButton"
+                                    class="btn btn-outline-success">
+
+                                <i class="bi bi-clipboard"></i>
+
+                                Copy
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- EXPIRY -->
+                    @if (Model.GeneratedCodeExpiresAt.HasValue)
+                    {
+                        <div style="
+                                    color: #3d6048;
+                                    font-size: 14px;
+                                    margin-bottom: 6px;">
+
+                            <i class="bi bi-clock-fill"></i>
+
+                            Expires:
+
+                            <strong>
+                                @(Model.GeneratedCodeExpiresAt.Value
+                                                        .ToLocalTime()
+                                                        .ToString("dd MMM yyyy HH:mm"))
+                    </strong>
+
+                        </div>
+                                }
+
+
+                    <!-- SECURITY MESSAGE -->
+
+                    <div style="
+                            color: #3d6048;
+                            font-size: 14px;">
+
+                        <i class="bi bi-shield-check"></i>
+
+                        This code is linked to
+
+                        <strong>
+                            @Model.GeneratedSchoolName
+                        </strong>
+
+                        and should only be given to that school's
+                        authorised School Administrator.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+    <!-- =========================================
+         EMAIL SUCCESS
+         ========================================= -->
+    @if (ViewData["RegistrationEmailSuccess"] != null)
+    {
+        <div style="
+                background: #e8f7ec;
+                border: 1px solid #b7dfc0;
+                color: #155724;
+                border-radius: 10px;
+                padding: 14px 16px;
+                margin-bottom: 20px;">
+
+            <i class="bi bi-envelope-check-fill"></i>
+
+            <strong>
+                @ViewData["RegistrationEmailSuccess"]
+            </strong>
+
+        </div>
+    }
+
+
+    <!-- =========================================
+         SCHOOL ADMIN REGISTRATION
+         ========================================= -->
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="panel">
+
+
+                <!-- PANEL HEADER -->
+
+                <div class="panel-header">
+
+                    <h3>
+                        <i class="bi bi-key-fill"></i>
+
+                        School Admin Registration
+                    </h3>
+
+                </div>
+
+
+                <!-- PANEL BODY -->
+
+                <div class="panel-body"
+                     style="padding: 30px;">
+
+
+                    <!-- INFORMATION -->
+
+                    <div style="
+                        background: #f5f8f2;
+                        border: 1px solid #dfe8d8;
+                        border-radius: 10px;
+                        padding: 18px;
+                        margin-bottom: 26px;">
+
+                        <div style="
+                            display: flex;
+                            gap: 12px;
+                            align-items: flex-start;">
+
+                            <i class="bi bi-info-circle-fill"
+                               style="
+                                    color: var(--green-900);
+                                    font-size: 20px;">
+                            </i>
+
+
+                            <div>
+
+                                <strong style="
+                                    color: var(--green-900);
+                                    display: block;
+                                    margin-bottom: 5px;">
+
+                                    Registration Code
+
+                                </strong>
+
+
+                                <span style="
+                                    color: #667066;
+                                    font-size: 14px;
+                                    line-height: 1.6;">
+
+                                    Select an active school below.
+                                    The generated code will allow a
+                                    School Administrator to register
+                                    an account for that specific school.
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FORM -->
+
+                    <form asp-controller="SuperAdminAccessCode"
+                          asp-action="GenerateRegistrationCode"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+
+                        <!-- SCHOOL -->
+
+                        <div class="mb-4">
+
+                            <label asp-for="SelectedSchoolId"
+                                   class="form-label fw-bold"
+                                   style="
+                                        color: var(--green-900);
+                                        margin-bottom: 8px;">
+
+                                Select School
+
+                            </label>
+
+
+                            <select asp-for="SelectedSchoolId"
+                                    class="form-select"
+                                    required
+                                    style="
+                                        width: 100%;
+                                        min-height: 48px;
+                                        padding: 10px 14px;
+                                        border: 1px solid #ced7c9;
+                                        border-radius: 8px;
+                                        background: #ffffff;
+                                        font-size: 15px;">
+
+                                <option value="">
+                                    -- Choose an active school --
+                                </option>
+
+
+                                @if (Model?.Schools != null)
+                                {
+                                    foreach (var school in Model.Schools)
+                                    {
+                                        <option value="@school.Id">
+                                            @school.Name
+                                        </option>
+                                    }
+                                }
+
+                            </select>
+
+
+                            <span asp-validation-for="SelectedSchoolId"
+                                  class="text-danger">
+                            </span>
+
+
+                            <small style="
+                                display: block;
+                                margin-top: 8px;
+                                color: #7a8278;">
+
+                                Only active schools registered in
+                                the system are shown.
+
+                            </small>
+
+                        </div>
+
+
+                        <!-- NO ACTIVE SCHOOLS -->
+                        @if (Model == null ||
+                                                Model.Schools == null ||
+                                                Model.Schools.Count == 0)
+                        {
+                            <div style="
+                                    background: #fff4e5;
+                                    border: 1px solid #f1d3a5;
+                                    color: #805b21;
+                                    border-radius: 8px;
+                                    padding: 14px 16px;
+                                    margin-bottom: 20px;">
+
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                                No active schools are currently
+                                available.
+
+                            </div>
+                        }
+
+
+                        <!-- GENERATE BUTTON -->
+
+                        <button type="submit"
+                                class="primary-action w-100"
+                                @(Model == null ||
+                                                                Model.Schools == null ||
+                                                                Model.Schools.Count == 0
+                                                                ? "disabled"
+                                                                : null)
+                                style="
+                                    justify-content: center;
+                                    padding: 14px;
+                                    font-size: 15px;">
+
+                            <i class="bi bi-magic"></i>
+
+                            Generate Registration Code
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const copyButton =
+                    document.getElementById(
+                        "copyGeneratedCodeButton"
+                    );
+
+                const codeInput =
+                    document.getElementById(
+                        "generatedCodeInput"
+                    );
+
+
+                if (!copyButton ||
+                    !codeInput) {
+
+                    return;
+                }
+
+
+                copyButton.addEventListener(
+                    "click",
+                    async function () {
+
+                        try {
+
+                            await navigator.clipboard
+                                .writeText(
+                                    codeInput.value
+                                );
+
+
+                            const original =
+                                copyButton.innerHTML;
+
+
+                            copyButton.innerHTML =
+                                '<i class="bi bi-check2"></i> Copied';
+
+
+                            setTimeout(
+                                function () {
+
+                                    copyButton.innerHTML =
+                                        original;
+
+                                },
+                                2000
+                            );
+
+                        }
+                        catch {
+
+                            codeInput.select();
+
+                            document.execCommand(
+                                "copy"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+    </script>
+}

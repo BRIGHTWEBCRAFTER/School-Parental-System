@@ -1,0 +1,825 @@
+﻿
+@using SchoolParentalSystem.Web.ViewModels.Teacher
+@model TeacherDashboardViewModel
+
+@{
+    ViewData["Title"] = "Teacher Dashboard";
+    Layout = "_TeacherLayout";
+
+    var teacherName =
+        string.IsNullOrWhiteSpace(User.Identity?.Name)
+            ? "Teacher"
+            : User.Identity!.Name;
+
+    var gradeStats = ViewBag.GradeStats
+        as TeacherGradeDashboardStatsViewModel;
+}
+
+<link rel="stylesheet"
+      href="~/css/teacher/teacher-grade-dashboard.css"
+      asp-append-version="true" />
+
+<style>
+    .teacher-dashboard .teacher-live-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .teacher-dashboard .teacher-live-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        padding: 13px 2px;
+        border-bottom: 1px solid #eeeae0;
+    }
+
+    .teacher-dashboard .teacher-live-row:last-child {
+        border-bottom: none;
+    }
+
+    .teacher-dashboard .teacher-live-main {
+        min-width: 0;
+    }
+
+    .teacher-dashboard .teacher-live-main strong {
+        display: block;
+        color: #073a28;
+        font-size: 13px;
+        overflow-wrap: anywhere;
+    }
+
+    .teacher-dashboard .teacher-live-main small {
+        display: block;
+        color: #71847b;
+        font-size: 11px;
+        margin-top: 4px;
+    }
+
+    .teacher-dashboard .teacher-live-metric {
+        flex-shrink: 0;
+        color: #0e5b3d;
+        font-weight: 750;
+        font-size: 13px;
+    }
+
+    .teacher-dashboard .teacher-live-link {
+        color: #0b4a32;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 12px;
+    }
+
+    .teacher-dashboard .teacher-live-link:hover {
+        text-decoration: underline;
+    }
+
+    .teacher-dashboard .teacher-panel-bottom {
+        margin-top: 16px;
+    }
+
+    .teacher-dashboard .teacher-live-empty {
+        padding: 22px 14px;
+        text-align: center;
+        color: #71847b;
+        font-size: 12px;
+        background: #f9f7f1;
+        border-radius: 10px;
+    }
+
+    .teacher-dashboard .teacher-live-pills {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .teacher-dashboard .teacher-live-pill {
+        font-size: 11px;
+        font-weight: 700;
+        color: #0b4a32;
+        background: #edf5ef;
+        border-radius: 7px;
+        padding: 5px 9px;
+    }
+
+    .teacher-dashboard .teacher-refresh {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #0b4a32;
+        text-decoration: none;
+        border: 1px solid #cbdacc;
+        border-radius: 8px;
+        padding: 9px 13px;
+        background: white;
+    }
+
+    .teacher-dashboard .teacher-refresh:hover {
+        background: #edf5ef;
+    }
+</style>
+
+
+<section class="dashboard-content teacher-dashboard"
+         aria-label="Teacher Dashboard">
+
+    <!-- DASHBOARD STATUS -->
+
+    @if (Model.DataLoadFailed)
+    {
+        <div class="teacher-dashboard-status"
+             role="alert">
+
+            <i class="bi bi-exclamation-circle"></i>
+
+            The dashboard could not load.
+            Refresh the page to try again.
+
+        </div>
+    }
+    else if (!Model.HasTeacherProfile)
+    {
+        <div class="teacher-dashboard-status"
+             role="status">
+
+            <i class="bi bi-info-circle"></i>
+
+            No active Teacher record is linked
+            to your account. Please contact
+            your School Admin.
+
+        </div>
+    }
+
+
+    <!-- ==========================================
+         WELCOME CARD
+         ========================================== -->
+
+    <div class="welcome-card teacher-welcome">
+
+        <div>
+
+            <span class="teacher-eyebrow">
+                YOUR TEACHING OVERVIEW
+            </span>
+
+            <h2>
+                Welcome back, @teacherName!
+            </h2>
+
+            <p>
+                Current school information,
+                loaded from Supabase.
+            </p>
+
+            <a asp-controller="Teacher"
+               asp-action="Dashboard"
+               class="teacher-refresh"
+               style="margin-top:12px;">
+
+                <i class="bi bi-arrow-clockwise"></i>
+
+                Refresh Dashboard
+
+            </a>
+
+        </div>
+
+        <div class="teacher-welcome-icon"
+             aria-hidden="true">
+
+            <i class="bi bi-mortarboard-fill"></i>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         LIVE SUMMARY CARDS
+         ========================================== -->
+
+    <div class="stats-grid teacher-stats-grid">
+
+
+        <!-- ASSIGNED CLASS -->
+
+        <div class="stat-card teacher-stat-card">
+
+            <div class="stat-icon green">
+                <i class="bi bi-easel-fill"></i>
+            </div>
+
+            <div class="teacher-stat-copy">
+
+                <small>My Assigned Class</small>
+
+                <h3>
+                    @(Model.HasTeacherProfile &&
+                      !Model.DataLoadFailed
+                        ? Model.AssignedClassCount.ToString()
+                        : "—")
+                </h3>
+
+                <span class="muted">
+                    @Model.AssignedClassSummary
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- CLASSES I TEACH -->
+
+        <div class="stat-card teacher-stat-card">
+
+            <div class="stat-icon orange">
+                <i class="bi bi-book-half"></i>
+            </div>
+
+            <div class="teacher-stat-copy">
+
+                <small>Classes I Teach</small>
+
+                <h3>
+                    @(Model.HasTeacherProfile &&
+                      !Model.DataLoadFailed
+                        ? Model.ClassesTaughtCount.ToString()
+                        : "—")
+                </h3>
+
+                <span class="muted">
+                    @Model.ClassesTaughtSummary
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ATTENDANCE TODAY -->
+
+        <div class="stat-card teacher-stat-card">
+
+            <div class="stat-icon green">
+                <i class="bi bi-calendar-check-fill"></i>
+            </div>
+
+            <div class="teacher-stat-copy">
+
+                <small>Attendance Today</small>
+
+                <h3>
+                    @(Model.HasTeacherProfile &&
+                      !Model.DataLoadFailed &&
+                      !Model.AttendanceLoadFailed
+                        ? Model.AttendanceTodayCount.ToString()
+                        : "—")
+                </h3>
+
+                <span class="muted">
+                    Attendance entries in your
+                    assigned classes
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVE ANNOUNCEMENTS -->
+
+        <div class="stat-card teacher-stat-card">
+
+            <div class="stat-icon orange">
+                <i class="bi bi-megaphone-fill"></i>
+            </div>
+
+            <div class="teacher-stat-copy">
+
+                <small>My Active Announcements</small>
+
+                <h3>
+                    @(Model.HasTeacherProfile &&
+                      !Model.DataLoadFailed &&
+                      !Model.AnnouncementsLoadFailed
+                        ? Model.ActiveAnnouncementsCount.ToString()
+                        : "—")
+                </h3>
+
+                <span class="muted">
+                    Unexpired announcements you created
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         LIVE DASHBOARD PANELS
+         ========================================== -->
+
+    <div class="dashboard-grid teacher-dashboard-panels">
+
+
+
+        <!-- ==========================================
+             LIVE WEEKLY TEACHING TIMETABLE
+             ========================================== -->
+
+        <section class="panel teacher-panel">
+
+            <div class="panel-header">
+
+                <h3>
+                    <i class="bi bi-calendar-week"></i>
+                    My Weekly Timetable
+                </h3>
+
+                <span class="teacher-panel-tag">
+                    Live Schedule
+                </span>
+
+            </div>
+
+
+            @if (Model.TeachingClasses.Count == 0)
+            {
+                <div class="teacher-live-empty">
+
+                    No teaching assignments available.
+
+                </div>
+            }
+            else
+            {
+                <ul class="teacher-live-list">
+
+                    @foreach (var item in Model.TeachingClasses)
+                    {
+                        <li class="teacher-live-row">
+
+                            <div class="teacher-live-main">
+
+                                <strong>
+                                    @item.ClassName
+                                </strong>
+
+                                <small>
+                                    @item.SubjectName
+                                    · Room @item.RoomNumber
+                                </small>
+
+
+                                <!-- ACTUAL TIMETABLE -->
+
+                                <div style="margin-top:10px;">
+
+                                    <span class="teacher-live-pill">
+
+                                        <i class="bi bi-clock"></i>
+
+                                        @(string.IsNullOrWhiteSpace(
+                                            item.Schedule)
+                                            ? "Not scheduled"
+                                            : item.Schedule)
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- TAKE ATTENDANCE -->
+
+                            <a asp-controller="Teacher"
+                               asp-action="Attendance"
+                               asp-route-classId="@item.ClassId"
+                               class="teacher-live-link">
+
+                                <i class="bi bi-calendar-check"></i>
+
+                                Attendance
+
+                            </a>
+
+                        </li>
+                    }
+
+                </ul>
+            }
+
+
+            <div class="teacher-panel-bottom">
+
+                <a asp-controller="Teacher"
+                   asp-action="AssignedClasses"
+                   class="teacher-live-link">
+
+                    View Full Timetable
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================
+             CLASS ATTENDANCE OVERVIEW
+             ===================================== -->
+
+        <section class="panel teacher-panel">
+
+            <div class="panel-header">
+
+                <h3>
+                    <i class="bi bi-clipboard2-check-fill"></i>
+                    Class Attendance Overview
+                </h3>
+
+                <span class="teacher-panel-tag">
+                    Today
+                </span>
+
+            </div>
+
+
+            @if (Model.AttendanceLoadFailed)
+            {
+                <div class="teacher-live-empty">
+                    Attendance data could not be loaded.
+                </div>
+            }
+            else if (Model.AttendanceByClass.Count == 0)
+            {
+                <div class="teacher-live-empty">
+                    No assigned classes to display.
+                </div>
+            }
+            else
+            {
+                <div class="teacher-live-pills">
+
+                    <span class="teacher-live-pill">
+                        Present / Late:
+                        @Model.PresentTodayCount
+                    </span>
+
+                    <span class="teacher-live-pill">
+                        Absent:
+                        @Model.AbsentTodayCount
+                    </span>
+
+                </div>
+
+
+                <ul class="teacher-live-list">
+
+                    @foreach (var item in Model.AttendanceByClass)
+                    {
+                        <li class="teacher-live-row">
+
+                            <div class="teacher-live-main">
+
+                                <strong>
+                                    @item.ClassName
+                                </strong>
+
+                                <small>
+
+                                    @if (item.Total == 0)
+                                    {
+                                        <text>
+                                            No attendance recorded today
+                                        </text>
+                                    }
+                                    else
+                                    {
+                                        <text>
+                                            Present @item.Present ·
+                                            Late @item.Late ·
+                                            Absent @item.Absent ·
+                                            Excused @item.Excused
+                                        </text>
+                                    }
+
+                                </small>
+
+                            </div>
+
+
+                            <span class="teacher-live-metric">
+
+                                @item.Total records
+
+                            </span>
+
+                        </li>
+                    }
+
+                </ul>
+            }
+
+
+            <div class="teacher-panel-bottom">
+
+                <a asp-controller="Teacher"
+                   asp-action="Attendance"
+                   class="teacher-live-link">
+
+                    Open Attendance
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             RECENT ANNOUNCEMENTS
+             ===================================== -->
+
+        <section class="panel teacher-panel">
+
+            <div class="panel-header">
+
+                <h3>
+                    <i class="bi bi-megaphone-fill"></i>
+                    Recent Announcements
+                </h3>
+
+                <span class="teacher-panel-tag">
+                    Mine · Active
+                </span>
+
+            </div>
+
+
+            @if (Model.AnnouncementsLoadFailed)
+            {
+                <div class="teacher-live-empty">
+                    Announcements could not be loaded.
+                </div>
+            }
+            else if (Model.RecentAnnouncements.Count == 0)
+            {
+                <div class="teacher-live-empty">
+                    You have no active class announcements.
+                </div>
+            }
+            else
+            {
+                <ul class="teacher-live-list">
+
+                    @foreach (var item in Model.RecentAnnouncements)
+                    {
+                        <li class="teacher-live-row">
+
+                            <div class="teacher-live-main">
+
+                                <strong>
+                                    @item.Title
+                                </strong>
+
+                                <small>
+                                    @item.ClassName ·
+                                    @(item.CreatedAt.ToString("dd MMM yyyy"))
+                                </small>
+
+                            </div>
+
+                            <span class="teacher-live-metric">
+                                @item.Priority
+                            </span>
+
+                        </li>
+                    }
+
+                </ul>
+            }
+
+
+            <div class="teacher-panel-bottom">
+
+                <a asp-controller="Teacher"
+                   asp-action="Communication"
+                   class="teacher-live-link">
+
+                    Manage Announcements
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             UPCOMING EVENTS
+             ===================================== -->
+
+        <section class="panel teacher-panel">
+
+            <div class="panel-header">
+
+                <h3>
+                    <i class="bi bi-calendar-event-fill"></i>
+                    Upcoming Events
+                </h3>
+
+                <span class="teacher-panel-tag">
+                    Mine · Upcoming
+                </span>
+
+            </div>
+
+
+            @if (Model.EventsLoadFailed)
+            {
+                <div class="teacher-live-empty">
+                    Events could not be loaded.
+                </div>
+            }
+            else if (Model.UpcomingEvents.Count == 0)
+            {
+                <div class="teacher-live-empty">
+                    You have no upcoming class events.
+                </div>
+            }
+            else
+            {
+                <ul class="teacher-live-list">
+
+                    @foreach (var item in Model.UpcomingEvents)
+                    {
+                        <li class="teacher-live-row">
+
+                            <div class="teacher-live-main">
+
+                                <strong>
+                                    @item.EventName
+                                </strong>
+
+                                <small>
+                                    @item.ClassName ·
+                                    @item.Venue
+                                </small>
+
+                            </div>
+
+
+                            <span class="teacher-live-metric">
+
+                                @(item.EventDate.ToString("dd MMM"))
+
+                            </span>
+
+                        </li>
+                    }
+
+                </ul>
+            }
+
+
+            <div class="teacher-panel-bottom">
+
+                <a asp-controller="Teacher"
+                   asp-action="Events"
+                   class="teacher-live-link">
+
+                    Manage Events
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- DATA INFORMATION -->
+
+    <p class="teacher-data-notice">
+
+        <i class="bi bi-info-circle"></i>
+
+        Dashboard information is loaded from Supabase
+        when you open or refresh this page.
+        Attendance figures count records
+        (daily and subject registers),
+        not unique learners.
+
+    </p>
+
+
+    <!-- ==========================================
+         EXISTING GRADE MANAGEMENT OVERVIEW
+         ========================================== -->
+
+    @if (gradeStats != null)
+    {
+        <section class="teacher-grades-summary">
+
+            <div class="teacher-grades-heading">
+
+                <div>
+
+                    <h3>
+                        <i class="bi bi-journal-check"></i>
+                        Grade Management Overview
+                    </h3>
+
+                    <p>
+                        @gradeStats.AssessmentCount assessments
+                        in @gradeStats.AcademicYear
+                    </p>
+
+                </div>
+
+
+                <a asp-controller="Teacher"
+                   asp-action="GradeRecording"
+                   class="btn btn-success">
+
+                    Manage Grades
+
+                </a>
+
+            </div>
+
+
+            <div class="teacher-grades-grid">
+
+                <div class="teacher-grades-stat">
+
+                    <span>Grade Entries</span>
+
+                    <strong>
+                        @gradeStats.TotalEntries
+                    </strong>
+
+                </div>
+
+
+                <div class="teacher-grades-stat">
+
+                    <span>Published Entries</span>
+
+                    <strong>
+                        @gradeStats.PublishedEntries
+                    </strong>
+
+                </div>
+
+
+                <div class="teacher-grades-stat">
+
+                    <span>Draft Entries</span>
+
+                    <strong>
+                        @gradeStats.DraftEntries
+                    </strong>
+
+                </div>
+
+
+                <div class="teacher-grades-stat">
+
+                    <span>Average Recorded Score</span>
+
+                    <strong>
+                        @(gradeStats.AverageScore.HasValue
+                            ? gradeStats.AverageScore.Value
+                                .ToString("0.#") + "%"
+                            : "—")
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+    }
+
+</section>

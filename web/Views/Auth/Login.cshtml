@@ -1,301 +1,1661 @@
-﻿@model SchoolParentalSystem.Web.ViewModels.LoginViewModel
+@model SchoolParentalSystem.Web.ViewModels.LoginViewModel
+
+@using SchoolParentalSystem.Web.Services.SuperAdmin
+@inject SchoolAdminRegistrationService SchoolAdminRegistrationService
 
 @{
     ViewData["Title"] = "Log In";
     Layout = null;
+
+    SchoolParentalSystem.Web.ViewModels.SuperAdmin.SchoolAdminRegistrationViewModel registrationPage;
+    try
+    {
+        registrationPage = await SchoolAdminRegistrationService.GetRegistrationPageAsync();
+    }
+    catch
+    {
+        // Keep login accessible when anonymous school listing is unavailable.
+        registrationPage = new SchoolParentalSystem.Web.ViewModels.SuperAdmin.SchoolAdminRegistrationViewModel();
+    }
 }
 
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
+
     <meta charset="utf-8" />
 
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0" />
 
-    <title>Log In - School-Parental System</title>
+    <meta name="description"
+          content="School-Parental System secure login portal." />
+
+    <title>
+        Log In - School-Parental System
+    </title>
+
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
+
     <link rel="stylesheet"
-          href="~/css/login.css"
+          href="~/css/login-animated.css"
           asp-append-version="true" />
+
+
+    <style>
+
+        /* =========================================
+                   THREE-PANEL AUTH SYSTEM
+                   LOGIN / FORGOT / REGISTER
+                   ========================================= */
+
+        .auth-container {
+            overflow: hidden !important;
+        }
+
+
+        /* =========================================
+                   PANEL TRANSITIONS
+                   ========================================= */
+
+        .auth-left-panel,
+        .auth-right-panel {
+            transition: transform .65s ease, opacity .45s ease;
+        }
+
+
+        /*
+                    LOGIN
+                */
+
+        .login-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+
+        .login-info-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+
+        /*
+                    FORGOT PASSWORD
+                */
+
+        .forgot-panel {
+            transform: translateX(-120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+        .forgot-info-panel {
+            transform: translateX(120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+        /*
+                    REGISTER
+                */
+
+        .register-panel {
+            transform: translateX(-120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+        .register-info-panel {
+            transform: translateX(120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+        /* =========================================
+                   FORGOT MODE
+                   ========================================= */
+
+        .auth-container.show-forgot
+        .login-panel {
+            transform: translateX(120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+        .auth-container.show-forgot
+        .login-info-panel {
+            transform: translateX(-120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+        .auth-container.show-forgot
+        .forgot-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+
+        .auth-container.show-forgot
+        .forgot-info-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+
+        /* =========================================
+                   REGISTER MODE
+                   ========================================= */
+
+        .auth-container.show-register
+        .login-panel {
+            transform: translateX(120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+        .auth-container.show-register
+        .login-info-panel {
+            transform: translateX(-120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+        .auth-container.show-register
+        .register-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+
+        .auth-container.show-register
+        .register-info-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+
+        /* =========================================
+                   REGISTRATION FORM
+                   ========================================= */
+
+        .register-panel {
+            justify-content: flex-start !important;
+            padding-top: 32px !important;
+            padding-bottom: 30px !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(244, 197, 66, .75) transparent;
+        }
+
+
+            .register-panel::-webkit-scrollbar {
+                width: 6px;
+            }
+
+
+            .register-panel::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+
+            .register-panel::-webkit-scrollbar-thumb {
+                background: rgba(244, 197, 66, .75);
+                border-radius: 20px;
+            }
+
+
+            .register-panel h2 {
+                margin-top: 0 !important;
+                margin-bottom: 20px !important;
+            }
+
+
+            .register-panel form {
+                width: 100% !important;
+                padding-bottom: 25px;
+            }
+
+
+            .register-panel .input-box {
+                margin-bottom: 17px !important;
+            }
+
+
+        /* =========================================
+                   AUTH ACTION LINKS
+                   ========================================= */
+
+        .auth-links {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+
+            .auth-links a {
+                color: #f4c542;
+                text-decoration: none;
+                font-weight: 600;
+                cursor: pointer;
+            }
+
+
+                .auth-links a:hover {
+                    text-decoration: underline;
+                }
+
+
+        .auth-divider {
+            margin: 0 6px;
+            color: rgba(255,255,255,.45);
+        }
+
+
+        /* =========================================
+                   REGISTRATION RIGHT PANEL
+                   ========================================= */
+
+        .register-info-icon {
+            font-size: 42px;
+            color: #f4c542;
+            margin-bottom: 18px;
+        }
+
+
+        .register-info-panel p {
+            max-width: 360px;
+            line-height: 1.65;
+        }
+
+
+        /* =========================================
+                   MOBILE
+                   ========================================= */
+
+        @@media (max-width: 700px) {
+
+            .register-panel {
+                padding-top: 25px !important;
+            }
+        }
+
+    </style>
+
 </head>
 
-<body>
 
-    <div class="login-page">
+<body class="auth-body">
 
-        <!-- LEFT BRAND PANEL -->
-        <aside class="login-brand-panel">
 
-            <div class="brand-top">
+    <main class="auth-container"
+          id="authContainer">
 
-                <div class="login-brand-header">
 
-                    <div class="login-dbe-logo">
-                        <img src="~/images/dbe-logo.webp"
-                             alt="Department of Basic Education" />
+        <div class="curved-shape"></div>
+
+        <div class="curved-shape2"></div>
+
+
+
+        <!-- =========================================
+             LOGIN FORM
+             ========================================= -->
+
+        <section class="form-box Login
+                        auth-left-panel
+                        login-panel">
+
+
+            <h2 class="animation"
+                id="loginHeading"
+                style="--D:0; --S:21;">
+
+                Log In
+
+            </h2>
+
+
+            <form asp-controller="Auth"
+                  asp-action="Login"
+                  method="post"
+                  id="loginForm">
+
+                @Html.AntiForgeryToken()
+
+
+                @if (TempData["LoginMessage"] != null)
+                {
+                    <div class="auth-message success animation"
+                         style="--D:0; --S:21;">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            @TempData["LoginMessage"]
+                        </span>
+
                     </div>
+                }
 
-                    <div class="login-system-name">
-                        School-Parental
-                        <br />
-                        System
-                    </div>
+
+                <div asp-validation-summary="ModelOnly"
+                     class="auth-message error animation"
+                     style="--D:0; --S:21;">
+                </div>
+
+
+
+                <!-- ROLE -->
+
+                <div class="input-box role-box animation"
+                     style="--D:3; --S:24;">
+
+
+                    <select asp-for="Role"
+                            id="loginRole"
+                            required>
+
+
+                        <option value="">
+                            Select your role
+                        </option>
+
+
+                        <option value="Super Admin">
+                            Super Admin
+                        </option>
+
+
+                        <option value="School Admin">
+                            School Admin
+                        </option>
+
+
+                        <option value="Teacher">
+                            Teacher
+                        </option>
+
+
+                    </select>
+
+
+                    <label asp-for="Role">
+                        Role
+                    </label>
+
+
+                    <i class="bi bi-person-badge-fill field-icon"></i>
+
 
                 </div>
 
-                <div class="gold-line"></div>
+
+                <span asp-validation-for="Role"
+                      class="field-error">
+                </span>
 
 
-                <div class="welcome-copy">
 
-                    <h1>Welcome back</h1>
+                <!-- EMAIL -->
+
+                <div class="input-box animation"
+                     style="--D:1; --S:22;">
+
+
+                    <input asp-for="Email"
+                           type="email"
+                           autocomplete="email"
+                           required />
+
+
+                    <label asp-for="Email">
+                        Email Address
+                    </label>
+
+
+                    <i class="bi bi-envelope-fill field-icon"></i>
+
+
+                </div>
+
+
+                <span asp-validation-for="Email"
+                      class="field-error">
+                </span>
+
+
+
+                <!-- PASSWORD -->
+
+                <div class="input-box animation"
+                     style="--D:2; --S:23;">
+
+
+                    <input asp-for="Password"
+                           type="password"
+                           id="loginPassword"
+                           autocomplete="current-password"
+                           required />
+
+
+                    <label asp-for="Password">
+                        Password
+                    </label>
+
+
+                    <button type="button"
+                            class="field-icon icon-button"
+                            id="passwordToggle"
+                            aria-label="Show password">
+
+                        <i class="bi bi-eye-fill"></i>
+
+                    </button>
+
+
+                </div>
+
+
+                <span asp-validation-for="Password"
+                      class="field-error">
+                </span>
+
+
+
+                <!-- ACCESS CODE -->
+
+                <div id="accessCodeBox"
+                     class="input-box
+                            access-code-box
+                            animation
+                            auth-field-hidden"
+                     style="--D:4; --S:25;">
+
+
+                    <input asp-for="AccessCode"
+                           type="password"
+                           id="loginAccessCode"
+                           autocomplete="off" />
+
+
+                    <label asp-for="AccessCode">
+                        Access Code
+                    </label>
+
+
+                    <button type="button"
+                            class="field-icon icon-button"
+                            id="accessCodeToggle"
+                            aria-label="Show access code">
+
+                        <i class="bi bi-eye-fill"></i>
+
+                    </button>
+
+
+                </div>
+
+
+                <span asp-validation-for="AccessCode"
+                      id="accessCodeValidation"
+                      class="field-error">
+                </span>
+
+
+
+                <!-- ROLE INFO -->
+
+                <div id="loginRoleMessage"
+                     class="animation"
+                     style="
+                        --D:5;
+                        --S:26;
+                        font-size:12px;
+                        line-height:1.5;
+                        margin-top:8px;
+                        margin-bottom:4px;
+                        color:rgba(255,255,255,.75);
+                        display:none;">
+                </div>
+
+
+
+                <!-- LOGIN BUTTON -->
+
+                <div class="input-box animation"
+                     style="--D:6; --S:27;">
+
+
+                    <button class="btn"
+                            type="submit">
+
+
+                        <span id="loginButtonText">
+                            Log In
+                        </span>
+
+
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- LOGIN LINKS -->
+
+                <div class="auth-links animation"
+                     style="--D:7; --S:28;">
+
+
+                    <a href="#forgot"
+                       id="forgotPasswordLink">
+
+                        Forgot Password?
+
+                    </a>
+
+
+                    <!-- TEMPORARY PIN ACCOUNT ACTIVATION -->
+
+                    <a asp-controller="InvitationActivation"
+                       asp-action="Index"
+                       class="text-success">
+
+                        Received a temporary PIN?
+                        Activate your account
+
+                    </a>
+
+
+
+                    <span class="auth-divider">
+                        |
+                    </span>
+
+
+                    <a href="#register"
+                       id="registerAccountLink">
+
+                        Register
+
+                    </a>
+
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
+
+
+        <!-- =========================================
+             LOGIN INFORMATION
+             ========================================= -->
+
+        <section class="info-content Login
+                        auth-right-panel
+                        login-info-panel">
+
+
+            <div class="info-logo animation"
+                 style="--D:0; --S:19;">
+
+
+                <img src="~/images/dbe-logo.webp"
+                     alt="Department of Basic Education" />
+
+
+            </div>
+
+
+            <h2 class="animation"
+                id="roleWelcomeTitle"
+                style="--D:1; --S:20;">
+
+                Welcome Back!
+
+            </h2>
+
+
+            <p class="animation"
+               id="roleWelcomeText"
+               style="--D:2; --S:21;">
+
+                Select your role and enter your
+                login details to access the
+                School-Parental System.
+
+            </p>
+
+
+        </section>
+
+
+
+        <!-- =========================================
+             FORGOT PASSWORD FORM
+             ========================================= -->
+
+        <section class="form-box Login
+                        auth-left-panel
+                        forgot-panel">
+
+
+            <h2>
+                Reset Password
+            </h2>
+
+
+            <form asp-controller="Auth"
+                  asp-action="ForgotPassword"
+                  method="post">
+
+
+                @Html.AntiForgeryToken()
+
+
+                <div class="input-box">
+
+
+                    <input type="email"
+                           name="Email"
+                           id="forgotEmail"
+                           autocomplete="email"
+                           required />
+
+
+                    <label for="forgotEmail">
+                        Email Address
+                    </label>
+
+
+                    <i class="bi bi-envelope-fill field-icon"></i>
+
+
+                </div>
+
+
+
+                <div class="input-box">
+
+
+                    <button class="btn"
+                            type="submit">
+
+
+                        <span>
+                            Send Reset Link
+                        </span>
+
+
+                    </button>
+
+
+                </div>
+
+
+
+                <div class="regi-link">
+
 
                     <p>
-                        Secure access for school staff
-                        and administrators.
+
+                        Remembered your password?
+
+                        <br />
+
+
+                        <a href="#login"
+                           class="backToLoginLink">
+
+                            Back to Log In
+
+                        </a>
+
                     </p>
 
-                </div>
-
-
-                <div class="benefits-list">
-
-                    <div class="benefit-item">
-
-                        <div class="benefit-icon">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
-
-                        <div>
-                            <strong>Safe &amp; Secure</strong>
-                            <span>Your school data is protected</span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="benefit-item">
-
-                        <div class="benefit-icon">
-                            <i class="bi bi-people-fill"></i>
-                        </div>
-
-                        <div>
-                            <strong>Connected Community</strong>
-                            <span>Schools, parents and teachers together</span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="benefit-item">
-
-                        <div class="benefit-icon">
-                            <i class="bi bi-bar-chart-fill"></i>
-                        </div>
-
-                        <div>
-                            <strong>Better Learning Outcomes</strong>
-                            <span>Together for a brighter future</span>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- Decorative background scene -->
-            <div class="school-art">
-
-                <div class="gold-sun"></div>
-
-                <div class="hill hill-back"></div>
-
-                <div class="hill hill-front"></div>
-
-            </div>
-
-
-            <div class="brand-footer">
-                Better People
-                <br />
-                Brighter Tomorrow
-            </div>
-
-        </aside>
-
-
-        <!-- RIGHT LOGIN AREA -->
-        <main class="login-content">
-
-            <div class="support-link">
-                <span>Need help?</span>
-                <a href="#">Contact Support</a>
-            </div>
-
-
-            <div class="login-content-inner">
-
-                <div class="portal-heading">
-
-                    <div class="portal-icon">
-                        <i class="bi bi-buildings-fill"></i>
-                    </div>
-
-                    <div>
-                        <strong>School-Parental System</strong>
-                        <span>Learn Today. Lead Tomorrow.</span>
-                    </div>
 
                 </div>
 
 
-                <section class="login-card">
-
-                    <div class="login-card-heading">
-
-                        <h2>Log In</h2>
-
-                        <p>
-                            Sign in to continue to your dashboard.
-                        </p>
-
-                    </div>
+            </form>
 
 
-                    <form asp-controller="Auth"
-                          asp-action="Login"
-                          method="post">
-
-                        @Html.AntiForgeryToken()
+        </section>
 
 
-                        <div asp-validation-summary="ModelOnly"
-                             class="validation-summary">
-                        </div>
+
+        <!-- =========================================
+             FORGOT PASSWORD INFORMATION
+             ========================================= -->
+
+        <section class="info-content Login
+                        auth-right-panel
+                        forgot-info-panel">
 
 
-                        <div class="login-form-group">
-
-                            <label asp-for="Email"></label>
-
-                            <div class="login-input">
-
-                                <i class="bi bi-envelope"></i>
-
-                                <input asp-for="Email"
-                                       placeholder="Enter your email address"
-                                       autocomplete="email" />
-
-                            </div>
-
-                            <span asp-validation-for="Email"
-                                  class="field-validation-error">
-                            </span>
-
-                        </div>
+            <div class="info-logo">
 
 
-                        <div class="login-form-group">
+                <img src="~/images/dbe-logo.webp"
+                     alt="Department of Basic Education" />
 
-                            <label asp-for="Password"></label>
-
-                            <div class="login-input">
-
-                                <i class="bi bi-lock"></i>
-
-                                <input asp-for="Password"
-                                       id="loginPassword"
-                                       placeholder="Enter your password"
-                                       autocomplete="current-password" />
-
-                                <button type="button"
-                                        class="password-toggle"
-                                        id="passwordToggle"
-                                        aria-label="Show or hide password">
-
-                                    <i class="bi bi-eye"></i>
-
-                                </button>
-
-                            </div>
-
-                            <span asp-validation-for="Password"
-                                  class="field-validation-error">
-                            </span>
-
-                        </div>
-
-
-                        <div class="login-options">
-
-                            <span class="secure-login">
-                                <i class="bi bi-shield-lock"></i>
-                                Secure login
-                            </span>
-
-                            <a asp-controller="Auth"
-                               asp-action="ForgotPassword"
-                               class="forgot-password">
-                                Forgot Password?
-                            </a>
-
-                        </div>
-
-
-                        <button type="submit"
-                                class="login-submit">
-
-                            <span>Log In</span>
-
-                            <i class="bi bi-arrow-right"></i>
-
-                        </button>
-
-                    </form>
-
-                </section>
 
             </div>
 
-        </main>
 
-    </div>
+            <h2>
+                Forgot Password?
+            </h2>
+
+
+            <p>
+
+                Enter the email address linked
+                to your account and we will send
+                you a secure link to choose a
+                new password.
+
+            </p>
+
+
+        </section>
+
+
+
+        <!-- =========================================
+             SCHOOL ADMIN REGISTRATION FORM
+             ========================================= -->
+
+        <section class="form-box Login
+                        auth-left-panel
+                        register-panel"
+                 id="registrationPanel">
+
+
+            <h2>
+                Register
+            </h2>
+
+
+            <form asp-controller="SchoolAdminRegistration"
+                  asp-action="SchoolAdmin"
+                  method="post">
+
+
+                @Html.AntiForgeryToken()
+
+
+
+                <!-- FULL NAME -->
+
+                <div class="input-box">
+
+
+                    <input type="text"
+                           name="FullName"
+                           autocomplete="name"
+                           required />
+
+
+                    <label>
+                        Full Name
+                    </label>
+
+
+                    <i class="bi bi-person-fill field-icon"></i>
+
+
+                </div>
+
+
+
+                <!-- EMAIL -->
+
+                <div class="input-box">
+
+
+                    <input type="email"
+                           name="Email"
+                           autocomplete="email"
+                           required />
+
+
+                    <label>
+                        Email Address
+                    </label>
+
+
+                    <i class="bi bi-envelope-fill field-icon"></i>
+
+
+                </div>
+
+
+
+                <!-- PHONE -->
+
+                <div class="input-box">
+
+
+                    <input type="tel"
+                           name="Phone"
+                           autocomplete="tel" />
+
+
+                    <label>
+                        Phone Number
+                    </label>
+
+
+                    <i class="bi bi-telephone-fill field-icon"></i>
+
+
+                </div>
+
+
+
+                <!-- SCHOOL -->
+
+                <div class="input-box role-box">
+
+
+                    <select name="SchoolId"
+                            required>
+
+
+                        <option value="">
+                            Select your school
+                        </option>
+
+
+                        @foreach (var school
+                                                in registrationPage.Schools)
+                        {
+
+                            <option value="@school.Id">
+
+                                @school.Name
+
+                            </option>
+
+                        }
+
+
+                    </select>
+
+
+                    <label>
+                        School
+                    </label>
+
+
+                    <i class="bi bi-buildings-fill field-icon"></i>
+
+
+                </div>
+
+
+
+                <!-- REGISTRATION CODE -->
+
+                <div class="input-box">
+
+
+                    <input type="text"
+                           name="RegistrationCode"
+                           autocomplete="off"
+                           required />
+
+
+                    <label>
+                        Registration Code
+                    </label>
+
+
+                    <i class="bi bi-key-fill field-icon"></i>
+
+
+                </div>
+
+
+
+                <!-- PASSWORD -->
+
+                <div class="input-box">
+
+
+                    <input type="password"
+                           name="Password"
+                           id="registerPassword"
+                           autocomplete="new-password"
+                           required />
+
+
+                    <label>
+                        Password
+                    </label>
+
+
+                    <button type="button"
+                            class="field-icon icon-button"
+                            id="registerPasswordToggle"
+                            aria-label="Show password">
+
+
+                        <i class="bi bi-eye-fill"></i>
+
+
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- CONFIRM PASSWORD -->
+
+                <div class="input-box">
+
+
+                    <input type="password"
+                           name="ConfirmPassword"
+                           id="confirmPassword"
+                           autocomplete="new-password"
+                           required />
+
+
+                    <label>
+                        Confirm Password
+                    </label>
+
+
+                    <button type="button"
+                            class="field-icon icon-button"
+                            id="confirmPasswordToggle"
+                            aria-label="Show confirm password">
+
+
+                        <i class="bi bi-eye-fill"></i>
+
+
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- REGISTER BUTTON -->
+
+                <div class="input-box">
+
+
+                    <button class="btn"
+                            type="submit">
+
+
+                        <span>
+                            Register School Admin
+                        </span>
+
+
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- BACK -->
+
+                <div class="regi-link">
+
+
+                    <p>
+
+                        Already have an account?
+
+                        <br />
+
+
+                        <a href="#login"
+                           class="backToLoginLink">
+
+                            Back to Log In
+
+                        </a>
+
+
+                    </p>
+
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
+
+
+        <!-- =========================================
+             REGISTRATION INFORMATION
+             ========================================= -->
+
+        <section class="info-content Login
+                        auth-right-panel
+                        register-info-panel">
+
+
+            <div class="info-logo">
+
+
+                <img src="~/images/dbe-logo.webp"
+                     alt="Department of Basic Education" />
+
+
+            </div>
+
+
+            <div class="register-info-icon">
+
+
+                <i class="bi bi-person-plus-fill"></i>
+
+
+            </div>
+
+
+            <h2>
+                Create Account
+            </h2>
+
+
+            <p>
+
+                School Administrators can create
+                their account using the registration
+                code sent to their school's
+                registered email address.
+
+            </p>
+
+
+        </section>
+
+
+    </main>
+
 
 
     <script>
 
-        const passwordInput =
-            document.getElementById("loginPassword");
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
 
-        const passwordToggle =
-            document.getElementById("passwordToggle");
 
-        passwordToggle.addEventListener("click", function () {
+                /* =====================================
+                   PANEL NAVIGATION
+                   ===================================== */
 
-            const showingPassword =
-                passwordInput.type === "text";
+                const authContainer =
+                    document.getElementById(
+                        "authContainer"
+                    );
 
-            passwordInput.type =
-                showingPassword
-                    ? "password"
-                    : "text";
 
-            passwordToggle.innerHTML =
-                showingPassword
-                    ? '<i class="bi bi-eye"></i>'
-                    : '<i class="bi bi-eye-slash"></i>';
+                const forgotPasswordLink =
+                    document.getElementById(
+                        "forgotPasswordLink"
+                    );
 
-        });
+
+                const registerAccountLink =
+                    document.getElementById(
+                        "registerAccountLink"
+                    );
+
+
+                const backToLoginLinks =
+                    document.querySelectorAll(
+                        ".backToLoginLink"
+                    );
+
+
+                function showLogin() {
+
+                    authContainer.classList.remove(
+                        "show-forgot"
+                    );
+
+                    authContainer.classList.remove(
+                        "show-register"
+                    );
+
+                }
+
+
+                function showForgot() {
+
+                    authContainer.classList.remove(
+                        "show-register"
+                    );
+
+                    authContainer.classList.add(
+                        "show-forgot"
+                    );
+
+                }
+
+
+                function showRegister() {
+
+                    authContainer.classList.remove(
+                        "show-forgot"
+                    );
+
+                    authContainer.classList.add(
+                        "show-register"
+                    );
+
+
+                    const panel =
+                        document.getElementById(
+                            "registrationPanel"
+                        );
+
+
+                    if (panel) {
+                        panel.scrollTop = 0;
+                    }
+
+                }
+
+
+                if (forgotPasswordLink) {
+
+                    forgotPasswordLink.addEventListener(
+                        "click",
+                        function (event) {
+
+                            event.preventDefault();
+
+                            showForgot();
+
+                        }
+                    );
+
+                }
+
+
+                if (registerAccountLink) {
+
+                    registerAccountLink.addEventListener(
+                        "click",
+                        function (event) {
+
+                            event.preventDefault();
+
+                            showRegister();
+
+                        }
+                    );
+
+                }
+
+
+                backToLoginLinks.forEach(
+                    function (link) {
+
+                        link.addEventListener(
+                            "click",
+                            function (event) {
+
+                                event.preventDefault();
+
+                                showLogin();
+
+                            }
+                        );
+
+                    }
+                );
+
+
+
+                /* =====================================
+                   LOGIN ROLE
+                   ===================================== */
+
+                const roleSelect =
+                    document.getElementById(
+                        "loginRole"
+                    );
+
+
+                const accessCodeBox =
+                    document.getElementById(
+                        "accessCodeBox"
+                    );
+
+
+                const accessCodeInput =
+                    document.getElementById(
+                        "loginAccessCode"
+                    );
+
+
+                const accessCodeValidation =
+                    document.getElementById(
+                        "accessCodeValidation"
+                    );
+
+
+                const loginHeading =
+                    document.getElementById(
+                        "loginHeading"
+                    );
+
+
+                const loginButtonText =
+                    document.getElementById(
+                        "loginButtonText"
+                    );
+
+
+                const roleMessage =
+                    document.getElementById(
+                        "loginRoleMessage"
+                    );
+
+
+                const welcomeTitle =
+                    document.getElementById(
+                        "roleWelcomeTitle"
+                    );
+
+
+                const welcomeText =
+                    document.getElementById(
+                        "roleWelcomeText"
+                    );
+
+
+
+                function updateLoginRole() {
+
+
+                    if (!roleSelect ||
+                        !accessCodeBox ||
+                        !accessCodeInput) {
+
+                        return;
+
+                    }
+
+
+                    const role =
+                        roleSelect.value;
+
+
+
+                    if (role === "Super Admin") {
+
+
+                        accessCodeBox.classList.remove(
+                            "auth-field-hidden"
+                        );
+
+
+                        accessCodeInput.disabled =
+                            false;
+
+
+                        accessCodeInput.required =
+                            true;
+
+
+                        loginHeading.textContent =
+                            "Super Admin Login";
+
+
+                        loginButtonText.textContent =
+                            "Log In as Super Admin";
+
+
+                        roleMessage.style.display =
+                            "block";
+
+
+                        roleMessage.innerHTML =
+                            '<i class="bi bi-shield-lock-fill"></i> ' +
+                            'Super Admin requires Email, Password and Access Code.';
+
+
+                        welcomeTitle.textContent =
+                            "Super Admin";
+
+
+                        welcomeText.textContent =
+                            "Secure system-wide access for authorised Super Administrators.";
+
+
+                        return;
+
+                    }
+
+
+
+                    if (role === "School Admin") {
+
+
+                        accessCodeBox.classList.remove(
+                            "auth-field-hidden"
+                        );
+
+
+                        accessCodeInput.disabled =
+                            false;
+
+
+                        accessCodeInput.required =
+                            true;
+
+
+                        loginHeading.textContent =
+                            "School Admin Login";
+
+
+                        loginButtonText.textContent =
+                            "Log In as School Admin";
+
+
+                        roleMessage.style.display =
+                            "block";
+
+
+                        roleMessage.innerHTML =
+                            '<i class="bi bi-building-lock"></i> ' +
+                            'School Admin requires Email, Password and Access Code.';
+
+
+                        welcomeTitle.textContent =
+                            "School Admin";
+
+
+                        welcomeText.textContent =
+                            "Secure access to manage your registered school.";
+
+
+                        return;
+
+                    }
+
+
+
+                    if (role === "Teacher") {
+
+
+                        accessCodeBox.classList.add(
+                            "auth-field-hidden"
+                        );
+
+
+                        accessCodeInput.required =
+                            false;
+
+
+                        accessCodeInput.disabled =
+                            true;
+
+
+                        accessCodeInput.value =
+                            "";
+
+
+                        if (accessCodeValidation) {
+
+                            accessCodeValidation.innerHTML =
+                                "";
+
+                            accessCodeValidation.style.display =
+                                "none";
+
+                        }
+
+
+                        loginHeading.textContent =
+                            "Teacher Login";
+
+
+                        loginButtonText.textContent =
+                            "Log In as Teacher";
+
+
+                        roleMessage.style.display =
+                            "block";
+
+
+                        roleMessage.innerHTML =
+                            '<i class="bi bi-person-check-fill"></i> ' +
+                            'Teachers only require Email and Password.';
+
+
+                        welcomeTitle.textContent =
+                            "Teacher";
+
+
+                        welcomeText.textContent =
+                            "Sign in with your email and password to access your teaching portal.";
+
+
+                        return;
+
+                    }
+
+
+
+                    accessCodeBox.classList.add(
+                        "auth-field-hidden"
+                    );
+
+
+                    accessCodeInput.required =
+                        false;
+
+
+                    accessCodeInput.disabled =
+                        true;
+
+
+                    accessCodeInput.value =
+                        "";
+
+
+                    loginHeading.textContent =
+                        "Log In";
+
+
+                    loginButtonText.textContent =
+                        "Log In";
+
+
+                    roleMessage.style.display =
+                        "none";
+
+
+                    welcomeTitle.textContent =
+                        "Welcome Back!";
+
+
+                    welcomeText.textContent =
+                        "Select your role and enter your login details to access the School-Parental System.";
+
+                }
+
+
+
+                if (roleSelect) {
+
+
+                    roleSelect.addEventListener(
+                        "change",
+                        updateLoginRole
+                    );
+
+
+                    updateLoginRole();
+
+                }
+
+
+
+                /* =====================================
+                   PASSWORD TOGGLE HELPER
+                   ===================================== */
+
+                function setupPasswordToggle(
+                    buttonId,
+                    inputId) {
+
+
+                    const button =
+                        document.getElementById(
+                            buttonId
+                        );
+
+
+                    const input =
+                        document.getElementById(
+                            inputId
+                        );
+
+
+                    if (!button ||
+                        !input) {
+
+                        return;
+
+                    }
+
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+
+                            const icon =
+                                button.querySelector(
+                                    "i"
+                                );
+
+
+                            const hidden =
+                                input.type === "password";
+
+
+                            input.type =
+                                hidden
+                                    ? "text"
+                                    : "password";
+
+
+                            if (icon) {
+
+                                icon.className =
+                                    hidden
+                                        ? "bi bi-eye-slash-fill"
+                                        : "bi bi-eye-fill";
+
+                            }
+
+
+                        }
+                    );
+
+                }
+
+
+
+                setupPasswordToggle(
+                    "passwordToggle",
+                    "loginPassword"
+                );
+
+
+                setupPasswordToggle(
+                    "accessCodeToggle",
+                    "loginAccessCode"
+                );
+
+
+                setupPasswordToggle(
+                    "registerPasswordToggle",
+                    "registerPassword"
+                );
+
+
+                setupPasswordToggle(
+                    "confirmPasswordToggle",
+                    "confirmPassword"
+                );
+
+
+                /* =====================================
+                   URL HASH SUPPORT
+                   ===================================== */
+
+                if (window.location.hash ===
+                    "#register") {
+
+                    showRegister();
+
+                }
+                else if (
+                    window.location.hash ===
+                    "#forgot") {
+
+                    showForgot();
+
+                }
+
+
+            }
+        );
 
     </script>
 
+
 </body>
+
 </html>

@@ -1,0 +1,213 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.EditParentViewModel
+
+@{
+    ViewData["Title"] = "Edit Parent";
+    Layout = "_SchoolAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+            <h2>Edit Parent</h2>
+
+            <p>
+                Update parent or guardian information.
+            </p>
+        </div>
+
+
+        <a class="secondary-action"
+           asp-controller="SchoolAdmin"
+           asp-action="ParentDetails"
+           asp-route-id="@Model.Id">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Details
+
+        </a>
+
+    </div>
+
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="EditParent"
+          asp-route-id="@Model.Id"
+          method="post"
+          class="learner-form">
+
+        @Html.AntiForgeryToken()
+
+        <input asp-for="Id"
+               type="hidden" />
+
+
+        <div asp-validation-summary="All"
+             class="validation-summary">
+        </div>
+
+
+        <section class="form-card">
+
+            <div class="form-section-header">
+
+                <i class="bi bi-person-hearts"></i>
+
+                <div>
+
+                    <h3>Parent Information</h3>
+
+                    <p>
+                        Update the parent or guardian's
+                        personal and contact details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label asp-for="GuardianNumber"></label>
+
+                    <input asp-for="GuardianNumber"
+                           readonly />
+
+                    <small>
+                        Guardian number cannot be changed.
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="FullName"></label>
+
+                    <input asp-for="FullName"
+                           placeholder="Enter parent full name" />
+
+                    <span asp-validation-for="FullName"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Email"></label>
+
+                    <input asp-for="Email"
+                           type="email"
+                           placeholder="parent@example.com" />
+
+                    <span asp-validation-for="Email"
+                          class="field-validation-error">
+                    </span>
+
+                    <small>
+                        Changing this email also changes
+                        the parent's login email.
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Phone"></label>
+
+                    <input asp-for="Phone"
+                           placeholder="+27..." />
+
+                    <span asp-validation-for="Phone"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Gender"></label>
+
+                    <select asp-for="Gender">
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="AlternativePhone"></label>
+
+                    <input asp-for="AlternativePhone"
+                           placeholder="Alternative contact number" />
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label asp-for="Address"></label>
+
+                    <textarea asp-for="Address"
+                              rows="3"
+                              placeholder="Enter home address">
+                    </textarea>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div class="form-actions">
+
+            <a class="cancel-button"
+               asp-controller="SchoolAdmin"
+               asp-action="ParentDetails"
+               asp-route-id="@Model.Id">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="primary-action">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+                Save Changes
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>

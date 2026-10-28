@@ -1,38 +1,76 @@
 ﻿@model SchoolParentalSystem.Web.ViewModels.LearnerDetailsViewModel
 
+
 @{
     ViewData["Title"] = "Learner Details";
     Layout = "_SchoolAdminLayout";
+
+    var nameParts =
+        (Model.FullName ?? "")
+            .Split(
+                ' ',
+                StringSplitOptions.RemoveEmptyEntries);
+
+    var initials =
+        string.Concat(
+            nameParts
+                .Take(2)
+                .Select(x =>
+                    char.ToUpperInvariant(x[0])));
+
+    if (string.IsNullOrWhiteSpace(initials))
+    {
+        initials = "?";
+    }
 }
+
 
 <section class="dashboard-content">
 
-    <div class="page-heading">
+    <!-- =====================================================
+         PAGE HEADING / ACTIONS
+         ===================================================== -->
+
+    <div class="detail-page-heading">
 
         <div>
+
             <h2>Learner Details</h2>
-            <p>View learner, school and guardian information.</p>
+
+            <p>
+                View learner, school and guardian information.
+            </p>
+
         </div>
 
-        <div class="details-heading-actions">
 
-            <a class="secondary-action"
-               asp-action="Learners">
+        <div class="detail-heading-actions">
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="Learners"
+               class="detail-back-action">
+
                 <i class="bi bi-arrow-left"></i>
                 Back
+
             </a>
 
-            <a class="primary-action"
+
+            <a asp-controller="SchoolAdmin"
                asp-action="EditLearner"
-               asp-route-id="@Model.Id">
+               asp-route-id="@Model.Id"
+               class="detail-edit-action">
+
                 <i class="bi bi-pencil-square"></i>
                 Edit Learner
+
             </a>
+
 
             @if (Model.IsActive)
             {
                 <button type="button"
-                        class="danger-action"
+                        class="detail-danger-action"
                         id="openDeactivateModal">
 
                     <i class="bi bi-person-dash-fill"></i>
@@ -42,17 +80,22 @@
             }
             else
             {
-                <form asp-action="ReactivateLearner"
+                <form asp-controller="SchoolAdmin"
+                      asp-action="ReactivateLearner"
                       asp-route-id="@Model.Id"
+                      asp-route-returnUrl="@Context.Request.Path"
                       method="post"
                       class="inline-form">
 
                     @Html.AntiForgeryToken()
 
+
                     <button type="submit"
-                            class="reactivate-action">
+                            class="detail-reactivate-action">
+
                         <i class="bi bi-person-check-fill"></i>
                         Reactivate Learner
+
                     </button>
 
                 </form>
@@ -63,135 +106,309 @@
     </div>
 
 
-    <div class="learner-profile-card">
+    <!-- =====================================================
+         LEARNER IDENTITY HERO
+         ===================================================== -->
 
-        <div>
-            <label>Full Name</label>
-            <strong>@Model.FullName</strong>
+    <section class="detail-profile-hero">
+
+        <div class="detail-avatar">
+
+            @initials
+
         </div>
 
-        <div>
-            <label>Admission Number</label>
-            <strong>@Model.AdmissionNumber</strong>
-        </div>
 
-        <div>
-            <label>Date of Birth</label>
-            <strong>
-                @(Model.DateOfBirth.HasValue
-                    ? Model.DateOfBirth.Value.ToString("dd MMMM yyyy")
-                    : "Not provided")
-            </strong>
-        </div>
+        <div class="detail-identity">
 
-        <div>
-            <label>Gender</label>
-            <strong>
-                @(string.IsNullOrWhiteSpace(Model.Gender)
-                    ? "Not provided"
-                    : Model.Gender)
-            </strong>
-        </div>
+            <div class="detail-name-row">
 
-        <div>
-            <label>Grade</label>
-            <strong>@Model.Grade</strong>
-        </div>
+                <h3>
+                    @Model.FullName
+                </h3>
 
-        <div>
-            <label>Class</label>
-            <strong>@Model.ClassName</strong>
-        </div>
 
-        <div>
-            <label>Address</label>
-            <strong>
-                @(string.IsNullOrWhiteSpace(Model.Address)
-                    ? "Not provided"
-                    : Model.Address)
-            </strong>
-        </div>
+                <span class="detail-status
+                      @(Model.IsActive
+                          ? "active"
+                          : "inactive")">
 
-        <div>
-            <label>Status</label>
+                    @(Model.IsActive
+                        ? "Active"
+                        : "Inactive")
 
-            @if (Model.IsActive)
-            {
-                <span class="status-badge active">
-                    Active
                 </span>
-            }
-            else
-            {
-                <span class="status-badge inactive">
-                    Inactive
-                </span>
-            }
-        </div>
 
-    </div>
-
-
-    <div class="details-grid">
-
-        <section class="form-card">
-
-            <div class="form-section-header">
-                <i class="bi bi-person-vcard"></i>
-
-                <div>
-                    <h3>Personal Information</h3>
-                    <p>Learner personal and school details.</p>
-                </div>
             </div>
 
-            <div class="information-grid">
 
-                <div class="information-item">
-                    <span>Admission Number</span>
-                    <strong>@Model.AdmissionNumber</strong>
+            <div class="detail-meta">
+
+                <span>
+                    @Model.AdmissionNumber
+                </span>
+
+
+                <span class="detail-meta-dot">
+                    •
+                </span>
+
+
+                <span>
+                    @Model.Grade
+                </span>
+
+
+                <span class="detail-meta-dot">
+                    •
+                </span>
+
+
+                <span>
+                    @Model.ClassName
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MAIN INFORMATION AREA
+         ===================================================== -->
+
+    <div class="detail-content-grid">
+
+
+        <!-- =================================================
+             PERSONAL INFORMATION
+             ================================================= -->
+
+        <section class="detail-card">
+
+            <div class="detail-card-header">
+
+                <div class="detail-card-icon">
+
+                    <i class="bi bi-person-vcard"></i>
+
                 </div>
 
-                <div class="information-item">
-                    <span>Full Name</span>
-                    <strong>@Model.FullName</strong>
+
+                <div>
+
+                    <h3>
+                        Personal Information
+                    </h3>
+
+                    <p>
+                        Learner personal and academic details.
+                    </p>
+
                 </div>
 
-                <div class="information-item">
-                    <span>Date of Birth</span>
-                    <strong>
-                        @(Model.DateOfBirth.HasValue
-                            ? Model.DateOfBirth.Value.ToString("dd MMMM yyyy")
-                            : "Not provided")
-                    </strong>
+            </div>
+
+
+            <div class="detail-definition-grid">
+
+
+                <!-- FULL NAME -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-person-badge"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Full Name
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @Model.FullName
+                        </strong>
+
+                    </div>
+
                 </div>
 
-                <div class="information-item">
-                    <span>Gender</span>
-                    <strong>
-                        @(string.IsNullOrWhiteSpace(Model.Gender)
-                            ? "Not provided"
-                            : Model.Gender)
-                    </strong>
+
+                <!-- ADMISSION NUMBER -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-hash"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Admission Number
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @Model.AdmissionNumber
+                        </strong>
+
+                    </div>
+
                 </div>
 
-                <div class="information-item">
-                    <span>Grade</span>
-                    <strong>@Model.Grade</strong>
+
+                <!-- DATE OF BIRTH -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-calendar3"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Date of Birth
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(Model.DateOfBirth.HasValue
+                                ? Model.DateOfBirth.Value
+                                .ToString("dd MMMM yyyy")
+                                : "Not provided")
+
+                        </strong>
+
+                    </div>
+
                 </div>
 
-                <div class="information-item">
-                    <span>Class</span>
-                    <strong>@Model.ClassName</strong>
+
+                <!-- GENDER -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-person"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Gender
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Gender)
+                                ? "Not provided"
+                                : Model.Gender)
+
+                        </strong>
+
+                    </div>
+
                 </div>
 
-                <div class="information-item full-information-item">
-                    <span>Address</span>
-                    <strong>
-                        @(string.IsNullOrWhiteSpace(Model.Address)
-                            ? "Not provided"
-                            : Model.Address)
-                    </strong>
+
+                <!-- GRADE -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-mortarboard-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Grade
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @Model.Grade
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CLASS -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-people-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Class
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @Model.ClassName
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ADDRESS -->
+
+                <div class="detail-field full-width">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Address
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Address)
+                                ? "Not provided"
+                                : Model.Address)
+
+                        </strong>
+
+                    </div>
+
                 </div>
 
             </div>
@@ -199,70 +416,208 @@
         </section>
 
 
-        <section class="form-card">
 
-            <div class="form-section-header">
-                <i class="bi bi-people-fill"></i>
+        <!-- =================================================
+             GUARDIAN INFORMATION
+             ================================================= -->
+
+        <aside class="detail-card">
+
+            <div class="detail-card-header">
+
+                <div class="detail-card-icon">
+
+                    <i class="bi bi-people-fill"></i>
+
+                </div>
+
 
                 <div>
-                    <h3>Guardian Information</h3>
-                    <p>Registered parent or guardian linked to this learner.</p>
-                </div>
-            </div>
 
-            <div class="information-grid">
+                    <h3>
+                        Guardian Information
+                    </h3>
 
-                <div class="information-item">
-                    <span>Parent / Guardian</span>
-                    <strong>@Model.GuardianName</strong>
-                </div>
+                    <p>
+                        Registered parent or guardian
+                        linked to this learner.
+                    </p>
 
-                <div class="information-item">
-                    <span>Guardian Number</span>
-                    <strong>
-                        @(string.IsNullOrWhiteSpace(Model.GuardianNumber)
-                            ? "Not available"
-                            : Model.GuardianNumber)
-                    </strong>
-                </div>
-
-                <div class="information-item">
-                    <span>Relationship</span>
-                    <strong>
-                        @(string.IsNullOrWhiteSpace(Model.Relationship)
-                            ? "Not available"
-                            : Model.Relationship)
-                    </strong>
-                </div>
-
-                <div class="information-item">
-                    <span>Phone Number</span>
-                    <strong>
-                        @(string.IsNullOrWhiteSpace(Model.GuardianPhone)
-                            ? "Not provided"
-                            : Model.GuardianPhone)
-                    </strong>
-                </div>
-
-                <div class="information-item full-information-item">
-                    <span>Email Address</span>
-                    <strong>
-                        @(string.IsNullOrWhiteSpace(Model.GuardianEmail)
-                            ? "Not provided"
-                            : Model.GuardianEmail)
-                    </strong>
                 </div>
 
             </div>
 
-        </section>
+
+            <div class="detail-side-fields">
+
+
+                <!-- GUARDIAN NAME -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-person-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Parent / Guardian
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.GuardianName)
+                                ? "Not linked"
+                                : Model.GuardianName)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- GUARDIAN NUMBER -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-person-vcard"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Guardian Number
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.GuardianNumber)
+                                ? "Not available"
+                                : Model.GuardianNumber)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RELATIONSHIP -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-link-45deg"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Relationship
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Relationship)
+                                ? "Not available"
+                                : Model.Relationship)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-telephone"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Phone Number
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.GuardianPhone)
+                                ? "Not provided"
+                                : Model.GuardianPhone)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-envelope"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Email Address
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.GuardianEmail)
+                                ? "Not provided"
+                                : Model.GuardianEmail)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
 
     </div>
-
-    
 
 </section>
 
+
+
+<!-- =========================================================
+     DEACTIVATE CONFIRMATION MODAL
+     ========================================================= -->
 @if (Model.IsActive)
 {
     <div id="deactivateModal"
@@ -273,29 +628,42 @@
              aria-modal="true"
              aria-labelledby="deactivateModalTitle">
 
+
             <div class="confirmation-icon danger">
+
                 <i class="bi bi-trash3-fill"></i>
+
             </div>
 
+
             <h3 id="deactivateModalTitle">
+
                 Deactivate Learner?
+
             </h3>
 
+
             <p class="confirmation-message">
+
                 Are you sure you want to deactivate this learner?
                 The learner record will remain in the system,
                 but they will no longer be active.
+
             </p>
+
 
             <div class="confirmation-learner">
 
-                <span>Learner:</span>
+                <span>
+                    Learner:
+                </span>
 
                 <strong>
                     @Model.FullName
                 </strong>
 
             </div>
+
 
             <div class="confirmation-actions">
 
@@ -311,13 +679,17 @@
                 <form asp-controller="SchoolAdmin"
                       asp-action="DeactivateLearner"
                       asp-route-id="@Model.Id"
+                      asp-route-returnUrl="@Context.Request.Path"
                       method="post">
 
                     @Html.AntiForgeryToken()
 
+
                     <button type="submit"
                             class="confirmation-deactivate">
+
                         Deactivate
+
                     </button>
 
                 </form>
@@ -329,57 +701,81 @@
     </div>
 }
 
+
+
 <script>
+
     const deactivateModal =
-        document.getElementById("deactivateModal");
+        document.getElementById(
+            "deactivateModal"
+        );
+
 
     const openDeactivateModal =
-        document.getElementById("openDeactivateModal");
+        document.getElementById(
+            "openDeactivateModal"
+        );
+
 
     const cancelDeactivate =
-        document.getElementById("cancelDeactivate");
-
-
-    if (openDeactivateModal && deactivateModal) {
-
-        openDeactivateModal.addEventListener(
-            "click",
-            function () {
-
-                deactivateModal.classList.add("show");
-
-                document.body.classList.add(
-                    "modal-open"
-                );
-            }
+        document.getElementById(
+            "cancelDeactivate"
         );
+
+
+    if (openDeactivateModal &&
+        deactivateModal) {
+
+        openDeactivateModal
+            .addEventListener(
+                "click",
+                function () {
+
+                    deactivateModal
+                        .classList
+                        .add("show");
+
+
+                    document.body
+                        .classList
+                        .add("modal-open");
+
+                }
+            );
     }
 
 
-    if (cancelDeactivate && deactivateModal) {
+    if (cancelDeactivate &&
+        deactivateModal) {
 
-        cancelDeactivate.addEventListener(
-            "click",
-            function () {
+        cancelDeactivate
+            .addEventListener(
+                "click",
+                function () {
 
-                closeDeactivateModal();
-            }
-        );
+                    closeDeactivateModal();
+
+                }
+            );
     }
 
 
     if (deactivateModal) {
 
-        deactivateModal.addEventListener(
-            "click",
-            function (event) {
+        deactivateModal
+            .addEventListener(
+                "click",
+                function (event) {
 
-                if (event.target === deactivateModal) {
+                    if (event.target ===
+                        deactivateModal) {
 
-                    closeDeactivateModal();
+                        closeDeactivateModal();
+
+                    }
+
                 }
-            }
-        );
+            );
     }
 
 
@@ -389,20 +785,34 @@
 
             if (event.key === "Escape" &&
                 deactivateModal &&
-                deactivateModal.classList.contains("show")) {
+                deactivateModal
+                    .classList
+                    .contains("show")) {
 
                 closeDeactivateModal();
+
             }
+
         }
     );
 
 
     function closeDeactivateModal() {
 
-        deactivateModal.classList.remove("show");
+        if (!deactivateModal) {
+            return;
+        }
 
-        document.body.classList.remove(
-            "modal-open"
-        );
+
+        deactivateModal
+            .classList
+            .remove("show");
+
+
+        document.body
+            .classList
+            .remove("modal-open");
+
     }
+
 </script>

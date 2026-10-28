@@ -1,0 +1,336 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.CreateAnnouncementViewModel
+
+@{
+    ViewData["Title"] = "Create Announcement";
+}
+
+<section class="sa-edit-school-page">
+
+    <!-- HEADER -->
+
+    <section class="sa-schools-header">
+
+        <div>
+
+            <a asp-controller="SuperAdmin"
+               asp-action="Dashboard"
+               class="sa-back-link">
+
+                <i class="bi bi-arrow-left"></i>
+                Back to Dashboard
+
+            </a>
+
+
+            <span class="sa-page-label"
+                  style="display:block; margin-top:12px;">
+                Communication
+            </span>
+
+
+            <h2>
+                Create Announcement
+            </h2>
+
+
+            <p>
+                Send an announcement to all schools
+                or a specific school.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- FORM -->
+
+    <form asp-controller="SuperAdmin"
+          asp-action="CreateAnnouncement"
+          method="post"
+          class="sa-edit-school-form">
+
+        @Html.AntiForgeryToken()
+
+
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger">
+        </div>
+
+
+        <!-- ANNOUNCEMENT DETAILS -->
+
+        <section class="sa-school-details-card">
+
+            <div class="sa-detail-card-header">
+
+                <i class="bi bi-megaphone-fill"></i>
+
+                <h3>
+                    Announcement Details
+                </h3>
+
+            </div>
+
+
+            <div class="sa-edit-form-grid">
+
+
+                <!-- TITLE -->
+
+                <div class="sa-edit-field sa-edit-full">
+
+                    <label asp-for="Title">
+                        Title
+                    </label>
+
+                    <input asp-for="Title"
+                           placeholder="Enter announcement title" />
+
+                    <span asp-validation-for="Title"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- PRIORITY -->
+
+                <div class="sa-edit-field">
+
+                    <label asp-for="Priority">
+                        Priority
+                    </label>
+
+                    <select asp-for="Priority">
+
+                        @foreach (var priority in Model.Priorities)
+                        {
+                            <option value="@priority">
+                                @priority
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- TARGET -->
+
+                <div class="sa-edit-field">
+
+                    <label asp-for="Target">
+                        Send To
+                    </label>
+
+                    <select asp-for="Target"
+                            id="announcementTarget">
+
+                        @foreach (var target in Model.Targets)
+                        {
+                            <option value="@target">
+                                @target
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- SCHOOL -->
+
+                <div class="sa-edit-field sa-edit-full"
+                     id="schoolSelection">
+
+                    <label asp-for="SchoolId">
+                        Select School
+                    </label>
+
+                    <select asp-for="SchoolId">
+
+                        <option value="">
+                            Select a school
+                        </option>
+
+                        @foreach (var school in Model.Schools)
+                        {
+                            <option value="@school.Id">
+                                @school.Name
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="SchoolId"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- MESSAGE -->
+
+                <div class="sa-edit-field sa-edit-full">
+
+                    <label asp-for="Content">
+                        Message
+                    </label>
+
+                    <textarea asp-for="Content"
+                              rows="7"
+                              placeholder="Write your announcement message here...">
+                    </textarea>
+
+                    <span asp-validation-for="Content"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- DELIVERY SETTINGS -->
+
+        <section class="sa-school-details-card">
+
+            <div class="sa-detail-card-header">
+
+                <i class="bi bi-send-fill"></i>
+
+                <h3>
+                    Delivery Settings
+                </h3>
+
+            </div>
+
+
+            <div class="sa-edit-form-grid">
+
+
+                <!-- EXPIRY -->
+
+                <div class="sa-edit-field">
+
+                    <label asp-for="ExpiresAt">
+                        Expiry Date
+                    </label>
+
+                    <input asp-for="ExpiresAt"
+                           type="datetime-local" />
+
+                    <span asp-validation-for="ExpiresAt"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- ACKNOWLEDGEMENT -->
+
+                <div class="sa-announcement-check">
+
+                    <input asp-for="AcknowledgementRequired"
+                           type="checkbox" />
+
+                    <div>
+
+                        <label asp-for="AcknowledgementRequired">
+                            Require acknowledgement
+                        </label>
+
+                        <small>
+                            Recipients will be asked to acknowledge
+                            this announcement.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACTIONS -->
+
+        <div class="sa-edit-actions">
+
+            <a asp-controller="SuperAdmin"
+               asp-action="Dashboard"
+               class="sa-edit-cancel-button">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="super-primary-button">
+
+                <i class="bi bi-send-fill"></i>
+
+                Send Announcement
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+@section Scripts
+{
+    <script>
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const target =
+                    document.getElementById(
+                        "announcementTarget");
+
+                const schoolSelection =
+                    document.getElementById(
+                        "schoolSelection");
+
+
+                function updateSchoolSelection() {
+
+                    if (!target ||
+                        !schoolSelection) {
+                        return;
+                    }
+
+
+                    if (target.value ===
+                        "Specific School") {
+
+                        schoolSelection.style.display =
+                            "";
+
+                    }
+                    else {
+
+                        schoolSelection.style.display =
+                            "none";
+                    }
+                }
+
+
+                updateSchoolSelection();
+
+
+                target.addEventListener(
+                    "change",
+                    updateSchoolSelection);
+            });
+    </script>
+}

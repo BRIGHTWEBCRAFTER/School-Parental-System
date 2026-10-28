@@ -1,0 +1,255 @@
+﻿
+/* =========================================
+   SCHOOL ADMIN SEARCH
+   ========================================= */
+
+.sa-search-page {
+    color: #073a28;
+}
+
+.sa-search-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+    .sa-search-heading h2 {
+        font-size: 21px;
+        font-weight: 800;
+        margin: 0 0 6px;
+    }
+
+    .sa-search-heading p {
+        color: #71847b;
+        font-size: 12px;
+        margin: 0;
+    }
+
+.sa-search-total {
+    background: #eef6ef;
+    color: #0b4a32;
+    border: 1px solid #dce9dd;
+    border-radius: 20px;
+    padding: 8px 13px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* SEARCH FORM */
+
+.sa-search-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 650px;
+    padding: 8px 10px 8px 15px;
+    margin-bottom: 22px;
+    background: white;
+    border: 1px solid #e2ded3;
+    border-radius: 12px;
+}
+
+    .sa-search-form > i {
+        color: #71847b;
+        font-size: 17px;
+    }
+
+    .sa-search-form input {
+        flex: 1;
+        min-width: 0;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: #073a28;
+        font-size: 12px;
+    }
+
+    .sa-search-form button {
+        background: #0b4a32;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 18px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+        .sa-search-form button:hover {
+            background: #073a28;
+        }
+
+        .sa-search-form button:focus-visible {
+            outline: 2px solid #c6a34d;
+            outline-offset: 2px;
+        }
+
+/* RESULTS */
+
+.sa-search-query {
+    margin: 0 0 16px;
+    color: #71847b;
+    font-size: 12px;
+}
+
+    .sa-search-query strong {
+        color: #073a28;
+    }
+
+.sa-search-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+}
+
+.sa-search-card {
+    min-width: 0;
+    background: #ffffff;
+    border: 1px solid #e2ded3;
+    border-radius: 13px;
+    overflow: hidden;
+}
+
+.sa-search-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+    border-bottom: 1px solid #e2ded3;
+}
+
+    .sa-search-card-header h3 {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+        color: #073a28;
+        font-size: 13px;
+    }
+
+        .sa-search-card-header h3 i {
+            color: #c6a34d;
+            font-size: 17px;
+        }
+
+    .sa-search-card-header > span {
+        background: #f7f3e8;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+.sa-search-card-body {
+    padding: 7px;
+}
+
+/* RESULT ROW */
+
+.sa-search-result {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 9px;
+    border-radius: 8px;
+    color: #073a28;
+    transition: background .2s ease;
+}
+
+    .sa-search-result:hover {
+        background: #f7f3e8;
+    }
+
+.sa-search-result-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: #eef6ef;
+    color: #0b4a32;
+    font-size: 16px;
+}
+
+.sa-search-result-text {
+    min-width: 0;
+    flex: 1;
+}
+
+    .sa-search-result-text strong,
+    .sa-search-result-text small {
+        display: block;
+        overflow-wrap: anywhere;
+    }
+
+    .sa-search-result-text strong {
+        font-size: 12px;
+    }
+
+    .sa-search-result-text small {
+        margin-top: 3px;
+        color: #71847b;
+        font-size: 10px;
+    }
+
+.sa-search-result > .bi-chevron-right {
+    color: #71847b;
+    font-size: 11px;
+}
+
+.sa-search-no-match {
+    padding: 13px;
+    color: #71847b;
+    font-size: 11px;
+}
+
+/* EMPTY STATE */
+
+.sa-search-empty {
+    padding: 55px 20px;
+    text-align: center;
+    background: white;
+    border: 1px solid #e2ded3;
+    border-radius: 13px;
+}
+
+    .sa-search-empty > i {
+        color: #c6a34d;
+        font-size: 32px;
+    }
+
+    .sa-search-empty h3 {
+        margin: 12px 0 7px;
+        font-size: 15px;
+    }
+
+    .sa-search-empty p {
+        margin: 0;
+        color: #71847b;
+        font-size: 12px;
+    }
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+    .sa-search-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .sa-search-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sa-search-heading h2 {
+        font-size: 18px;
+    }
+}

@@ -1,0 +1,717 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.UserManagementViewModel
+
+@{
+    ViewData["Title"] = "Manage Users";
+
+    var schools = Model.Users
+        .Where(x => !string.IsNullOrWhiteSpace(x.SchoolName))
+        .Select(x => x.SchoolName)
+        .Distinct()
+        .OrderBy(x => x)
+        .ToList();
+}
+
+
+<div class="super-users-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="users-page-header">
+
+        <h1>
+            Manage Users
+        </h1>
+
+        <p>
+            View and manage users across all schools.
+        </p>
+
+    </div>
+
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="users-error-message">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+
+    <!-- =========================================
+         SUMMARY CARDS
+         ========================================= -->
+
+    <div class="users-summary-grid">
+
+        <!-- TOTAL USERS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon soft-gold">
+
+                <i class="bi bi-people-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Total Users
+                </span>
+
+                <strong>
+                    @Model.TotalUsers
+                </strong>
+
+                <small>
+                    System accounts
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- ACTIVE USERS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon green">
+
+                <i class="bi bi-person-check-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Active
+                </span>
+
+                <strong>
+                    @Model.ActiveUsers
+                </strong>
+
+                <small>
+                    Active accounts
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- INACTIVE USERS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon gold">
+
+                <i class="bi bi-person-x-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Inactive
+                </span>
+
+                <strong>
+                    @Model.InactiveUsers
+                </strong>
+
+                <small>
+                    Deactivated accounts
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- SCHOOL ADMINS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon gold">
+
+                <i class="bi bi-person-badge-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    School Admins
+                </span>
+
+                <strong>
+                    @Model.SchoolAdmins
+                </strong>
+
+                <small>
+                    School administrators
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- TEACHERS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon dark-green">
+
+                <i class="bi bi-person-workspace"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Teachers
+                </span>
+
+                <strong>
+                    @Model.Teachers
+                </strong>
+
+                <small>
+                    Teacher accounts
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- PARENTS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon soft-gold">
+
+                <i class="bi bi-people-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Parents
+                </span>
+
+                <strong>
+                    @Model.Parents
+                </strong>
+
+                <small>
+                    Parent accounts
+                </small>
+
+            </div>
+
+        </article>
+
+    </div>
+
+
+    <!-- =========================================
+         FILTER PANEL
+         ========================================= -->
+
+    <div class="users-filter-card">
+
+        <div class="users-filter-grid">
+
+            <!-- SEARCH -->
+
+            <div class="user-filter-group">
+
+                <label for="userSearch">
+                    Search
+                </label>
+
+                <input type="text"
+                       id="userSearch"
+                       placeholder="Search name, email or phone..." />
+
+            </div>
+
+
+            <!-- ROLE -->
+
+            <div class="user-filter-group">
+
+                <label for="roleFilter">
+                    Role
+                </label>
+
+                <select id="roleFilter">
+
+                    <option value="">
+                        All Roles
+                    </option>
+
+                    <option value="School Admin">
+                        School Admin
+                    </option>
+
+                    <option value="Teacher">
+                        Teacher
+                    </option>
+
+                    <option value="Parent">
+                        Parent
+                    </option>
+
+                    <option value="Super Admin">
+                        Super Admin
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- SCHOOL -->
+
+            <div class="user-filter-group">
+
+                <label for="schoolFilter">
+                    School
+                </label>
+
+                <select id="schoolFilter">
+
+                    <option value="">
+                        All Schools
+                    </option>
+
+                    @foreach (var school in schools)
+                    {
+                        <option value="@school">
+                            @school
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="user-filter-group">
+
+                <label for="statusFilter">
+                    Status
+                </label>
+
+                <select id="statusFilter">
+
+                    <option value="">
+                        All
+                    </option>
+
+                    <option value="Active">
+                        Active
+                    </option>
+
+                    <option value="Inactive">
+                        Inactive
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         USERS TABLE
+         ========================================= -->
+
+    <div class="users-table-card">
+
+        <div class="users-table-heading">
+
+            <h2>
+                Users
+            </h2>
+
+            <span class="users-count"
+                  id="visibleUserCount">
+
+                @Model.Users.Count user(s)
+
+            </span>
+
+        </div>
+
+
+        <div class="users-table-wrapper">
+
+            <table class="users-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>School</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @foreach (var user in Model.Users)
+                    {
+                        var status =
+                        user.IsActive
+                        ? "Active"
+                        : "Inactive";
+
+                        <tr class="user-row"
+                            data-name="@user.FullName"
+                            data-email="@user.Email"
+                            data-phone="@user.Phone"
+                            data-role="@user.Role"
+                            data-school="@user.SchoolName"
+                            data-status="@status">
+
+                            <!-- NAME -->
+
+                            <td>
+
+                                <div class="user-name-cell">
+
+                                    <div class="user-avatar">
+
+                                        @(string.IsNullOrWhiteSpace(
+                                                                            user.FullName)
+                                                                            ? "U"
+                                                                            : user.FullName
+                                                                            .Substring(0, 1)
+                                                                            .ToUpper())
+
+                                    </div>
+
+
+                                    <span class="user-full-name">
+
+                                        @(string.IsNullOrWhiteSpace(
+                                                                            user.FullName)
+                                                                            ? "Unknown User"
+                                                                            : user.FullName)
+
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- EMAIL -->
+
+                            <td>
+
+                                @(string.IsNullOrWhiteSpace(user.Email)
+                                                            ? "—"
+                                                            : user.Email)
+
+                            </td>
+
+
+                            <!-- PHONE -->
+
+                            <td>
+
+                                @(string.IsNullOrWhiteSpace(user.Phone)
+                                                            ? "—"
+                                                            : user.Phone)
+
+                            </td>
+
+
+                            <!-- ROLE -->
+
+                            <td>
+
+                                <span class="user-role-badge">
+
+                                    @(string.IsNullOrWhiteSpace(user.Role)
+                                                                    ? "Unknown"
+                                                                    : user.Role)
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- SCHOOL -->
+
+                            <td>
+
+                                @(string.IsNullOrWhiteSpace(
+                                                            user.SchoolName)
+                                                            ? "—"
+                                                            : user.SchoolName)
+
+                        </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                            @if (user.IsActive)
+                                {
+                                    <span class="user-status active">
+                                        Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="user-status inactive">
+                                        Inactive
+                                    </span>
+                                }
+
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td>
+
+                                <a asp-controller="SuperAdmin"
+                                   asp-action="UserDetails"
+                                   asp-route-id="@user.Id"
+                                   class="user-view-button">
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                    <span>
+                                        View
+                                    </span>
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        @if (Model.Users.Count == 0)
+        {
+            <div class="users-empty-state">
+
+                No users found.
+
+            </div>
+        }
+
+
+        <div id="noFilterResults"
+             class="users-empty-state"
+             style="display:none;">
+
+            No users match your search or filters.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            const searchInput =
+                document.getElementById(
+                    "userSearch");
+
+            const roleFilter =
+                document.getElementById(
+                    "roleFilter");
+
+            const schoolFilter =
+                document.getElementById(
+                    "schoolFilter");
+
+            const statusFilter =
+                document.getElementById(
+                    "statusFilter");
+
+            const rows =
+                Array.from(
+                    document.querySelectorAll(
+                        ".user-row"));
+
+            const countLabel =
+                document.getElementById(
+                    "visibleUserCount");
+
+            const noResults =
+                document.getElementById(
+                    "noFilterResults");
+
+
+            function filterUsers() {
+
+                const search =
+                    searchInput.value
+                        .trim()
+                        .toLowerCase();
+
+                const role =
+                    roleFilter.value
+                        .toLowerCase();
+
+                const school =
+                    schoolFilter.value
+                        .toLowerCase();
+
+                const status =
+                    statusFilter.value
+                        .toLowerCase();
+
+
+                let visibleCount = 0;
+
+
+                rows.forEach(function (row) {
+
+                    const name =
+                        (row.dataset.name || "")
+                            .toLowerCase();
+
+                    const email =
+                        (row.dataset.email || "")
+                            .toLowerCase();
+
+                    const phone =
+                        (row.dataset.phone || "")
+                            .toLowerCase();
+
+                    const rowRole =
+                        (row.dataset.role || "")
+                            .toLowerCase();
+
+                    const rowSchool =
+                        (row.dataset.school || "")
+                            .toLowerCase();
+
+                    const rowStatus =
+                        (row.dataset.status || "")
+                            .toLowerCase();
+
+
+                    const matchesSearch =
+                        search === "" ||
+                        name.includes(search) ||
+                        email.includes(search) ||
+                        phone.includes(search);
+
+
+                    const matchesRole =
+                        role === "" ||
+                        rowRole === role;
+
+
+                    const matchesSchool =
+                        school === "" ||
+                        rowSchool === school;
+
+
+                    const matchesStatus =
+                        status === "" ||
+                        rowStatus === status;
+
+
+                    const shouldShow =
+                        matchesSearch &&
+                        matchesRole &&
+                        matchesSchool &&
+                        matchesStatus;
+
+
+                    row.style.display =
+                        shouldShow
+                            ? ""
+                            : "none";
+
+
+                    if (shouldShow)
+                    {
+                        visibleCount++;
+                    }
+
+                });
+
+
+                countLabel.textContent =
+                    visibleCount +
+                    " user(s)";
+
+
+                noResults.style.display =
+                    rows.length > 0 &&
+                    visibleCount === 0
+                        ? "block"
+                        : "none";
+            }
+
+
+            searchInput.addEventListener(
+                "input",
+                filterUsers);
+
+
+            roleFilter.addEventListener(
+                "change",
+                filterUsers);
+
+
+            schoolFilter.addEventListener(
+                "change",
+                filterUsers);
+
+
+            statusFilter.addEventListener(
+                "change",
+                filterUsers);
+
+        });
+
+</script>

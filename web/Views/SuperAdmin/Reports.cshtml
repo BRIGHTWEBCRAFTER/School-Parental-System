@@ -1,0 +1,534 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.ReportsAnalyticsViewModel
+
+@{
+    ViewData["Title"] = "Reports & Analytics";
+}
+
+
+<div class="super-reports-page">
+
+    <!-- =========================================
+         PAGE HEADER
+         ========================================= -->
+
+    <div class="reports-page-header">
+
+        <h1>
+            Reports & Analytics
+        </h1>
+
+        <p>
+            Overview of schools, users, communication and system activity.
+        </p>
+
+    </div>
+
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="reports-error-message">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+
+    <!-- =========================================
+         SUMMARY CARDS
+         ========================================= -->
+
+    <div class="reports-summary-grid">
+
+        <!-- TOTAL SCHOOLS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon gold">
+
+                <i class="bi bi-buildings-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Total Schools
+                </span>
+
+                <strong>
+                    @Model.TotalSchools
+                </strong>
+
+                <small>
+                    Registered schools
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- ACTIVE SCHOOLS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon green">
+
+                <i class="bi bi-building-check"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Active Schools
+                </span>
+
+                <strong>
+                    @Model.ActiveSchools
+                </strong>
+
+                <small>
+                    Currently active
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- TOTAL USERS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon soft-gold">
+
+                <i class="bi bi-people-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Total Users
+                </span>
+
+                <strong>
+                    @Model.TotalUsers
+                </strong>
+
+                <small>
+                    System accounts
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- ACTIVE USERS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon green">
+
+                <i class="bi bi-person-check-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Active Users
+                </span>
+
+                <strong>
+                    @Model.ActiveUsers
+                </strong>
+
+                <small>
+                    Active accounts
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- INACTIVE USERS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon gold">
+
+                <i class="bi bi-person-x-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Inactive Users
+                </span>
+
+                <strong>
+                    @Model.InactiveUsers
+                </strong>
+
+                <small>
+                    Deactivated accounts
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- SCHOOL ADMINS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon gold">
+
+                <i class="bi bi-person-badge-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    School Admins
+                </span>
+
+                <strong>
+                    @Model.SchoolAdmins
+                </strong>
+
+                <small>
+                    Administrators
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- TEACHERS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon dark-green">
+
+                <i class="bi bi-person-workspace"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Teachers
+                </span>
+
+                <strong>
+                    @Model.Teachers
+                </strong>
+
+                <small>
+                    Teacher accounts
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- PARENTS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon soft-gold">
+
+                <i class="bi bi-people-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Parents
+                </span>
+
+                <strong>
+                    @Model.Parents
+                </strong>
+
+                <small>
+                    Parent accounts
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- EVENTS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon dark-green">
+
+                <i class="bi bi-calendar-event-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Events
+                </span>
+
+                <strong>
+                    @Model.TotalEvents
+                </strong>
+
+                <small>
+                    System events
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <!-- ANNOUNCEMENTS -->
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon green">
+
+                <i class="bi bi-megaphone-fill"></i>
+
+            </div>
+
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Announcements
+                </span>
+
+                <strong>
+                    @Model.TotalAnnouncements
+                </strong>
+
+                <small>
+                    System notices
+                </small>
+
+            </div>
+
+        </article>
+
+    </div>
+
+
+    <!-- =========================================
+         SCHOOL ANALYTICS
+         ========================================= -->
+
+    <div class="reports-table-card">
+
+        <div class="reports-table-heading">
+
+            <div>
+
+                <h2>
+                    School Analytics
+                </h2>
+
+                <p>
+                    User distribution and account status across registered schools.
+                </p>
+
+            </div>
+
+
+            <span class="reports-count">
+                @Model.Schools.Count school(s)
+            </span>
+
+        </div>
+
+
+        <div class="reports-table-wrapper">
+
+            <table class="reports-table">
+
+                <thead>
+
+                    <tr>
+                        <th>School</th>
+                        <th>Status</th>
+                        <th>Total Users</th>
+                        <th>Active</th>
+                        <th>Inactive</th>
+                        <th>School Admins</th>
+                        <th>Teachers</th>
+                        <th>Parents</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @foreach (var school in Model.Schools)
+                    {
+                        <tr>
+
+                            <!-- SCHOOL -->
+
+                            <td>
+
+                                <span class="report-school-name">
+
+                                    @(string.IsNullOrWhiteSpace(
+                                                                    school.SchoolName)
+                                                                    ? "Unnamed School"
+                                                                    : school.SchoolName)
+
+                            </span>
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                            @if (string.Equals(
+                                                        school.Status,
+                                                        "Active",
+                                                        StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <span class="report-status active">
+
+                                        Active
+
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="report-status inactive">
+
+                                        @(string.IsNullOrWhiteSpace(
+                                                                        school.Status)
+                                                                        ? "Unknown"
+                                                                        : school.Status)
+
+                            </span>
+                                                        }
+
+                            </td>
+
+
+                            <!-- TOTAL USERS -->
+
+                            <td>
+                                @school.TotalUsers
+                            </td>
+
+
+                            <!-- ACTIVE USERS -->
+
+                            <td>
+
+                                <span class="report-user-count active">
+                                    @school.ActiveUsers
+                                </span>
+
+                            </td>
+
+
+                            <!-- INACTIVE USERS -->
+
+                            <td>
+
+                                <span class="report-user-count inactive">
+                                    @school.InactiveUsers
+                                </span>
+
+                            </td>
+
+
+                            <!-- SCHOOL ADMINS -->
+
+                            <td>
+                                @school.SchoolAdmins
+                            </td>
+
+
+                            <!-- TEACHERS -->
+
+                            <td>
+                                @school.Teachers
+                            </td>
+
+
+                            <!-- PARENTS -->
+
+                            <td>
+                                @school.Parents
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td>
+
+                                <a asp-controller="SuperAdmin"
+                                   asp-action="SchoolDetails"
+                                   asp-route-id="@school.SchoolId"
+                                   class="report-view-button">
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                    <span>
+                                        View
+                                    </span>
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        @if (Model.Schools.Count == 0)
+        {
+            <div class="reports-empty-state">
+
+                No school analytics are available.
+
+            </div>
+        }
+
+    </div>
+
+</div>

@@ -1,0 +1,829 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.SchoolAdminRegistrationViewModel
+
+@{
+    ViewData["Title"] = "School Admin Registration";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        School Admin Registration - School-Parental System
+    </title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/login-animated.css"
+          asp-append-version="true" />
+
+
+    <style>
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+        }
+
+
+            body.auth-body {
+                min-height: 100vh !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 28px !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+            }
+
+
+        /* =========================================
+                   MAIN REGISTRATION CARD
+                   ========================================= */
+
+        .registration-container {
+            width: 1160px;
+            max-width: 94vw;
+            height: 760px;
+            max-height: 90vh;
+            display: grid;
+            grid-template-columns: 56% 44%;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #d5a900;
+            border-radius: 24px;
+            background: #003d2f;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.20);
+        }
+
+
+        /* =========================================
+                   LEFT SIDE
+                   ========================================= */
+
+        .registration-form-side {
+            position: relative;
+            height: 100%;
+            padding: 42px 48px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: #003d2f;
+            /* Scroll works but scrollbar stays hidden */
+            scrollbar-width: none;
+        }
+
+
+            .registration-form-side::-webkit-scrollbar {
+                display: none;
+            }
+
+
+        .registration-form-inner {
+            width: 100%;
+            padding-bottom: 35px;
+        }
+
+
+        .registration-title {
+            margin: 0 0 32px 0;
+            color: #ffffff;
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+
+            .registration-title::after {
+                content: "";
+                display: block;
+                width: 48px;
+                height: 4px;
+                margin-top: 12px;
+                border-radius: 10px;
+                background: #f4c542;
+            }
+
+
+        /* =========================================
+                   FORM FIELDS
+                   ========================================= */
+
+        .registration-field {
+            position: relative;
+            margin-bottom: 28px;
+        }
+
+
+            .registration-field label {
+                display: block;
+                margin-bottom: 7px;
+                color: #f4c542;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+
+            .registration-field input,
+            .registration-field select {
+                width: 100%;
+                height: 48px;
+                padding: 8px 42px 8px 0;
+                border: none;
+                border-bottom: 2px solid rgba(255,255,255,0.65);
+                outline: none;
+                background: transparent;
+                color: #ffffff;
+                font-size: 15px;
+                box-sizing: border-box;
+                transition: border-color .2s ease;
+            }
+
+
+                .registration-field input:focus,
+                .registration-field select:focus {
+                    border-bottom-color: #f4c542;
+                }
+
+
+            .registration-field select {
+                cursor: pointer;
+            }
+
+
+                .registration-field select option {
+                    background: #ffffff;
+                    color: #222222;
+                }
+
+
+        .registration-field-icon {
+            position: absolute;
+            right: 8px;
+            bottom: 14px;
+            color: #d5ddd9;
+            font-size: 18px;
+        }
+
+
+        .registration-field button.registration-eye {
+            position: absolute;
+            right: 0;
+            bottom: 7px;
+            width: 38px;
+            height: 38px;
+            border: none;
+            background: transparent;
+            color: #d5ddd9;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+
+            .registration-field button.registration-eye:hover {
+                color: #f4c542;
+            }
+
+
+        .field-error {
+            display: block;
+            margin-top: 6px;
+            color: #ff9f9f;
+            font-size: 12px;
+        }
+
+
+        /* =========================================
+                   MESSAGES
+                   ========================================= */
+
+        .registration-message {
+            margin-bottom: 22px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+
+            .registration-message.success {
+                background: rgba(46, 204, 113, 0.14);
+                border: 1px solid rgba(46, 204, 113, 0.5);
+                color: #d9ffe7;
+            }
+
+
+            .registration-message.error {
+                color: #ffb4b4;
+            }
+
+
+        /* =========================================
+                   REGISTER BUTTON
+                   ========================================= */
+
+        .registration-submit {
+            width: 100%;
+            height: 50px;
+            margin-top: 4px;
+            border: 2px solid #f4c542;
+            border-radius: 10px;
+            background: transparent;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .2s ease, color .2s ease;
+        }
+
+
+            .registration-submit:hover {
+                background: #f4c542;
+                color: #003d2f;
+            }
+
+
+        .registration-login-link {
+            margin-top: 22px;
+            padding-bottom: 16px;
+            text-align: center;
+            color: #d7e2de;
+            font-size: 13px;
+        }
+
+
+            .registration-login-link a {
+                color: #f4c542;
+                font-weight: 700;
+                text-decoration: none;
+            }
+
+
+                .registration-login-link a:hover {
+                    text-decoration: underline;
+                }
+
+
+        /* =========================================
+                   RIGHT INFORMATION SIDE
+                   ========================================= */
+
+        .registration-info-side {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 55px;
+            box-sizing: border-box;
+            overflow: hidden;
+            text-align: center;
+            background: linear-gradient( 145deg, #004a38 0%, #006047 100% );
+        }
+
+
+            /* subtle diagonal background only */
+            .registration-info-side::before {
+                content: "";
+                position: absolute;
+                left: -180px;
+                top: -100px;
+                width: 300px;
+                height: 120%;
+                background: rgba(0, 40, 31, 0.48);
+                transform: rotate(-38deg);
+                pointer-events: none;
+            }
+
+
+        .registration-info-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 380px;
+        }
+
+
+        .registration-info-logo {
+            margin-bottom: 26px;
+        }
+
+
+            .registration-info-logo img {
+                width: 165px;
+                max-width: 100%;
+                padding: 10px;
+                border-radius: 10px;
+                background: #ffffff;
+            }
+
+
+        .registration-info-side h2 {
+            margin: 0 0 20px 0;
+            color: #ffffff;
+            font-size: 34px;
+            font-weight: 700;
+            line-height: 1.15;
+            text-transform: uppercase;
+        }
+
+
+        .registration-info-side p {
+            margin: 0;
+            color: #d9e3df;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+
+        .registration-info-icon {
+            margin-bottom: 20px;
+            color: #f4c542;
+            font-size: 38px;
+        }
+
+
+        /* =========================================
+                   RESPONSIVE
+                   ========================================= */
+
+        @@media (max-width: 900px) {
+
+            body.auth-body {
+                overflow-y: auto !important;
+                align-items: flex-start !important;
+            }
+
+
+            .registration-container {
+                width: 100%;
+                height: auto;
+                max-height: none;
+                grid-template-columns: 1fr;
+            }
+
+
+            .registration-form-side {
+                height: auto;
+                overflow: visible;
+            }
+
+
+            .registration-info-side {
+                min-height: 360px;
+            }
+        }
+
+
+        @@media (max-width: 560px) {
+
+            .registration-form-side {
+                padding: 32px 24px;
+            }
+
+
+            .registration-info-side {
+                padding: 40px 24px;
+            }
+
+
+            .registration-title {
+                font-size: 26px;
+            }
+
+
+            .registration-info-side h2 {
+                font-size: 28px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body class="auth-body">
+
+
+    <main class="registration-container">
+
+
+        <!-- =========================================
+             LEFT: REGISTRATION FORM
+             ========================================= -->
+
+        <section class="registration-form-side"
+                 id="registrationFormPanel">
+
+
+            <div class="registration-form-inner">
+
+
+                <h1 class="registration-title">
+                    School Admin Registration
+                </h1>
+
+
+                <form asp-controller="SchoolAdminRegistration"
+                      asp-action="SchoolAdmin"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+
+                    <!-- SUCCESS -->
+                    @if (TempData["RegistrationCodeValidated"] != null)
+                    {
+                        <div class="registration-message success">
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                            @TempData["RegistrationCodeValidated"]
+
+                        </div>
+                    }
+
+
+                    <!-- ERRORS -->
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="registration-message error">
+                    </div>
+
+
+                    <!-- FULL NAME -->
+
+                    <div class="registration-field">
+
+                        <label asp-for="FullName">
+                            Full Name
+                        </label>
+
+                        <input asp-for="FullName"
+                               type="text"
+                               autocomplete="name"
+                               required />
+
+                        <i class="bi bi-person-fill registration-field-icon"></i>
+
+                        <span asp-validation-for="FullName"
+                              class="field-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="registration-field">
+
+                        <label asp-for="Email">
+                            Email Address
+                        </label>
+
+                        <input asp-for="Email"
+                               type="email"
+                               autocomplete="email"
+                               required />
+
+                        <i class="bi bi-envelope-fill registration-field-icon"></i>
+
+                        <span asp-validation-for="Email"
+                              class="field-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="registration-field">
+
+                        <label asp-for="Phone">
+                            Phone Number
+                        </label>
+
+                        <input asp-for="Phone"
+                               type="tel"
+                               autocomplete="tel" />
+
+                        <i class="bi bi-telephone-fill registration-field-icon"></i>
+
+                        <span asp-validation-for="Phone"
+                              class="field-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- SCHOOL -->
+
+                    <div class="registration-field">
+
+                        <label asp-for="SchoolId">
+                            School
+                        </label>
+
+                        <select asp-for="SchoolId"
+                                required>
+
+                            <option value="">
+                                Select your school
+                            </option>
+
+                            @if (Model?.Schools != null)
+                            {
+                                foreach (var school in Model.Schools)
+                                {
+                                    <option value="@school.Id">
+                                        @school.Name
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                        <i class="bi bi-buildings-fill registration-field-icon"></i>
+
+                        <span asp-validation-for="SchoolId"
+                              class="field-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- REGISTRATION CODE -->
+
+                    <div class="registration-field">
+
+                        <label asp-for="RegistrationCode">
+                            Registration Code
+                        </label>
+
+                        <input asp-for="RegistrationCode"
+                               type="text"
+                               autocomplete="off"
+                               required />
+
+                        <i class="bi bi-key-fill registration-field-icon"></i>
+
+                        <span asp-validation-for="RegistrationCode"
+                              class="field-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="registration-field">
+
+                        <label asp-for="Password">
+                            Password
+                        </label>
+
+                        <input asp-for="Password"
+                               type="password"
+                               id="registerPassword"
+                               autocomplete="new-password"
+                               required />
+
+                        <button type="button"
+                                class="registration-eye"
+                                id="registerPasswordToggle"
+                                aria-label="Show password">
+
+                            <i class="bi bi-eye-fill"></i>
+
+                        </button>
+
+                        <span asp-validation-for="Password"
+                              class="field-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- CONFIRM PASSWORD -->
+
+                    <div class="registration-field">
+
+                        <label asp-for="ConfirmPassword">
+                            Confirm Password
+                        </label>
+
+                        <input asp-for="ConfirmPassword"
+                               type="password"
+                               id="confirmPassword"
+                               autocomplete="new-password"
+                               required />
+
+                        <button type="button"
+                                class="registration-eye"
+                                id="confirmPasswordToggle"
+                                aria-label="Show confirm password">
+
+                            <i class="bi bi-eye-fill"></i>
+
+                        </button>
+
+                        <span asp-validation-for="ConfirmPassword"
+                              class="field-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- REGISTER BUTTON -->
+
+                    <button class="registration-submit"
+                            type="submit">
+
+                        <i class="bi bi-person-check-fill"></i>
+
+                        Register School Admin
+
+                    </button>
+
+
+                    <!-- BACK TO LOGIN -->
+
+                    <div class="registration-login-link">
+
+                        Already have an account?
+
+                        <br />
+
+                        <a asp-controller="Auth"
+                           asp-action="Login">
+
+                            Back to Log In
+
+                        </a>
+
+                    </div>
+
+
+                </form>
+
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =========================================
+             RIGHT: INFORMATION
+             ========================================= -->
+
+        <aside class="registration-info-side">
+
+
+            <div class="registration-info-content">
+
+
+                <div class="registration-info-logo">
+
+                    <img src="~/images/dbe-logo.webp"
+                         alt="Department of Basic Education" />
+
+                </div>
+
+
+                <div class="registration-info-icon">
+
+                    <i class="bi bi-shield-lock-fill"></i>
+
+                </div>
+
+
+                <h2>
+                    School Administrator
+                </h2>
+
+
+                <p>
+                    Use the registration code sent to your
+                    school's registered email address to create
+                    your School Admin account.
+                </p>
+
+
+            </div>
+
+
+        </aside>
+
+
+    </main>
+
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+
+                const registrationPanel =
+                    document.getElementById(
+                        "registrationFormPanel"
+                    );
+
+
+                if (registrationPanel) {
+
+                    registrationPanel.scrollTop = 0;
+
+                }
+
+
+                function setupPasswordToggle(
+                    buttonId,
+                    inputId) {
+
+                    const button =
+                        document.getElementById(
+                            buttonId
+                        );
+
+                    const input =
+                        document.getElementById(
+                            inputId
+                        );
+
+
+                    if (!button ||
+                        !input) {
+
+                        return;
+                    }
+
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            const icon =
+                                button.querySelector(
+                                    "i"
+                                );
+
+
+                            const isHidden =
+                                input.type === "password";
+
+
+                            input.type =
+                                isHidden
+                                    ? "text"
+                                    : "password";
+
+
+                            if (icon) {
+
+                                icon.className =
+                                    isHidden
+                                        ? "bi bi-eye-slash-fill"
+                                        : "bi bi-eye-fill";
+
+                            }
+
+                        }
+                    );
+
+                }
+
+
+                setupPasswordToggle(
+                    "registerPasswordToggle",
+                    "registerPassword"
+                );
+
+
+                setupPasswordToggle(
+                    "confirmPasswordToggle",
+                    "confirmPassword"
+                );
+
+
+            }
+        );
+
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,952 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.SuperAdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var schoolStatusTotal =
+        Model.ActiveSchools +
+        Model.PendingSchools +
+        Model.InactiveSchools;
+
+    var activePercentage =
+        schoolStatusTotal == 0
+            ? 0
+            : (decimal)Model.ActiveSchools /
+              schoolStatusTotal * 100;
+
+    var pendingPercentage =
+        schoolStatusTotal == 0
+            ? 0
+            : (decimal)Model.PendingSchools /
+              schoolStatusTotal * 100;
+
+    var activeEnd =
+        activePercentage;
+
+    var pendingEnd =
+        activePercentage +
+        pendingPercentage;
+
+    var schoolStatusChart =
+        $"background: conic-gradient(" +
+        $"var(--sa-success) 0 {activeEnd:0.##}%, " +
+        $"var(--sa-warning) {activeEnd:0.##}% {pendingEnd:0.##}%, " +
+        $"var(--sa-danger) {pendingEnd:0.##}% 100%);";
+
+
+    var successMessage =
+        TempData["SuccessMessage"]?.ToString();
+
+    var successTitle =
+        "Success";
+
+    var successAction =
+        "Dashboard";
+
+    var successButtonText =
+        "Done";
+
+    var successIcon =
+        "bi-check-lg";
+
+
+    if (!string.IsNullOrWhiteSpace(successMessage))
+    {
+        if (successMessage.Contains(
+                "Announcement",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            successTitle =
+                "Announcement Sent";
+
+            successAction =
+                "Announcements";
+        }
+        else if (successMessage.Contains(
+                     "Event",
+                     StringComparison.OrdinalIgnoreCase))
+        {
+            successTitle =
+                "Event Created";
+
+            successAction =
+                "Events";
+        }
+        else if (successMessage.Contains(
+                     "School",
+                     StringComparison.OrdinalIgnoreCase))
+        {
+            successTitle =
+                "School Saved";
+
+            successAction =
+                "Schools";
+        }
+    }
+}
+
+
+@if (!string.IsNullOrWhiteSpace(successMessage))
+{
+    <div class="sa-confirm-overlay"
+         style="display:flex;">
+
+        <div class="sa-confirm-box">
+
+            <div class="sa-success-modal-icon">
+
+                <i class="bi @successIcon"></i>
+
+            </div>
+
+
+            <h3>
+                @successTitle
+            </h3>
+
+
+            <p>
+                @successMessage
+            </p>
+
+
+            <div class="sa-confirm-actions">
+
+                <a asp-controller="SuperAdmin"
+                   asp-action="@successAction"
+                   class="super-primary-button">
+
+                    @successButtonText
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+
+<section class="sa-dashboard">
+
+    <!-- =========================================
+         WELCOME
+         ========================================= -->
+
+    <section class="sa-welcome-card">
+
+        <div>
+
+            <span class="sa-welcome-label">
+                System Overview
+            </span>
+
+            <h2>
+                Welcome back, @Model.AdminName!
+            </h2>
+
+            <p>
+                Here is an overview of the entire
+                School-Parental System.
+            </p>
+
+        </div>
+
+
+        <div class="sa-welcome-icon">
+
+            <i class="bi bi-shield-check"></i>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         SYSTEM STATISTICS
+         ========================================= -->
+
+    <section class="sa-stat-grid">
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon gold">
+                <i class="bi bi-buildings-fill"></i>
+            </div>
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Total Schools
+                </span>
+
+                <strong>
+                    @Model.TotalSchools
+                </strong>
+
+                <small>
+                    Registered schools
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon green">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Total Learners
+                </span>
+
+                <strong>
+                    @Model.TotalLearners
+                </strong>
+
+                <small>
+                    Active learners
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon soft-gold">
+                <i class="bi bi-people-fill"></i>
+            </div>
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Total Parents
+                </span>
+
+                <strong>
+                    @Model.TotalParents
+                </strong>
+
+                <small>
+                    Active parent accounts
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon dark-green">
+                <i class="bi bi-person-workspace"></i>
+            </div>
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Total Teachers
+                </span>
+
+                <strong>
+                    @Model.TotalTeachers
+                </strong>
+
+                <small>
+                    Active teachers
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon gold">
+                <i class="bi bi-person-badge-fill"></i>
+            </div>
+
+            <div class="sa-stat-content">
+
+                <span>
+                    School Admins
+                </span>
+
+                <strong>
+                    @Model.TotalSchoolAdmins
+                </strong>
+
+                <small>
+                    Active administrators
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <article class="sa-stat-card">
+
+            <div class="sa-stat-icon green">
+                <i class="bi bi-megaphone-fill"></i>
+            </div>
+
+            <div class="sa-stat-content">
+
+                <span>
+                    Active Announcements
+                </span>
+
+                <strong>
+                    @Model.ActiveAnnouncements
+                </strong>
+
+                <small>
+                    Current notices
+                </small>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- =========================================
+         MIDDLE DASHBOARD ROW
+         ========================================= -->
+
+    <section class="sa-dashboard-grid
+                    sa-dashboard-grid-main">
+
+        <!-- ENROLLMENT -->
+
+        <article class="sa-dashboard-panel">
+
+            <div class="sa-panel-header">
+
+                <div>
+
+                    <span class="sa-panel-icon">
+                        <i class="bi bi-bar-chart-fill"></i>
+                    </span>
+
+                    <h3>
+                        School Enrollment
+                    </h3>
+
+                </div>
+
+
+                <a asp-controller="SuperAdmin"
+                   asp-action="Schools">
+
+                    View All
+
+                </a>
+
+            </div>
+
+
+            <p class="sa-panel-subtitle">
+                Learner enrollment across all schools
+            </p>
+
+
+            @if (Model.EnrollmentOverview.Count > 0)
+            {
+                var maxEnrollment =
+                Model.EnrollmentOverview
+                .Max(x => x.LearnerCount);
+
+                <div class="sa-enrollment-chart">
+
+                    @foreach (var item
+                                    in Model.EnrollmentOverview)
+                    {
+                        var barHeight =
+                        maxEnrollment == 0
+                        ? 0
+                        : (decimal)item.LearnerCount /
+                        maxEnrollment * 100;
+
+                        <div class="sa-enrollment-column">
+
+                            <span class="sa-enrollment-value">
+                                @item.LearnerCount
+                            </span>
+
+
+                            <div class="sa-enrollment-track">
+
+                                <div class="sa-enrollment-bar"
+                                     style="height: @barHeight.ToString("0")%;">
+                                </div>
+
+                            </div>
+
+
+                            <span class="sa-enrollment-label">
+                                @item.Label
+                            </span>
+
+                        </div>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="sa-panel-empty">
+
+                    <i class="bi bi-bar-chart"></i>
+
+                    <strong>
+                        Enrollment data will appear here
+                    </strong>
+
+                    <span>
+                        System-wide enrollment trends
+                        will be connected next.
+                    </span>
+
+                </div>
+            }
+
+        </article>
+
+
+        <!-- SCHOOL STATUS -->
+
+        <article class="sa-dashboard-panel">
+
+            <div class="sa-panel-header">
+
+                <div>
+
+                    <span class="sa-panel-icon">
+                        <i class="bi bi-pie-chart-fill"></i>
+                    </span>
+
+                    <h3>
+                        Schools by Status
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <p class="sa-panel-subtitle">
+                Current school registration status
+            </p>
+
+
+            <div class="sa-school-status-content">
+
+                <div class="sa-status-chart"
+                     style="@schoolStatusChart">
+
+                    <div class="sa-status-chart-inner">
+
+                        <strong>
+                            @Model.TotalSchools
+                        </strong>
+
+                        <span>
+                            Schools
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="sa-status-legend">
+
+                    <div class="sa-status-legend-item">
+
+                        <span class="sa-status-dot active">
+                        </span>
+
+                        <div>
+                            <strong>Active</strong>
+                            <span>@Model.ActiveSchools schools</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="sa-status-legend-item">
+
+                        <span class="sa-status-dot pending">
+                        </span>
+
+                        <div>
+                            <strong>Pending</strong>
+                            <span>@Model.PendingSchools schools</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="sa-status-legend-item">
+
+                        <span class="sa-status-dot inactive">
+                        </span>
+
+                        <div>
+                            <strong>Inactive</strong>
+                            <span>@Model.InactiveSchools schools</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+        <!-- UPCOMING EVENTS -->
+
+        <article class="sa-dashboard-panel">
+
+            <div class="sa-panel-header">
+
+                <div>
+
+                    <span class="sa-panel-icon">
+                        <i class="bi bi-calendar-event-fill"></i>
+                    </span>
+
+                    <h3>
+                        Upcoming Events
+                    </h3>
+
+                </div>
+
+
+                <a asp-controller="SuperAdmin"
+                   asp-action="Events">
+
+                    View All
+
+                </a>
+
+            </div>
+
+
+            <p class="sa-panel-subtitle">
+                Upcoming events across the system
+            </p>
+
+
+            @if (Model.UpcomingEvents.Count > 0)
+            {
+                <div class="sa-event-list">
+
+                    @foreach (var item
+                                    in Model.UpcomingEvents.Take(5))
+                    {
+                        <div class="sa-event-row">
+
+                            <div class="sa-event-date">
+
+                                <span>
+                                    @item.Month
+                                </span>
+
+                                <strong>
+                                    @item.Day
+                                </strong>
+
+                            </div>
+
+
+                            <div class="sa-event-details">
+
+                                <strong>
+                                    @item.Title
+                                </strong>
+
+                                <span>
+                                    <i class="bi bi-clock"></i>
+                                    @item.Time
+                                </span>
+
+                                <small>
+
+                                    @(string.IsNullOrWhiteSpace(
+                                                                item.SchoolName)
+                                                                ? "All Schools"
+                                                                : item.SchoolName)
+
+                        </small>
+
+                            </div>
+
+                        </div>
+                                }
+
+                </div>
+            }
+            else
+            {
+                <div class="sa-panel-empty">
+
+                    <i class="bi bi-calendar2-event"></i>
+
+                    <strong>
+                        No upcoming events
+                    </strong>
+
+                    <span>
+                        Upcoming school and system events
+                        will appear here.
+                    </span>
+
+                </div>
+            }
+
+        </article>
+
+    </section>
+
+
+    <!-- =========================================
+         BOTTOM DASHBOARD ROW
+         ========================================= -->
+
+    <section class="sa-dashboard-grid
+                    sa-dashboard-grid-bottom">
+
+        <!-- RECENT ACTIVITY -->
+
+        <article class="sa-dashboard-panel">
+
+            <div class="sa-panel-header">
+
+                <div>
+
+                    <span class="sa-panel-icon">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                    </span>
+
+                    <h3>
+                        Recent Activity
+                    </h3>
+
+                </div>
+
+
+                <a asp-controller="SuperAdmin"
+                   asp-action="AuditLogs">
+
+                    View All
+
+                </a>
+
+            </div>
+
+
+            @if (Model.RecentActivities.Count > 0)
+            {
+                <div class="sa-activity-list">
+
+                    @foreach (var activity
+                                    in Model.RecentActivities.Take(5))
+                    {
+                        <div class="sa-activity-row">
+
+                            <div class="sa-activity-icon">
+
+                                <i class="bi bi-activity"></i>
+
+                            </div>
+
+
+                            <div class="sa-activity-content">
+
+                                <strong>
+                                    @activity.Description
+                                </strong>
+
+                                <span>
+                                    @activity.Type
+                                </span>
+
+                            </div>
+
+
+                            <small>
+                                @activity.TimeAgo
+                            </small>
+
+                        </div>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="sa-panel-empty compact">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <strong>
+                        No recent activity
+                    </strong>
+
+                    <span>
+                        System activity will appear here.
+                    </span>
+
+                </div>
+            }
+
+        </article>
+
+
+        <!-- QUICK ACTIONS -->
+
+        <article class="sa-dashboard-panel">
+
+            <div class="sa-panel-header">
+
+                <div>
+
+                    <span class="sa-panel-icon">
+                        <i class="bi bi-rocket-takeoff-fill"></i>
+                    </span>
+
+                    <h3>
+                        Quick Actions
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="sa-quick-actions">
+
+                <a asp-controller="SuperAdmin"
+                   asp-action="AddSchool"
+                   class="sa-quick-action gold-action">
+
+                    <i class="bi bi-building-add"></i>
+
+                    <span>
+
+                        <strong>
+                            Add School
+                        </strong>
+
+                        <small>
+                            Register a new school
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <a asp-controller="SuperAdmin"
+                   asp-action="Users"
+                   class="sa-quick-action green-action">
+
+                    <i class="bi bi-people-fill"></i>
+
+                    <span>
+
+                        <strong>
+                            Manage Users
+                        </strong>
+
+                        <small>
+                            View system accounts
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <a asp-controller="SuperAdmin"
+                   asp-action="CreateAnnouncement"
+                   class="sa-quick-action cream-action">
+
+                    <i class="bi bi-megaphone-fill"></i>
+
+                    <span>
+
+                        <strong>
+                            Announcement
+                        </strong>
+
+                        <small>
+                            Send a system notice
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <a asp-controller="SuperAdmin"
+                   asp-action="CreateEvent"
+                   class="sa-quick-action dark-action">
+
+                    <i class="bi bi-calendar-plus-fill"></i>
+
+                    <span>
+
+                        <strong>
+                            Create Event
+                        </strong>
+
+                        <small>
+                            Schedule an event
+                        </small>
+
+                    </span>
+
+                </a>
+
+            </div>
+
+        </article>
+
+
+        <!-- RECENT SCHOOLS -->
+
+        <article class="sa-dashboard-panel
+                        sa-recent-schools-panel">
+
+            <div class="sa-panel-header">
+
+                <div>
+
+                    <span class="sa-panel-icon">
+                        <i class="bi bi-buildings-fill"></i>
+                    </span>
+
+                    <h3>
+                        Recent Schools
+                    </h3>
+
+                </div>
+
+
+                <a asp-controller="SuperAdmin"
+                   asp-action="Schools">
+
+                    View All
+
+                </a>
+
+            </div>
+
+
+            @if (Model.RecentSchools.Count > 0)
+            {
+                <div class="sa-table-wrapper">
+
+                    <table class="sa-dashboard-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>School</th>
+                                <th>Location</th>
+                                <th>Learners</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var school
+                                                    in Model.RecentSchools.Take(5))
+                            {
+                                <tr>
+
+                                    <td>
+
+                                        <strong>
+                                            @school.SchoolName
+                                        </strong>
+
+                                    </td>
+
+                                    <td>
+                                        @school.Location
+                                    </td>
+
+                                    <td>
+                                        @school.LearnerCount
+                                    </td>
+
+                                    <td>
+
+                                        @{
+                                            var statusClass =
+                                            school.Status
+                                            .ToLowerInvariant();
+                                        }
+
+                                        <span class="sa-school-status-badge
+                                                             @statusClass">
+
+                                            <span></span>
+
+                                            @school.Status
+
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="sa-panel-empty compact">
+
+                    <i class="bi bi-buildings"></i>
+
+                    <strong>
+                        No school records yet
+                    </strong>
+
+                    <span>
+                        Recently registered schools
+                        will appear here.
+                    </span>
+
+                </div>
+            }
+
+        </article>
+
+    </section>
+
+</section>

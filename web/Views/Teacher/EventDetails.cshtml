@@ -1,0 +1,410 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherEventItemViewModel
+
+@{
+    ViewData["Title"] = "Event Details";
+    Layout = "_TeacherLayout";
+
+    var eventStatus =
+        Model.EventDate.Date < DateTime.Today
+            ? "Past"
+            : Model.EventDate.Date == DateTime.Today
+                ? "Today"
+                : "Upcoming";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-event-details.css"
+      asp-append-version="true" />
+
+
+<section class="dashboard-content">
+
+    <!-- =========================================
+         PAGE HEADING
+         ========================================= -->
+
+    <div class="page-heading event-details-heading">
+
+        <div>
+            <h2>Event Details</h2>
+
+            <p>
+                Review the event information,
+                schedule and target audience.
+            </p>
+        </div>
+
+
+        <div class="event-details-actions">
+
+            <!-- BACK TO EVENTS -->
+
+            <a asp-controller="Teacher"
+               asp-action="Events"
+               class="event-details-back-button">
+
+                <i class="bi bi-arrow-left"></i>
+                Back to Events
+
+            </a>
+
+
+            <!-- EDIT EVENT -->
+
+            <a asp-controller="Teacher"
+               asp-action="EditEvent"
+               asp-route-id="@Model.Id"
+               class="event-details-edit-button">
+
+                <i class="bi bi-pencil-square"></i>
+                Edit Event
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         FEEDBACK MESSAGES
+         ========================================= -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success"
+             role="alert">
+
+            <i class="bi bi-check-circle-fill"></i>
+
+            @TempData["SuccessMessage"]
+
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill"></i>
+
+            @TempData["ErrorMessage"]
+
+        </div>
+    }
+
+
+    <!-- =========================================
+         EVENT DETAILS
+         ========================================= -->
+
+    <section class="event-details-main-card">
+
+        <div class="event-details-main-header">
+
+            <div class="event-details-main-icon">
+
+                <i class="bi bi-calendar-event-fill"></i>
+
+            </div>
+
+
+            <div class="event-details-title-block">
+
+                <div class="event-details-title-row">
+
+                    <h3>
+                        @Model.EventName
+                    </h3>
+
+
+                    <span class="event-details-status @eventStatus.ToLowerInvariant()">
+
+                        @eventStatus
+
+                    </span>
+
+                </div>
+
+
+                <div class="event-details-meta">
+
+                    <span>
+
+                        <i class="bi bi-calendar3"></i>
+
+                        @(Model.EventDate.ToString(
+                            "dd MMM yyyy"))
+
+                    </span>
+
+
+                    <span>
+
+                        <i class="bi bi-calendar-week"></i>
+
+                        @(Model.EventDate.ToString(
+                            "dddd"))
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="event-details-description">
+
+            <span class="event-details-label">
+                Description
+            </span>
+
+
+            @if (!string.IsNullOrWhiteSpace(
+            Model.Description))
+            {
+                <p>
+                    @Model.Description
+                </p>
+            }
+            else
+            {
+                <p class="event-details-muted">
+                    No description provided.
+                </p>
+            }
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         SCHEDULE AND AUDIENCE
+         ========================================= -->
+
+    <div class="event-details-grid">
+
+        <!-- =====================================
+             SCHEDULE
+             ===================================== -->
+
+        <section class="event-details-card">
+
+            <div class="event-details-section-heading">
+
+                <div class="event-details-section-icon">
+
+                    <i class="bi bi-clock-fill"></i>
+
+                </div>
+
+
+                <div>
+                    <h3>Schedule</h3>
+
+                    <p>
+                        Date, time and venue details.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="event-details-info-list">
+
+                <!-- EVENT DATE -->
+
+                <div class="event-details-info-row">
+
+                    <span>Event Date</span>
+
+                    <strong>
+                        @(Model.EventDate.ToString(
+                            "dd MMM yyyy"))
+                    </strong>
+
+                </div>
+
+
+                <!-- START TIME -->
+
+                <div class="event-details-info-row">
+
+                    <span>Start Time</span>
+
+                    <strong>
+
+                        @if (Model.StartTime.HasValue)
+                        {
+                            @(Model.StartTime.Value
+                                .ToString(@"hh\:mm"))
+                        }
+                        else
+                        {
+                            <text>Not specified</text>
+                        }
+
+                    </strong>
+
+                </div>
+
+
+                <!-- END TIME -->
+
+                <div class="event-details-info-row">
+
+                    <span>End Time</span>
+
+                    <strong>
+
+                        @if (Model.EndTime.HasValue)
+                        {
+                            @(Model.EndTime.Value
+                                .ToString(@"hh\:mm"))
+                        }
+                        else
+                        {
+                            <text>Not specified</text>
+                        }
+
+                    </strong>
+
+                </div>
+
+
+                <!-- VENUE -->
+
+                <div class="event-details-info-row">
+
+                    <span>Venue</span>
+
+                    <strong>
+
+                        @if (!string.IsNullOrWhiteSpace(
+                        Model.Venue))
+                        {
+                            @Model.Venue
+                        }
+                        else
+                        {
+                            <text>Not specified</text>
+                        }
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             TARGET AUDIENCE
+             ===================================== -->
+
+        <section class="event-details-card">
+
+            <div class="event-details-section-heading">
+
+                <div class="event-details-section-icon">
+
+                    <i class="bi bi-people-fill"></i>
+
+                </div>
+
+
+                <div>
+                    <h3>Audience</h3>
+
+                    <p>
+                        Who this event is intended for.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="event-details-info-list">
+
+                <!-- TARGET TYPE -->
+
+                <div class="event-details-info-row">
+
+                    <span>Target Type</span>
+
+                    <strong>
+
+                        @(Model.TargetType == "Specific Users"
+                            ? "Specific User"
+                            : "Class")
+
+                    </strong>
+
+                </div>
+
+
+                <!-- TARGET AUDIENCE -->
+
+                <div class="event-details-info-row">
+
+                    <span>Target Audience</span>
+
+                    <strong>
+                        @Model.TargetDisplay
+                    </strong>
+
+                </div>
+
+
+                <!-- ASSIGNED CLASS -->
+
+                <div class="event-details-info-row">
+
+                    <span>Assigned Class</span>
+
+                    <strong>
+                        @Model.ClassName
+                    </strong>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="event-details-info-row">
+
+                    <span>Status</span>
+
+                    <strong>
+                        @eventStatus
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- INFORMATION NOTICE -->
+
+            <div class="event-details-notice">
+
+                <i class="bi bi-info-circle-fill"></i>
+
+                <span>
+                    This event belongs to one of your
+                    assigned classes.
+                </span>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</section>

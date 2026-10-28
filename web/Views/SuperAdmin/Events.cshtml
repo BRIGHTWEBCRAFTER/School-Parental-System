@@ -1,0 +1,211 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.EventManagementViewModel
+
+@{
+    ViewData["Title"] = "Events";
+}
+
+<section class="sa-schools-page">
+
+    <section class="sa-schools-header">
+
+        <div>
+
+            <span class="sa-page-label">
+                Events
+            </span>
+
+            <h2>Events</h2>
+
+            <p>
+                View and manage events created for registered schools.
+            </p>
+
+        </div>
+
+
+        <a asp-controller="SuperAdmin"
+           asp-action="CreateEvent"
+           class="super-primary-button">
+
+            <i class="bi bi-calendar-plus"></i>
+            New Event
+
+        </a>
+
+    </section>
+
+
+    <section class="sa-schools-card">
+
+        <div class="sa-schools-toolbar">
+
+            <div>
+
+                <h3>
+                    Event History
+                </h3>
+
+                <span>
+                    @Model.Events.Count event(s)
+                </span>
+
+            </div>
+
+        </div>
+
+
+        @if (Model.Events.Count == 0)
+        {
+            <div style="padding:40px; text-align:center;">
+
+                <i class="bi bi-calendar-x"
+                   style="font-size:28px;">
+                </i>
+
+                <h3 style="margin-top:12px;">
+                    No Events Yet
+                </h3>
+
+                <p>
+                    Create your first event using the
+                    New Event button.
+                </p>
+
+            </div>
+        }
+        else
+        {
+            <div class="sa-schools-table-wrapper">
+
+                <table class="sa-schools-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Event</th>
+                            <th>School</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Venue</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var item in Model.Events)
+                        {
+                            var startTime =
+                            item.StartTime.HasValue
+                            ? item.StartTime.Value.ToString("hh\\:mm")
+                            : "—";
+
+                            var endTime =
+                            item.EndTime.HasValue
+                            ? item.EndTime.Value.ToString("hh\\:mm")
+                            : "";
+
+                            <tr>
+
+                                <!-- EVENT -->
+
+                                <td>
+
+                                    <strong>
+                                        @item.EventName
+                                    </strong>
+
+                                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                                    {
+                                        <span class="sa-table-secondary">
+                                            @item.Description
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- SCHOOL -->
+
+                                <td>
+                                    @item.SchoolName
+                                </td>
+
+
+                                <!-- DATE -->
+
+                                <td>
+                                    @item.EventDate.ToString("dd MMM yyyy")
+                                </td>
+
+
+                                <!-- TIME -->
+
+                                <td>
+
+                                    @startTime
+
+                                    @if (!string.IsNullOrWhiteSpace(endTime))
+                                    {
+                                        <span>
+                                            - @endTime
+                                        </span>
+                                    }
+
+                            </td>
+
+
+                            <!-- VENUE -->
+
+                            <td>
+
+                                @(string.IsNullOrWhiteSpace(item.Venue)
+                                                            ? "—"
+                                                            : item.Venue)
+
+                        </td>
+
+
+                                <!-- CREATED -->
+
+                                <td>
+
+                                    @item.CreatedAt
+                                    .ToLocalTime()
+                                    .ToString("dd MMM yyyy HH:mm")
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+
+                                <td>
+
+                                    <a asp-controller="SuperAdmin"
+                                       asp-action="EventDetails"
+                                       asp-route-id="@item.Id"
+                                       class="sa-school-action-button"
+                                       title="View event">
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </section>
+
+</section>

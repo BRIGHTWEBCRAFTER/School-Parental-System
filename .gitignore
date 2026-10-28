@@ -1,4 +1,17 @@
 
+# Ignore Visual Studio temporary files
+.vs/
+**/.vs/
+
+# Ignore compiled project files
+**/bin/
+**/obj/
+
+# Ignore local user settings
+*.user
+*.suo
+*.vsidx
+
 # ASP.NET / Visual Studio local files
 web/.vs/
 web/**/bin/

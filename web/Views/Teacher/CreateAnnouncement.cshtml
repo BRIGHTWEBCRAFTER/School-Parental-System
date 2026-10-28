@@ -1,0 +1,600 @@
+﻿@using System.Linq
+@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherCreateClassAnnouncementViewModel
+
+@{
+    ViewData["Title"] = "Create Announcement";
+    Layout = "_TeacherLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-create-announcement.css"
+      asp-append-version="true" />
+
+<link rel="stylesheet"
+      href="~/css/teacher/teacher-communication-schooladmin.css"
+      asp-append-version="true" />
+
+<section class="dashboard-content teacher-communication-page">
+
+    <!-- PAGE HEADING -->
+
+    <div class="page-heading announcement-page-heading">
+
+        <div>
+            <h2>Create Announcement</h2>
+
+            <p>
+                Send communication to parents of learners
+                in your assigned classes.
+            </p>
+        </div>
+
+        <a asp-controller="Teacher"
+           asp-action="Communication"
+           class="announcement-back-button">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Communication
+
+        </a>
+
+    </div>
+
+    <!-- FEEDBACK MESSAGES -->
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="alert alert-danger" role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            @errorMessage
+
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success" role="status">
+
+            <i class="bi bi-check-circle-fill"></i>
+            @successMessage
+
+        </div>
+    }
+
+    <!-- ANNOUNCEMENT FORM -->
+
+    <form asp-controller="Teacher"
+          asp-action="SendClassAnnouncement"
+          method="post"
+          class="announcement-form">
+
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly"
+             class="announcement-validation-summary">
+        </div>
+
+        <!-- ANNOUNCEMENT DETAILS -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-megaphone-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Announcement Details</h3>
+
+                    <p>
+                        Enter the message and choose its priority.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="announcement-form-grid">
+
+                <div class="announcement-field full-width">
+
+                    <label asp-for="Title">
+                        Announcement Title
+                    </label>
+
+                    <input asp-for="Title"
+                           maxlength="150"
+                           placeholder="Enter announcement title"
+                           required />
+
+                    <span asp-validation-for="Title"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+                <div class="announcement-field full-width">
+
+                    <label asp-for="Content">
+                        Message
+                    </label>
+
+                    <textarea asp-for="Content"
+                              rows="6"
+                              maxlength="5000"
+                              placeholder="Write your announcement message..."
+                              required></textarea>
+
+                    <span asp-validation-for="Content"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+                <div class="announcement-field">
+
+                    <label asp-for="Priority">
+                        Priority
+                    </label>
+
+                    <select asp-for="Priority"
+                            id="teacherAnnouncementPriority">
+
+                        <option value="Normal">Normal</option>
+                        <option value="Important">Important</option>
+                        <option value="Urgent">Urgent</option>
+
+                    </select>
+
+                    <span asp-validation-for="Priority"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- TARGET AUDIENCE -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-bullseye"></i>
+                </div>
+
+                <div>
+                    <h3>Target Audience</h3>
+
+                    <p>
+                        Send to all linked parents in a class
+                        or one specific parent.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="announcement-form-grid">
+
+                <!-- TARGET TYPE -->
+
+                <div class="announcement-field">
+
+                    <label asp-for="TargetType">
+                        Target Type
+                    </label>
+
+                    <select asp-for="TargetType"
+                            id="teacherTargetType"
+                            required>
+
+                        <option value="Class">
+                            Class (All Linked Parents)
+                        </option>
+
+                        <option value="Specific Users">
+                            Specific User (One Parent)
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="TargetType"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+                <!-- TARGET CLASS -->
+
+                <div class="announcement-field">
+
+                    <label asp-for="ClassId">
+                        Target Class
+                    </label>
+
+                    <select asp-for="ClassId"
+                            id="teacherTargetClass"
+                            required>
+
+                        <option value="">
+                            Select assigned class
+                        </option>
+
+                        @foreach (var schoolClass in Model.Classes)
+                        {
+                            <option value="@schoolClass.Id">
+                                @schoolClass.Name
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="ClassId"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+                <!-- SPECIFIC PARENT -->
+
+                <div class="announcement-field"
+                     id="teacherSpecificParentSection"
+                     hidden>
+
+                    <label asp-for="ParentUserId">
+                        Select Parent
+                    </label>
+
+                    <select asp-for="ParentUserId"
+                            id="teacherTargetParent">
+
+                        <option value="">
+                            Select one parent
+                        </option>
+
+                        @foreach (var parent in Model.Parents)
+                        {
+                            <option value="@parent.UserId"
+                                    data-class-id="@parent.ClassId">
+                                @parent.ParentName — @parent.LearnerNames
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="ParentUserId"
+                          class="field-validation">
+                    </span>
+
+                    <small id="teacherParentHelp">
+                        Select an assigned class to see eligible parents.
+                    </small>
+
+                </div>
+
+            </div>
+
+            @if (!Model.Classes.Any())
+            {
+                <div class="communication-info-banner teacher-communication-error">
+
+                    <p>
+                        No assigned classes found.
+                        Please contact your School Administrator.
+                    </p>
+
+                </div>
+            }
+
+        </section>
+
+        <!-- ACKNOWLEDGEMENT -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-check2-square"></i>
+                </div>
+
+                <div>
+                    <h3>Acknowledgement</h3>
+
+                    <p>
+                        Important or urgent announcements may
+                        require confirmation from parents.
+                    </p>
+                </div>
+
+            </div>
+
+            <label class="acknowledgement-option">
+
+                <input asp-for="AcknowledgementRequired"
+                       id="teacherAckCheckbox" />
+
+                <span class="acknowledgement-check">
+                    <i class="bi bi-check-lg"></i>
+                </span>
+
+                <span class="acknowledgement-content">
+
+                    <strong>
+                        Require parent acknowledgement
+                    </strong>
+
+                    <span id="teacherAckHelp">
+                        Available for Important and Urgent announcements.
+                    </span>
+
+                </span>
+
+            </label>
+
+        </section>
+
+        <!-- FORM ACTIONS -->
+
+        <div class="announcement-form-actions">
+
+            <a asp-controller="Teacher"
+               asp-action="Communication"
+               class="announcement-cancel-button">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    id="teacherAnnouncementSubmit"
+                    class="announcement-submit-button"
+                    disabled="@(Model.Classes.Count == 0)">
+
+                <i class="bi bi-send-fill"></i>
+                Create Announcement
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // ==========================================
+            // ELEMENT REFERENCES
+            // ==========================================
+
+            const priority =
+                document.getElementById("teacherAnnouncementPriority");
+
+            const acknowledgement =
+                document.getElementById("teacherAckCheckbox");
+
+            const acknowledgementHelp =
+                document.getElementById("teacherAckHelp");
+
+            const targetType =
+                document.getElementById("teacherTargetType");
+
+            const targetClass =
+                document.getElementById("teacherTargetClass");
+
+            const parentSection =
+                document.getElementById("teacherSpecificParentSection");
+
+            const parentSelect =
+                document.getElementById("teacherTargetParent");
+
+            const parentHelp =
+                document.getElementById("teacherParentHelp");
+
+            const submitButton =
+                document.getElementById("teacherAnnouncementSubmit");
+
+            // ==========================================
+            // ACKNOWLEDGEMENT LOGIC
+            // ==========================================
+
+            function updateAcknowledgement() {
+
+                if (!priority || !acknowledgement) {
+                    return;
+                }
+
+                const supported =
+                    priority.value === "Important" ||
+                    priority.value === "Urgent";
+
+                acknowledgement.disabled = !supported;
+
+                if (!supported) {
+                    acknowledgement.checked = false;
+                }
+
+                if (acknowledgementHelp) {
+
+                    acknowledgementHelp.textContent =
+                        supported
+                            ? "Recipients will be asked to acknowledge this announcement."
+                            : "Change priority to Important or Urgent to require acknowledgement.";
+                }
+            }
+
+            if (priority) {
+
+                priority.addEventListener(
+                    "change",
+                    updateAcknowledgement
+                );
+
+                updateAcknowledgement();
+            }
+
+            // ==========================================
+            // SPECIFIC PARENT LOGIC
+            // ==========================================
+
+            if (!targetType ||
+                !targetClass ||
+                !parentSection ||
+                !parentSelect) {
+                return;
+            }
+
+            // Store the parent options rendered
+            // by Razor before updating the list.
+
+            const allParents = Array.from(
+                parentSelect.querySelectorAll(
+                    "option[data-class-id]")
+            ).map(option => ({
+
+                id: option.value,
+
+                classId: (
+                    option.dataset.classId || ""
+                ).trim().toLowerCase(),
+
+                name: option.textContent.trim()
+
+            }));
+
+            function updateParentSelection(resetSelection) {
+
+                const isSpecific =
+                    targetType.value === "Specific Users";
+
+                const selectedClass =
+                    targetClass.value.trim().toLowerCase();
+
+                const previousParentId =
+                    resetSelection ? "" : parentSelect.value;
+
+                // Show the selector only when
+                // Specific Users is selected.
+
+                parentSection.hidden = !isSpecific;
+
+                parentSection.style.display =
+                    isSpecific ? "block" : "none";
+
+                // Reset the dropdown.
+
+                parentSelect.replaceChildren(
+                    new Option("Select one parent", "")
+                );
+
+                const matchingParents = isSpecific
+                    ? allParents.filter(parent =>
+                        parent.classId === selectedClass)
+                    : [];
+
+                // Add only eligible parents
+                // from the selected class.
+
+                matchingParents.forEach(parent => {
+
+                    const option = new Option(
+                        parent.name,
+                        parent.id
+                    );
+
+                    parentSelect.add(option);
+                });
+
+                // Restore selection where possible.
+
+                if (previousParentId &&
+                    matchingParents.some(
+                        parent => parent.id === previousParentId)) {
+
+                    parentSelect.value = previousParentId;
+                }
+
+                parentSelect.disabled =
+                    !isSpecific ||
+                    !selectedClass ||
+                    matchingParents.length === 0;
+
+                parentSelect.required = isSpecific;
+
+                // Prevent an invalid specific-parent
+                // announcement from being submitted.
+
+                if (submitButton) {
+
+                    const hasClasses =
+                        targetClass.options.length > 1;
+
+                    submitButton.disabled =
+                        !hasClasses ||
+                        (isSpecific &&
+                            (!selectedClass ||
+                                matchingParents.length === 0));
+                }
+
+                // Display helpful status.
+
+                if (parentHelp) {
+
+                    if (!isSpecific) {
+
+                        parentHelp.textContent = "";
+
+                    }
+                    else if (!selectedClass) {
+
+                        parentHelp.textContent =
+                            "Select your assigned class first.";
+
+                    }
+                    else if (matchingParents.length === 0) {
+
+                        parentHelp.textContent =
+                            "No eligible parents were loaded for this class.";
+
+                    }
+                    else {
+
+                        parentHelp.textContent =
+                            matchingParents.length +
+                            " eligible parent(s) available. Select one parent.";
+                    }
+                }
+            }
+
+            // ==========================================
+            // TARGET EVENTS
+            // ==========================================
+
+            targetType.addEventListener(
+                "change",
+                function () {
+                    updateParentSelection(true);
+                }
+            );
+
+            targetClass.addEventListener(
+                "change",
+                function () {
+                    updateParentSelection(true);
+                }
+            );
+
+            // Initialize on page load.
+
+            updateParentSelection(false);
+
+        });
+    </script>
+}

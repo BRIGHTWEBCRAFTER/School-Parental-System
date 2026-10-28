@@ -1,0 +1,794 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherEditAnnouncementViewModel
+
+@{
+    ViewData["Title"] = "Edit Announcement";
+    Layout = "_TeacherLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-create-announcement.css"
+      asp-append-version="true" />
+
+
+<section class="dashboard-content">
+
+    <!-- PAGE HEADING -->
+
+    <div class="page-heading announcement-page-heading">
+
+        <div>
+            <h2>Edit Announcement</h2>
+
+            <p>
+                Update the announcement details,
+                target audience and acknowledgement settings.
+            </p>
+        </div>
+
+        <a asp-controller="Teacher"
+           asp-action="Communication"
+           class="announcement-back-button">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Communication
+
+        </a>
+
+    </div>
+
+
+    <!-- EDIT ANNOUNCEMENT FORM -->
+
+    <form asp-controller="Teacher"
+          asp-action="EditAnnouncement"
+          method="post"
+          class="announcement-form">
+
+        @Html.AntiForgeryToken()
+
+        <input asp-for="Id"
+               type="hidden" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="announcement-validation-summary">
+        </div>
+
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+
+        <!-- =========================================
+             ANNOUNCEMENT DETAILS
+             ========================================= -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-pencil-square"></i>
+                </div>
+
+                <div>
+                    <h3>Announcement Details</h3>
+
+                    <p>
+                        Update the message and its priority.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="announcement-form-grid">
+
+                <!-- TITLE -->
+
+                <div class="announcement-field full-width">
+
+                    <label asp-for="Title">
+                        Announcement Title
+                    </label>
+
+                    <input asp-for="Title"
+                           maxlength="150"
+                           placeholder="Enter announcement title"
+                           required />
+
+                    <span asp-validation-for="Title"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <!-- MESSAGE -->
+
+                <div class="announcement-field full-width">
+
+                    <label asp-for="Content">
+                        Message
+                    </label>
+
+                    <textarea asp-for="Content"
+                              rows="6"
+                              maxlength="5000"
+                              placeholder="Write your announcement message..."
+                              required></textarea>
+
+                    <span asp-validation-for="Content"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <!-- PRIORITY -->
+
+                <div class="announcement-field">
+
+                    <label asp-for="Priority">
+                        Priority
+                    </label>
+
+                    <select asp-for="Priority"
+                            id="announcementPriority">
+
+                        <option value="Normal">
+                            Normal
+                        </option>
+
+                        <option value="Important">
+                            Important
+                        </option>
+
+                        <option value="Urgent">
+                            Urgent
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="Priority"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <!-- EXPIRY DATE -->
+
+                <div class="announcement-field">
+
+                    <label asp-for="ExpiresAt">
+                        Expiry Date
+                    </label>
+
+                    <input asp-for="ExpiresAt"
+                           type="datetime-local"
+                           asp-format="{0:yyyy-MM-ddTHH:mm}" />
+
+                    <span asp-validation-for="ExpiresAt"
+                          class="field-validation">
+                    </span>
+
+                    <small>
+                        Optional. Leave blank if the announcement
+                        should remain active.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             TARGET AUDIENCE
+             ========================================= -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-bullseye"></i>
+                </div>
+
+                <div>
+                    <h3>Target Audience</h3>
+
+                    <p>
+                        Update who should receive this announcement.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- TARGET TYPE -->
+
+            <div class="announcement-field">
+
+                <label asp-for="TargetType">
+                    Target Type
+                </label>
+
+                <select asp-for="TargetType"
+                        id="teacherEditAnnouncementTargetType"
+                        required>
+
+                    <option value="Class">
+                        Class (All Linked Parents)
+                    </option>
+
+                    <option value="Specific Users">
+                        Specific User (One Parent)
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="TargetType"
+                      class="field-validation">
+                </span>
+
+            </div>
+
+
+            <!-- TARGET CLASS -->
+
+            <div id="teacherEditAnnouncementClassSection"
+                 class="target-section">
+
+                <div class="announcement-field">
+
+                    <label asp-for="TargetClassId">
+                        Target Class
+                    </label>
+
+                    <select asp-for="TargetClassId"
+                            id="teacherEditAnnouncementClass"
+                            required>
+
+                        <option value="">
+                            Select assigned class
+                        </option>
+
+                        @foreach (var schoolClass in Model.Classes)
+                        {
+                            <option value="@schoolClass.Id">
+                                @schoolClass.DisplayName
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="TargetClassId"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- SPECIFIC PARENT -->
+
+            <div id="teacherEditAnnouncementParentSection"
+                 class="target-section"
+                 hidden>
+
+                <div class="announcement-field">
+
+                    <label asp-for="ParentUserId">
+                        Select Parent
+                    </label>
+
+                    <select asp-for="ParentUserId"
+                            id="teacherEditAnnouncementParent">
+
+                        <option value="">
+                            Select one parent
+                        </option>
+
+                        @foreach (var parent in Model.Parents)
+                        {
+                            <option value="@parent.UserId"
+                                    data-class-id="@parent.ClassId">
+                                @parent.ParentName — @parent.LearnerNames
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="ParentUserId"
+                          class="field-validation">
+                    </span>
+
+                    <small id="teacherEditAnnouncementParentHelp">
+                        Select a class to see eligible parents.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             ACKNOWLEDGEMENT
+             ========================================= -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-check2-square"></i>
+                </div>
+
+                <div>
+                    <h3>Acknowledgement</h3>
+
+                    <p>
+                        Important or urgent announcements may
+                        require confirmation from recipients.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <label class="acknowledgement-option">
+
+                <input asp-for="AcknowledgementRequired"
+                       id="acknowledgementCheckbox" />
+
+                <span class="acknowledgement-check">
+                    <i class="bi bi-check-lg"></i>
+                </span>
+
+                <span class="acknowledgement-content">
+
+                    <strong>
+                        Require parent acknowledgement
+                    </strong>
+
+                    <span id="acknowledgementHelp">
+                        Available for Important and Urgent
+                        announcements.
+                    </span>
+
+                </span>
+
+            </label>
+
+        </section>
+
+
+        <!-- =========================================
+             ACTIONS
+             ========================================= -->
+
+        <div class="announcement-form-actions">
+
+            <a asp-controller="Teacher"
+               asp-action="Communication"
+               class="announcement-cancel-button">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    id="teacherEditAnnouncementSubmit"
+                    class="announcement-submit-button">
+
+                <i class="bi bi-check-lg"></i>
+                Save Changes
+
+            </button>
+
+
+        </div>
+
+    </form>
+
+</section>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // =====================================
+            // ELEMENT REFERENCES
+            // =====================================
+
+            const form = document.querySelector(
+                "form.announcement-form");
+
+            const targetType = document.getElementById(
+                "teacherEditAnnouncementTargetType");
+
+            const targetClass = document.getElementById(
+                "teacherEditAnnouncementClass");
+
+            const parentSection = document.getElementById(
+                "teacherEditAnnouncementParentSection");
+
+            const parentSelect = document.getElementById(
+                "teacherEditAnnouncementParent");
+
+            const parentHelp = document.getElementById(
+                "teacherEditAnnouncementParentHelp");
+
+            const priority = document.getElementById(
+                "announcementPriority");
+
+            const acknowledgement = document.getElementById(
+                "acknowledgementCheckbox");
+
+            const acknowledgementHelp = document.getElementById(
+                "acknowledgementHelp");
+
+            const submitButton = document.getElementById(
+                "teacherEditAnnouncementSubmit");
+
+
+            if (!form ||
+                !targetType ||
+                !targetClass ||
+                !parentSection ||
+                !parentSelect ||
+                !priority ||
+                !acknowledgement ||
+                !submitButton) {
+
+                return;
+            }
+
+
+            // =====================================
+            // STORE ELIGIBLE PARENTS
+            // =====================================
+
+            const allParents = Array.from(
+                parentSelect.querySelectorAll(
+                    "option[data-class-id]")
+            ).map(option => ({
+
+                id: option.value,
+
+                classId: (
+                    option.dataset.classId || ""
+                ).trim().toLowerCase(),
+
+                name: option.textContent.trim()
+
+            }));
+
+
+            // Preserve the parent previously selected
+            // for an existing Specific Users announcement.
+
+            const initialParentId = parentSelect.value;
+
+
+            // =====================================
+            // VALIDATE TARGET AUDIENCE
+            // =====================================
+
+            function isValidAudience() {
+
+                const selectedType = targetType.value;
+
+                const selectedClass = targetClass.value;
+
+                if (!selectedClass) {
+                    return false;
+                }
+
+                if (selectedType === "Class") {
+                    return true;
+                }
+
+                if (selectedType === "Specific Users") {
+
+                    return (
+                        !parentSelect.disabled &&
+                        parentSelect.value !== ""
+                    );
+                }
+
+                return false;
+            }
+
+
+            // =====================================
+            // ENABLE OR DISABLE SAVE CHANGES
+            // =====================================
+
+            function updateSubmitButton() {
+
+                submitButton.disabled =
+                    !isValidAudience();
+            }
+
+
+            // =====================================
+            // FILTER PARENTS BY CLASS
+            // =====================================
+
+            function updateTargetSections(
+                preserveSelection) {
+
+                const selectedType = targetType.value;
+
+                const selectedClass = targetClass.value
+                    .trim()
+                    .toLowerCase();
+
+                const isSpecific =
+                    selectedType === "Specific Users";
+
+
+                const parentIdToPreserve =
+                    preserveSelection
+                        ? initialParentId
+                        : "";
+
+
+                // ---------------------------------
+                // SHOW OR HIDE PARENT FIELD
+                // ---------------------------------
+
+                parentSection.hidden = !isSpecific;
+
+                parentSection.style.display =
+                    isSpecific ? "block" : "none";
+
+
+                // ---------------------------------
+                // CLEAR EXISTING PARENT OPTIONS
+                // ---------------------------------
+
+                parentSelect.replaceChildren(
+                    new Option("Select one parent", "")
+                );
+
+
+                // ---------------------------------
+                // FILTER BY ASSIGNED CLASS
+                // ---------------------------------
+
+                const matchingParents = isSpecific
+                    ? allParents.filter(parent =>
+                        parent.classId === selectedClass)
+                    : [];
+
+
+                matchingParents.forEach(parent => {
+
+                    const option = new Option(
+                        parent.name,
+                        parent.id
+                    );
+
+                    parentSelect.add(option);
+
+                });
+
+
+                // ---------------------------------
+                // RESTORE ORIGINAL PARENT
+                // ---------------------------------
+
+                if (parentIdToPreserve) {
+
+                    const existingParent =
+                        matchingParents.find(parent =>
+                            parent.id.toLowerCase() ===
+                            parentIdToPreserve.toLowerCase());
+
+                    if (existingParent) {
+
+                        parentSelect.value =
+                            existingParent.id;
+                    }
+                }
+
+
+                // ---------------------------------
+                // SET PARENT FIELD STATE
+                // ---------------------------------
+
+                parentSelect.disabled =
+                    !isSpecific ||
+                    !selectedClass ||
+                    matchingParents.length === 0;
+
+                parentSelect.required = isSpecific;
+
+
+                // ---------------------------------
+                // UPDATE HELP TEXT
+                // ---------------------------------
+
+                if (parentHelp) {
+
+                    if (!isSpecific) {
+
+                        parentHelp.textContent = "";
+
+                    }
+                    else if (!selectedClass) {
+
+                        parentHelp.textContent =
+                            "Select an assigned class first.";
+
+                    }
+                    else if (matchingParents.length === 0) {
+
+                        parentHelp.textContent =
+                            "No eligible parents are available for this class.";
+
+                    }
+                    else {
+
+                        parentHelp.textContent =
+                            matchingParents.length +
+                            " eligible parent(s) available.";
+                    }
+                }
+
+                updateSubmitButton();
+            }
+
+
+            // =====================================
+            // ACKNOWLEDGEMENT RULES
+            // =====================================
+
+            function updateAcknowledgement() {
+
+                const canRequireAcknowledgement =
+                    priority.value === "Important" ||
+                    priority.value === "Urgent";
+
+
+                acknowledgement.disabled =
+                    !canRequireAcknowledgement;
+
+
+                if (!canRequireAcknowledgement) {
+
+                    acknowledgement.checked = false;
+
+                    if (acknowledgementHelp) {
+
+                        acknowledgementHelp.textContent =
+                            "Change priority to Important or Urgent to require acknowledgement.";
+                    }
+                }
+                else {
+
+                    if (acknowledgementHelp) {
+
+                        acknowledgementHelp.textContent =
+                            "Recipients will be asked to acknowledge this announcement.";
+                    }
+                }
+            }
+
+
+            // =====================================
+            // TARGET TYPE CHANGED
+            // =====================================
+
+            targetType.addEventListener(
+                "change",
+                function () {
+
+                    updateTargetSections(false);
+
+                }
+            );
+
+
+            // =====================================
+            // TARGET CLASS CHANGED
+            // =====================================
+
+            targetClass.addEventListener(
+                "change",
+                function () {
+
+                    updateTargetSections(false);
+
+                }
+            );
+
+
+            // =====================================
+            // PARENT CHANGED
+            // =====================================
+
+            parentSelect.addEventListener(
+                "change",
+                updateSubmitButton
+            );
+
+
+            // =====================================
+            // PRIORITY CHANGED
+            // =====================================
+
+            priority.addEventListener(
+                "change",
+                updateAcknowledgement
+            );
+
+
+            // =====================================
+            // FORM SUBMISSION
+            // =====================================
+
+            form.addEventListener(
+                "submit",
+                function (event) {
+
+                    if (!isValidAudience()) {
+
+                        event.preventDefault();
+
+                        if (!targetClass.value) {
+
+                            targetClass.focus();
+
+                        }
+                        else if (
+                            targetType.value ===
+                            "Specific Users") {
+
+                            parentSelect.focus();
+                        }
+
+                        return;
+                    }
+
+                    // Browser and ASP.NET Core handle
+                    // other form validation.
+                    //
+                    // The service and Supabase RPC
+                    // independently validate ownership,
+                    // class assignments and parent access.
+
+                }
+            );
+
+
+            // =====================================
+            // INITIALIZE EXISTING ANNOUNCEMENT
+            // =====================================
+
+            updateTargetSections(true);
+
+            updateAcknowledgement();
+
+            updateSubmitButton();
+
+        });
+    </script>
+}

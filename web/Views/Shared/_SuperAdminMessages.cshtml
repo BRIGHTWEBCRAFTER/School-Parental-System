@@ -1,0 +1,25 @@
+﻿@if (TempData["SuccessMessage"] != null)
+{
+    <div class="page-success-message">
+
+        <i class="bi bi-check-circle-fill"></i>
+
+        <span>
+            @TempData["SuccessMessage"]
+        </span>
+
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="page-error-message">
+
+        <i class="bi bi-exclamation-circle-fill"></i>
+
+        <span>
+            @TempData["ErrorMessage"]
+        </span>
+
+    </div>
+}

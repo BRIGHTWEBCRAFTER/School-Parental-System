@@ -1,0 +1,844 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.TeacherDetailsViewModel
+
+@{
+    ViewData["Title"] = "Teacher Details";
+    Layout = "_SchoolAdminLayout";
+
+    var nameParts =
+        (Model.FullName ?? "")
+            .Split(
+                ' ',
+                StringSplitOptions.RemoveEmptyEntries);
+
+    var initials =
+        string.Concat(
+            nameParts
+                .Take(2)
+                .Select(x =>
+                    char.ToUpperInvariant(x[0])));
+
+    if (string.IsNullOrWhiteSpace(initials))
+    {
+        initials = "?";
+    }
+
+    var joiningDateText =
+        Model.JoiningDate.HasValue
+            ? Model.JoiningDate.Value.ToString("dd MMMM yyyy")
+            : "Not provided";
+
+    var specializationText =
+        string.IsNullOrWhiteSpace(Model.Specialization)
+            ? "Not provided"
+            : Model.Specialization;
+
+    var phoneText =
+        string.IsNullOrWhiteSpace(Model.Phone)
+            ? "Not provided"
+            : Model.Phone;
+}
+
+<section class="dashboard-content">
+
+    <!-- =====================================================
+         PAGE HEADING
+         ===================================================== -->
+
+    <div class="detail-page-heading">
+
+        <div>
+
+            <h2>Teacher Details</h2>
+
+            <p>
+                View teacher personal, contact and employment information.
+            </p>
+
+        </div>
+
+
+        <div class="detail-heading-actions">
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="Teachers"
+               class="detail-back-action">
+
+                <i class="bi bi-arrow-left"></i>
+                Back
+
+            </a>
+
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="EditTeacher"
+               asp-route-id="@Model.Id"
+               class="detail-edit-action">
+
+                <i class="bi bi-pencil-square"></i>
+                Edit Teacher
+
+            </a>
+
+
+            @if (Model.IsActive)
+            {
+                <button type="button"
+                        class="detail-danger-action"
+                        id="openDeactivateModal">
+
+                    <i class="bi bi-person-dash-fill"></i>
+                    Deactivate Teacher
+
+                </button>
+            }
+            else
+            {
+                <form asp-controller="SchoolAdmin"
+                      asp-action="ReactivateTeacher"
+                      asp-route-id="@Model.Id"
+                      asp-route-returnUrl="@Context.Request.Path"
+                      method="post"
+                      class="inline-form">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="detail-reactivate-action">
+
+                        <i class="bi bi-person-check-fill"></i>
+                        Reactivate Teacher
+
+                    </button>
+
+                </form>
+            }
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TEACHER IDENTITY HERO
+         ===================================================== -->
+
+    <section class="detail-profile-hero">
+
+        <div class="detail-avatar">
+
+            @initials
+
+        </div>
+
+
+        <div class="detail-identity">
+
+            <div class="detail-name-row">
+
+                <h3>
+                    @Model.FullName
+                </h3>
+
+
+                <span class="detail-status
+                      @(Model.IsActive
+                          ? "active"
+                          : "inactive")">
+
+                    @Model.Status
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-meta">
+
+                <span>
+                    @Model.EmployeeId
+                </span>
+
+
+                <span class="detail-meta-dot">
+                    •
+                </span>
+
+
+                <span>
+                    @specializationText
+                </span>
+
+
+                <span class="detail-meta-dot">
+                    •
+                </span>
+
+
+                <span>
+                    Joined @joiningDateText
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+   
+
+    <!-- =====================================================
+         MAIN INFORMATION
+         ===================================================== -->
+
+    <div class="detail-content-grid">
+
+
+        <!-- =================================================
+             PERSONAL / EMPLOYMENT INFORMATION
+             ================================================= -->
+
+        <section class="detail-card">
+
+            <div class="detail-card-header">
+
+                <div class="detail-card-icon">
+
+                    <i class="bi bi-person-workspace"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h3>
+                        Teacher Information
+                    </h3>
+
+                    <p>
+                        Personal, contact and employment details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="detail-definition-grid">
+
+
+                <!-- FULL NAME -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-person-badge"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Full Name
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @Model.FullName
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EMPLOYEE ID -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-hash"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Employee ID
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @Model.EmployeeId
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DATE OF BIRTH -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-calendar3"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Date of Birth
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(Model.DateOfBirth.HasValue
+                                ? Model.DateOfBirth.Value
+                                .ToString("dd MMMM yyyy")
+                                : "Not provided")
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- GENDER -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-person"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Gender
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Gender)
+                                ? "Not provided"
+                                : Model.Gender)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SPECIALISATION -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-journal-bookmark-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Specialisation
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @specializationText
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- JOINING DATE -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-calendar-check"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Joining Date
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @joiningDateText
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-telephone"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Phone Number
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @phoneText
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ALTERNATIVE PHONE -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-phone"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Alternative Phone
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.AlternativePhone)
+                                ? "Not provided"
+                                : Model.AlternativePhone)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ADDRESS -->
+
+                <div class="detail-field full-width">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Address
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Address)
+                                ? "Not provided"
+                                : Model.Address)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             ACCOUNT INFORMATION
+             ================================================= -->
+
+        <aside class="detail-card">
+
+            <div class="detail-card-header">
+
+                <div class="detail-card-icon">
+
+                    <i class="bi bi-shield-lock"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h3>
+                        Account Information
+                    </h3>
+
+                    <p>
+                        Teacher portal and account details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="detail-side-fields">
+
+
+                <!-- EMAIL -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-envelope"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Email Address
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Email)
+                                ? "Not provided"
+                                : Model.Email)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACCOUNT STATUS -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-check-circle"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Account Status
+                        </span>
+
+                        <strong class="detail-field-value">
+                            @Model.Status
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-person-gear"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Role
+                        </span>
+
+                        <strong class="detail-field-value">
+                            Teacher
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PORTAL ACCESS -->
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+
+                        <i class="bi bi-window"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="detail-field-label">
+                            Portal Access
+                        </span>
+
+                        <strong class="detail-field-value">
+
+                            @(Model.IsActive
+                                ? "Web portal enabled"
+                                : "Web portal disabled")
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     DEACTIVATE CONFIRMATION
+     ========================================================= -->
+@if (Model.IsActive)
+{
+    <div id="deactivateModal"
+         class="confirmation-overlay">
+
+        <div class="confirmation-card"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="deactivateModalTitle">
+
+
+            <div class="confirmation-icon danger">
+
+                <i class="bi bi-trash3-fill"></i>
+
+            </div>
+
+
+            <h3 id="deactivateModalTitle">
+
+                Deactivate Teacher?
+
+            </h3>
+
+
+            <p class="confirmation-message">
+
+                Are you sure you want to deactivate this teacher?
+                The teacher record will remain in the system,
+                but their account will no longer be active.
+
+            </p>
+
+
+            <div class="confirmation-record">
+
+                <span>
+                    Teacher:
+                </span>
+
+                <strong>
+                    @Model.FullName
+                </strong>
+
+            </div>
+
+
+            <div class="confirmation-actions">
+
+                <button type="button"
+                        class="confirmation-cancel"
+                        id="cancelDeactivate">
+
+                    Cancel
+
+                </button>
+
+
+                <form asp-controller="SchoolAdmin"
+                      asp-action="DeactivateTeacher"
+                      asp-route-id="@Model.Id"
+                      asp-route-returnUrl="@Context.Request.Path"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+
+                    <button type="submit"
+                            class="confirmation-deactivate">
+
+                        Deactivate
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+
+
+<script>
+
+    const deactivateModal =
+        document.getElementById(
+            "deactivateModal"
+        );
+
+
+    const openDeactivateModal =
+        document.getElementById(
+            "openDeactivateModal"
+        );
+
+
+    const cancelDeactivate =
+        document.getElementById(
+            "cancelDeactivate"
+        );
+
+
+    if (openDeactivateModal &&
+        deactivateModal) {
+
+        openDeactivateModal
+            .addEventListener(
+                "click",
+                function () {
+
+                    deactivateModal
+                        .classList
+                        .add("show");
+
+
+                    document.body
+                        .classList
+                        .add("modal-open");
+
+                }
+            );
+    }
+
+
+    if (cancelDeactivate &&
+        deactivateModal) {
+
+        cancelDeactivate
+            .addEventListener(
+                "click",
+                function () {
+
+                    closeDeactivateModal();
+
+                }
+            );
+    }
+
+
+    if (deactivateModal) {
+
+        deactivateModal
+            .addEventListener(
+                "click",
+                function (event) {
+
+                    if (event.target ===
+                        deactivateModal) {
+
+                        closeDeactivateModal();
+
+                    }
+
+                }
+            );
+    }
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Escape" &&
+                deactivateModal &&
+                deactivateModal
+                    .classList
+                    .contains("show")) {
+
+                closeDeactivateModal();
+
+            }
+
+        }
+    );
+
+
+    function closeDeactivateModal() {
+
+        if (!deactivateModal) {
+            return;
+        }
+
+
+        deactivateModal
+            .classList
+            .remove("show");
+
+
+        document.body
+            .classList
+            .remove("modal-open");
+
+    }
+
+</script>

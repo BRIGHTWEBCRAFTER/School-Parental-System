@@ -1,0 +1,166 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.TopbarNotificationsViewModel
+
+<style>
+    .topbar-notification-menu {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+        .topbar-notification-menu > summary {
+            list-style: none;
+            cursor: pointer;
+        }
+
+            .topbar-notification-menu > summary::-webkit-details-marker {
+                display: none;
+            }
+
+        .topbar-notification-menu .notification-button {
+            position: relative;
+        }
+
+    .topbar-notification-panel {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 14px);
+        z-index: 500;
+        width: min(375px, calc(100vw - 30px));
+        max-height: 490px;
+        overflow-y: auto;
+        background: white;
+        color: #073f32;
+        border: 1px solid #dbe6de;
+        border-radius: 12px;
+        box-shadow: 0 18px 45px rgba(0,0,0,.16);
+    }
+
+    .topbar-notification-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid #edf0ec;
+    }
+
+        .topbar-notification-panel-header a {
+            color: #073f32;
+            font-size: 13px;
+        }
+
+    .topbar-notification-item {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f0f2ee;
+    }
+
+        .topbar-notification-item.unread {
+            background: #f0f7f2;
+        }
+
+        .topbar-notification-item strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .topbar-notification-item p {
+            margin: 0 0 6px;
+            font-size: 12px;
+            line-height: 1.45;
+            overflow-wrap: anywhere;
+        }
+
+        .topbar-notification-item time {
+            font-size: 11px;
+            color: #718178;
+        }
+
+        .topbar-notification-item button {
+            display: block;
+            margin-top: 7px;
+            padding: 4px 0;
+            border: 0;
+            background: transparent;
+            color: #095440;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+    .topbar-notification-empty {
+        padding: 20px;
+        margin: 0;
+        font-size: 13px;
+    }
+
+    .topbar-notification-panel-footer {
+        text-align: center;
+        padding: 12px;
+    }
+
+        .topbar-notification-panel-footer a {
+            color: #073f32;
+            font-size: 13px;
+            font-weight: bold;
+        }
+</style>
+
+<details class="topbar-notification-menu" id="topbarNotificationMenu">
+    <summary class="notification-button" aria-label="View notifications" title="Notifications">
+        <i class="bi bi-bell"></i>
+        @if (!Model.LoadFailed && Model.UnreadCount > 0)
+        {
+            <span class="notification-badge">@(Model.UnreadCount > 99 ? "99+" : Model.UnreadCount.ToString())</span>
+        }
+    </summary>
+    <div class="topbar-notification-panel" role="region" aria-label="Recent notifications">
+        <div class="topbar-notification-panel-header">
+            <strong>Notifications</strong>
+            <a asp-controller="Notifications" asp-action="Index">View all</a>
+        </div>
+        @if (Model.LoadFailed)
+        {
+            <p class="topbar-notification-empty">Notifications could not be loaded. Try refreshing.</p>
+        }
+        else if (Model.Notifications.Count == 0)
+        {
+            <p class="topbar-notification-empty">You don't have any notifications yet.</p>
+        }
+        else
+        {
+            @foreach (var item in Model.Notifications)
+            {
+                <div class="topbar-notification-item @(item.IsRead ? "" : "unread")">
+                    <strong>@item.Title</strong>
+                    <p>@item.Message</p>
+                    <time>@item.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</time>
+                    @if (!item.IsRead)
+                    {
+                        <form asp-controller="Notifications" asp-action="MarkRead" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit">Mark as read</button>
+                        </form>
+                    }
+                </div>
+            }
+        }
+        <div class="topbar-notification-panel-footer">
+            <a asp-controller="Notifications" asp-action="Index">All notifications</a>
+        </div>
+    </div>
+</details>
+
+<script>
+    // Close the topbar notification dropdown when clicking away or pressing Escape.
+    document.addEventListener("click", function (event) {
+        const menu = document.getElementById("topbarNotificationMenu");
+        if (menu && !menu.contains(event.target)) menu.open = false;
+    });
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            const menu = document.getElementById("topbarNotificationMenu");
+            if (menu) menu.open = false;
+        }
+    });
+</script>

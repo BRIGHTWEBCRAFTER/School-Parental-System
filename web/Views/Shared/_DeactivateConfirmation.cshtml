@@ -1,0 +1,244 @@
+﻿<div id="deactivateConfirmationModal"
+     class="confirmation-overlay">
+
+    <div class="confirmation-card"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="deactivateConfirmationTitle">
+
+        <div class="confirmation-icon danger">
+
+            <i class="bi bi-trash3-fill"></i>
+
+        </div>
+
+
+        <h3 id="deactivateConfirmationTitle">
+            Deactivate?
+        </h3>
+
+
+        <p id="deactivateConfirmationMessage"
+           class="confirmation-message">
+
+            Are you sure you want to deactivate this record?
+
+        </p>
+
+
+        <div class="confirmation-record">
+
+            <span id="deactivateConfirmationLabel">
+                Record:
+            </span>
+
+            <strong id="deactivateConfirmationName">
+            </strong>
+
+        </div>
+
+
+        <div class="confirmation-actions">
+
+            <button type="button"
+                    class="confirmation-cancel"
+                    id="cancelDeactivateConfirmation">
+
+                Cancel
+
+            </button>
+
+
+            <form id="deactivateConfirmationForm"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="confirmation-deactivate">
+
+                    Deactivate
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            const modal =
+                document.getElementById(
+                    "deactivateConfirmationModal"
+                );
+
+            const cancelButton =
+                document.getElementById(
+                    "cancelDeactivateConfirmation"
+                );
+
+            const confirmationForm =
+                document.getElementById(
+                    "deactivateConfirmationForm"
+                );
+
+            const title =
+                document.getElementById(
+                    "deactivateConfirmationTitle"
+                );
+
+            const message =
+                document.getElementById(
+                    "deactivateConfirmationMessage"
+                );
+
+            const label =
+                document.getElementById(
+                    "deactivateConfirmationLabel"
+                );
+
+            const name =
+                document.getElementById(
+                    "deactivateConfirmationName"
+                );
+
+
+            document
+                .querySelectorAll(
+                    ".open-deactivate-confirmation"
+                )
+                .forEach(button => {
+
+                    button.addEventListener(
+                        "click",
+                        function (event) {
+
+                            event.preventDefault();
+                            event.stopPropagation();
+
+
+                            const recordType =
+                                this.dataset.recordType ??
+                                "Record";
+
+                            const recordName =
+                                this.dataset.recordName ??
+                                "";
+
+                            const action =
+                                this.dataset.action;
+
+
+                            if (!action) {
+                                return;
+                            }
+
+
+                            title.textContent =
+                                `Deactivate ${recordType}?`;
+
+
+                            message.textContent =
+                                `Are you sure you want to deactivate this ${recordType.toLowerCase()}? ` +
+                                `The ${recordType.toLowerCase()} record will remain in the system, ` +
+                                `but they will no longer be active.`;
+
+
+                            label.textContent =
+                                `${recordType}:`;
+
+
+                            name.textContent =
+                                recordName;
+
+
+                            confirmationForm.action =
+                                action;
+
+
+                            modal.classList.add(
+                                "show"
+                            );
+
+
+                            document.body.classList.add(
+                                "modal-open"
+                            );
+
+
+                            document
+                                .querySelectorAll(
+                                    ".learner-actions.open"
+                                )
+                                .forEach(container => {
+
+                                    container
+                                        .classList
+                                        .remove("open");
+
+                                });
+
+                        }
+                    );
+
+                });
+
+
+            cancelButton?.addEventListener(
+                "click",
+                closeConfirmation
+            );
+
+
+            modal?.addEventListener(
+                "click",
+                function (event) {
+
+                    if (event.target === modal) {
+
+                        closeConfirmation();
+
+                    }
+
+                }
+            );
+
+
+            document.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (event.key === "Escape" &&
+                        modal?.classList.contains("show")) {
+
+                        closeConfirmation();
+
+                    }
+
+                }
+            );
+
+
+            function closeConfirmation() {
+
+                modal?.classList.remove(
+                    "show"
+                );
+
+                document.body.classList.remove(
+                    "modal-open"
+                );
+
+            }
+
+        }
+    );
+</script>

@@ -1,0 +1,360 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.InvitationActivationViewModel
+
+@{
+    ViewData["Title"] = "Activate Account";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <title>Activate Account - School Parental System</title>
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f7f4;
+            font-family: Arial, sans-serif;
+            color: #073f32;
+        }
+
+        .activation-card {
+            width: 420px;
+            max-width: 90%;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #073f32;
+        }
+
+        p {
+            color: #60756c;
+            line-height: 1.5;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d5dfd8;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+            input:focus {
+                outline: none;
+                border-color: #073f32;
+            }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 13px;
+            border: 0;
+            border-radius: 9px;
+            background: #073f32;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background: #0b5945;
+            }
+
+        .secondary-button {
+            background: #e8f1ea;
+            color: #073f32;
+        }
+
+            .secondary-button:hover {
+                background: #d8e7dc;
+            }
+
+        .field-validation-error,
+        .validation-summary-errors {
+            color: #b42318;
+            font-size: 13px;
+        }
+
+        .success-message {
+            padding: 12px;
+            margin: 15px 0;
+            background: #e6f4ea;
+            color: #075640;
+            border-radius: 8px;
+        }
+
+        .error-message {
+            padding: 12px;
+            margin: 15px 0;
+            background: #fde8e8;
+            color: #b42318;
+            border-radius: 8px;
+        }
+
+        .login-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #073f32;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="activation-card">
+
+        <h2>Activate Your Account</h2>
+
+        <p>
+            Welcome to the School Parental System.
+            Enter the temporary PIN sent to your email,
+            then create your own password.
+        </p>
+
+
+        <!-- ==========================================
+             SUCCESS / INFORMATION MESSAGE
+             ========================================== -->
+        @if (TempData["InfoMessage"] != null)
+        {
+            <div class="success-message" role="status">
+                @TempData["InfoMessage"]
+            </div>
+        }
+
+
+        <!-- ==========================================
+             ERROR MESSAGE
+             ========================================== -->
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="error-message" role="alert">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+
+        <!-- ==========================================
+             ACTIVATE ACCOUNT FORM
+             ========================================== -->
+
+        <form asp-controller="InvitationActivation"
+              asp-action="Index"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly"
+                 class="validation-summary-errors">
+            </div>
+
+
+            <!-- EMAIL ADDRESS -->
+
+            <label asp-for="Email">
+                Email Address
+            </label>
+
+            <input asp-for="Email"
+                   id="Email"
+                   type="email"
+                   placeholder="Enter your email address"
+                   autocomplete="email"
+                   required />
+
+            <span asp-validation-for="Email"></span>
+
+
+            <!-- TEMPORARY PIN -->
+
+            <label asp-for="Pin">
+                Temporary PIN
+            </label>
+
+            <input asp-for="Pin"
+                   type="text"
+                   inputmode="numeric"
+                   autocomplete="one-time-code"
+                   placeholder="Enter PIN from email"
+                   maxlength="8"
+                   required />
+
+            <span asp-validation-for="Pin"></span>
+
+
+            <!-- NEW PASSWORD -->
+
+            <label asp-for="NewPassword">
+                New Password
+            </label>
+
+            <input asp-for="NewPassword"
+                   type="password"
+                   autocomplete="new-password"
+                   placeholder="Create your password"
+                   minlength="12"
+                   required />
+
+            <span asp-validation-for="NewPassword"></span>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <label asp-for="ConfirmPassword">
+                Confirm Password
+            </label>
+
+            <input asp-for="ConfirmPassword"
+                   type="password"
+                   autocomplete="new-password"
+                   placeholder="Repeat your password"
+                   minlength="12"
+                   required />
+
+            <span asp-validation-for="ConfirmPassword"></span>
+
+
+            <!-- SUBMIT ACTIVATION -->
+
+            <button type="submit">
+                Activate Account
+            </button>
+
+        </form>
+
+
+        <!-- ==========================================
+             RESEND TEMPORARY PIN FORM
+             ========================================== -->
+
+        <form asp-controller="InvitationActivation"
+              asp-action="Resend"
+              method="post"
+              onsubmit="return prepareResendPin();">
+
+            @Html.AntiForgeryToken()
+
+            <!--
+                The JavaScript below updates this hidden
+                field from the visible email textbox
+                immediately before form submission.
+            -->
+
+            <input type="hidden"
+                   id="resendEmail"
+                   name="email" />
+
+            <button type="submit"
+                    class="secondary-button">
+
+                Resend Temporary PIN
+
+            </button>
+
+        </form>
+
+
+        <!-- BACK TO LOGIN -->
+
+        <a class="login-link"
+           asp-controller="Auth"
+           asp-action="Login">
+
+            Back to Login
+
+        </a>
+
+    </div>
+
+
+    <!-- ==========================================
+         EMAIL VALIDATION AND RESEND SCRIPT
+         ========================================== -->
+
+    <script>
+
+        //
+        // Method Name      : prepareResendPin
+        // Purpose          : Validate the visible email
+        //                    address and copy it into
+        //                    the Resend PIN form.
+        // Re-use           : Teacher and Parent activation.
+        // Input Parameters : None.
+        // Output Type      : boolean.
+        //
+
+        function prepareResendPin() {
+
+            // Retrieve the visible email field.
+            const emailInput =
+                document.getElementById("Email");
+
+            // Retrieve the hidden resend field.
+            const resendInput =
+                document.getElementById("resendEmail");
+
+            if (!emailInput || !resendInput) {
+                alert("Email input could not be found.");
+                return false;
+            }
+
+            // Remove unwanted spaces.
+            const email =
+                emailInput.value.trim();
+
+            // Ensure the email is present.
+            if (email.length === 0) {
+
+                alert("Please enter your email address.");
+
+                emailInput.focus();
+
+                return false;
+            }
+
+            // Use the browser's email validation.
+            emailInput.value = email;
+
+            if (!emailInput.reportValidity()) {
+                return false;
+            }
+
+            // Copy the exact entered address
+            // to the separate Resend form.
+            resendInput.value = email;
+
+            // Allow the resend request to submit.
+            return true;
+
+        } // end method
+
+    </script>
+
+</body>
+</html>

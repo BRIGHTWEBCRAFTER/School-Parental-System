@@ -1,0 +1,338 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherCommunicationAnnouncementViewModel
+
+@{
+    ViewData["Title"] = "Announcement Details";
+    Layout = "_TeacherLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-communication.css"
+      asp-append-version="true" />
+
+<link rel="stylesheet"
+      href="~/css/teacher/teacher-communication-schooladmin.css"
+      asp-append-version="true" />
+
+
+<section class="dashboard-content teacher-communication-page">
+
+    <!-- =========================================
+         PAGE HEADING
+         ========================================= -->
+
+    <div class="page-heading communication-page-heading">
+
+        <div>
+            <h2>Announcement Details</h2>
+
+            <p>
+                Review your announcement and
+                parent engagement.
+            </p>
+        </div>
+
+
+        <div style="display:flex;
+                    align-items:center;
+                    gap:12px;
+                    flex-wrap:wrap;">
+
+            <!-- BACK TO COMMUNICATION -->
+
+            <a asp-controller="Teacher"
+               asp-action="Communication"
+               class="communication-clear-button">
+
+                <i class="bi bi-arrow-left"></i>
+                Back to Communication
+
+            </a>
+
+
+            <!-- EDIT ANNOUNCEMENT -->
+
+            <a asp-controller="Teacher"
+               asp-action="EditAnnouncement"
+               asp-route-id="@Model.Id"
+               class="create-announcement-button"
+               title="Edit Announcement">
+
+                <i class="bi bi-pencil-square"></i>
+                Edit Announcement
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         SUCCESS AND ERROR MESSAGES
+         ========================================= -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success"
+             role="status">
+
+            <i class="bi bi-check-circle-fill"></i>
+
+            @TempData["SuccessMessage"]
+
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill"></i>
+
+            @TempData["ErrorMessage"]
+
+        </div>
+    }
+
+
+    <!-- =========================================
+         COMMUNICATION NAVIGATION
+         ========================================= -->
+
+    <div class="communication-tabs">
+
+        <a asp-controller="Teacher"
+           asp-action="Communication"
+           class="communication-tab active">
+
+            <i class="bi bi-megaphone"></i>
+            Announcements
+
+        </a>
+
+        <a asp-controller="Teacher"
+           asp-action="Events"
+           class="communication-tab">
+
+            <i class="bi bi-calendar-event"></i>
+            Events
+
+        </a>
+
+        <a asp-controller="Teacher"
+           asp-action="CommunicationStatistics"
+           class="communication-tab">
+
+            <i class="bi bi-bar-chart"></i>
+            Statistics
+
+        </a>
+
+    </div>
+
+
+    <!-- =========================================
+         ANNOUNCEMENT INFORMATION
+         ========================================= -->
+
+    <section class="communication-panel">
+
+        <div class="communication-panel-header">
+
+            <div>
+
+                <h3>
+
+                    <i class="bi bi-megaphone"></i>
+
+                    @Model.Title
+
+                </h3>
+
+                <p>
+
+                    @Model.TargetDisplay
+
+                    ·
+
+                    @Model.CreatedAt
+                    .ToLocalTime()
+                    .ToString("dd MMM yyyy HH:mm")
+
+                </p>
+
+            </div>
+
+
+            <!-- PRIORITY -->
+
+            <span class="priority-badge @Model.Priority.ToLowerInvariant()">
+
+                @Model.Priority
+
+            </span>
+
+        </div>
+
+
+        <!-- ANNOUNCEMENT MESSAGE -->
+
+        <div class="teacher-details-body">
+
+            <p>
+                @Model.Content
+            </p>
+
+
+            <!-- STATUS AND ACKNOWLEDGEMENT -->
+
+            <div class="teacher-details-meta">
+
+                <span class="communication-status @Model.Status.ToLowerInvariant()">
+
+                    @Model.Status
+
+                </span>
+
+
+                <span>
+
+                    <i class="bi bi-people"></i>
+
+                    @Model.TargetType
+
+                </span>
+
+
+                <span>
+
+                    <i class="bi bi-check2-square"></i>
+
+                    Acknowledgement:
+
+                    @(Model.AcknowledgementRequired
+                        ? "Required"
+                        : "Not required")
+
+                </span>
+
+            </div>
+
+
+            <!-- EXPIRY DATE -->
+            @if (Model.ExpiresAt.HasValue)
+            {
+                <div class="teacher-details-meta"
+                     style="margin-top:12px;">
+
+                    <span>
+
+                        <i class="bi bi-clock-history"></i>
+
+                        Expires:
+
+                        @Model.ExpiresAt.Value
+                        .ToLocalTime()
+                        .ToString("dd MMM yyyy HH:mm")
+
+                    </span>
+
+                </div>
+            }
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         RECIPIENT ENGAGEMENT SUMMARY
+         ========================================= -->
+
+    <div class="communication-summary-grid">
+
+        <!-- TOTAL RECIPIENTS -->
+
+        <div class="communication-summary-card total">
+
+            <div class="communication-summary-icon">
+
+                <i class="bi bi-people"></i>
+
+            </div>
+
+            <div>
+
+                <span>Recipients</span>
+
+                <strong>
+                    @Model.RecipientCount
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- READ COUNT -->
+
+        <div class="communication-summary-card read">
+
+            <div class="communication-summary-icon">
+
+                <i class="bi bi-eye"></i>
+
+            </div>
+
+            <div>
+
+                <span>Read</span>
+
+                <strong>
+                    @Model.ReadCount
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACKNOWLEDGEMENT COUNT -->
+
+        <div class="communication-summary-card acknowledged">
+
+            <div class="communication-summary-icon">
+
+                <i class="bi bi-check2-circle"></i>
+
+            </div>
+
+            <div>
+
+                <span>Acknowledged</span>
+
+                <strong>
+                    @Model.AcknowledgedCount
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         INFORMATION NOTICE
+         ========================================= -->
+
+    <p class="teacher-communication-footnote">
+
+        <i class="bi bi-info-circle"></i>
+
+        Engagement statistics update as recipients
+        read or acknowledge announcements.
+
+    </p>
+
+</section>

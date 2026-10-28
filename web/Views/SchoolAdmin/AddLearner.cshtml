@@ -88,26 +88,66 @@
                     <span asp-validation-for="Gender"></span>
                 </div>
 
+
+                <!-- =====================================
+                     GRADE - LOAD FROM ACTIVE SCHOOL CLASSES
+                     ===================================== -->
+                @{
+                    var availableGrades = Model.AvailableClasses
+                    .Where(c => !string.IsNullOrWhiteSpace(c.Grade))
+                    .Select(c => c.Grade.Trim())
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(g =>
+                    {
+                        var digits = new string(
+                            g.Where(char.IsDigit).ToArray());
+
+                        return int.TryParse(digits, out var number)
+                            ? number
+                            : int.MaxValue;
+                    })
+                    .ThenBy(g => g)
+                    .ToList();
+                }
+
                 <div class="form-group">
+
                     <label asp-for="Grade"></label>
 
-                    <select asp-for="Grade">
+                    <select asp-for="Grade"
+                            id="learnerGradeSelect"
+                            required>
+
                         <option value="">Select grade</option>
-                        <option>Grade 8</option>
-                        <option>Grade 9</option>
-                        <option>Grade 10</option>
-                        <option>Grade 11</option>
-                        <option>Grade 12</option>
+
+                        @foreach (var grade in availableGrades)
+                        {
+                            <option value="@grade">
+                                @grade
+                            </option>
+                        }
+
                     </select>
 
                     <span asp-validation-for="Grade"></span>
+
+                    @if (availableGrades.Count == 0)
+                    {
+                        <small class="text-muted">
+                            No grades available.
+                            Please create a class first.
+                        </small>
+                    }
+
                 </div>
+
 
                 <div class="form-group">
 
                     <label asp-for="ClassId">Class</label>
 
-                    <select asp-for="ClassId">
+                    <select asp-for="ClassId"
+                            id="learnerClassSelect">
 
                         <option value="">
                             Select class
@@ -115,7 +155,8 @@
 
                         @foreach (var schoolClass in Model.AvailableClasses)
                         {
-                            <option value="@schoolClass.Id">
+                            <option value="@schoolClass.Id"
+                                    data-grade="@schoolClass.Grade">
                                 @schoolClass.Name
                             </option>
                         }
@@ -546,4 +587,101 @@
 
         return div.innerHTML;
     }
+
+    const learnerGradeSelect =
+        document.getElementById(
+            "learnerGradeSelect"
+        );
+
+    const learnerClassSelect =
+        document.getElementById(
+            "learnerClassSelect"
+        );
+
+
+    function filterLearnerClasses(
+        clearInvalidSelection = false) {
+
+        if (!learnerGradeSelect ||
+            !learnerClassSelect) {
+            return;
+        }
+
+
+        const selectedGrade =
+            learnerGradeSelect.value
+                .trim()
+                .toLowerCase();
+
+
+        const classOptions =
+            learnerClassSelect
+                .querySelectorAll(
+                    "option[data-grade]"
+                );
+
+
+        classOptions.forEach(option => {
+
+            const classGrade =
+                (option.dataset.grade ?? "")
+                    .trim()
+                    .toLowerCase();
+
+
+            const matchesGrade =
+                selectedGrade !== "" &&
+                classGrade === selectedGrade;
+
+
+            option.hidden =
+                !matchesGrade;
+
+            option.disabled =
+                !matchesGrade;
+        });
+
+
+        learnerClassSelect.disabled =
+            selectedGrade === "";
+
+
+        if (clearInvalidSelection &&
+            learnerClassSelect.value !== "") {
+
+            const selectedOption =
+                learnerClassSelect.options[
+                learnerClassSelect.selectedIndex
+                ];
+
+
+            const selectedClassGrade =
+                (
+                    selectedOption?.dataset.grade ??
+                    ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+
+            if (selectedClassGrade !==
+                selectedGrade) {
+
+                learnerClassSelect.value =
+                    "";
+            }
+        }
+    }
+
+
+    learnerGradeSelect?.addEventListener(
+        "change",
+        function () {
+
+            filterLearnerClasses(true);
+        }
+    );
+
+
+    filterLearnerClasses(false);
 </script>

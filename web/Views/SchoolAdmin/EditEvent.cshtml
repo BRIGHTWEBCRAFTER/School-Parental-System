@@ -1,0 +1,451 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.EditEventViewModel
+
+@{
+    ViewData["Title"] = "Edit Event";
+    Layout = "_SchoolAdminLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-create-announcement.css"
+      asp-append-version="true" />
+
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+            <h2>Edit Event</h2>
+
+            <p>
+                Update the event information,
+                schedule and target audience.
+            </p>
+        </div>
+
+    </div>
+
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="EditEvent"
+          method="post"
+          class="announcement-form">
+
+        @Html.AntiForgeryToken()
+
+        <input asp-for="Id"
+               type="hidden" />
+
+
+        <div asp-validation-summary="ModelOnly"
+             class="form-validation-summary">
+        </div>
+
+
+        <!-- =========================================
+             EVENT DETAILS
+             ========================================= -->
+
+        <section class="form-section-card">
+
+            <div class="form-section-heading">
+
+                <div class="form-section-icon">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+
+
+                <div>
+                    <h3>Event Details</h3>
+
+                    <p>
+                        Update the event name,
+                        description and schedule.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group form-group-full">
+
+                    <label asp-for="EventName">
+                        Event Name
+                    </label>
+
+                    <input asp-for="EventName"
+                           class="form-control"
+                           placeholder="Enter event name" />
+
+                    <span asp-validation-for="EventName"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group form-group-full">
+
+                    <label asp-for="Description">
+                        Description
+                    </label>
+
+                    <textarea asp-for="Description"
+                              class="form-control form-textarea"
+                              rows="5"
+                              placeholder="Enter event description"></textarea>
+
+                    <span asp-validation-for="Description"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="EventDate">
+                        Event Date
+                    </label>
+
+                    <input asp-for="EventDate"
+                           type="date"
+                           class="form-control"
+                           value="@Model.EventDate.ToString("yyyy-MM-dd")" />
+
+                    <span asp-validation-for="EventDate"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Venue">
+                        Venue
+                    </label>
+
+                    <input asp-for="Venue"
+                           class="form-control"
+                           placeholder="Enter event venue" />
+
+                    <span asp-validation-for="Venue"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="StartTime">
+                        Start Time
+                    </label>
+
+                    <input asp-for="StartTime"
+                           type="time"
+                           class="form-control" />
+
+                    <span asp-validation-for="StartTime"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="EndTime">
+                        End Time
+                    </label>
+
+                    <input asp-for="EndTime"
+                           type="time"
+                           class="form-control" />
+
+                    <span asp-validation-for="EndTime"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             TARGET AUDIENCE
+             ========================================= -->
+
+        <section class="form-section-card">
+
+            <div class="form-section-heading">
+
+                <div class="form-section-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+
+
+                <div>
+                    <h3>Target Audience</h3>
+
+                    <p>
+                        Choose who should receive
+                        this event notification.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group form-group-full">
+
+                    <label asp-for="TargetType">
+                        Target Type
+                    </label>
+
+                    <select asp-for="TargetType"
+                            class="form-control"
+                            id="targetType">
+
+                        <option value="Whole School">
+                            Whole School
+                        </option>
+
+                        <option value="Role">
+                            Role
+                        </option>
+
+                        <option value="Grade">
+                            Grade
+                        </option>
+
+                        <option value="Class">
+                            Class
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="TargetType"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="form-group form-group-full"
+                     id="targetRoleGroup">
+
+                    <label asp-for="TargetRole">
+                        Role
+                    </label>
+
+                    <select asp-for="TargetRole"
+                            class="form-control">
+
+                        <option value="">
+                            Select role
+                        </option>
+
+                        <option value="School Admin">
+                            School Admin
+                        </option>
+
+                        <option value="Teacher">
+                            Teacher
+                        </option>
+
+                        <option value="Parent">
+                            Parent
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- GRADE -->
+
+                <div class="form-group form-group-full"
+                     id="targetGradeGroup">
+
+                    <label asp-for="TargetGrade">
+                        Grade
+                    </label>
+
+                    <select asp-for="TargetGrade"
+                            class="form-control">
+
+                        <option value="">
+                            Select grade
+                        </option>
+
+                        @foreach (var grade in Model.Grades)
+                        {
+                            <option value="@grade">
+                                @grade
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- CLASS -->
+
+                <div class="form-group form-group-full"
+                     id="targetClassGroup">
+
+                    <label asp-for="TargetClassId">
+                        Class
+                    </label>
+
+                    <select asp-for="TargetClassId"
+                            class="form-control">
+
+                        <option value="">
+                            Select class
+                        </option>
+
+                        @foreach (var schoolClass in Model.Classes)
+                        {
+                            <option value="@schoolClass.Id">
+                                @schoolClass.DisplayName
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             NOTIFICATION NOTE
+             ========================================= -->
+
+        <div class="form-info-banner">
+
+            <i class="bi bi-bell"></i>
+
+            <div>
+
+                <strong>
+                    Event notification update
+                </strong>
+
+                <span>
+                    If you change the target audience,
+                    the event notification recipients
+                    will be synchronized automatically.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             ACTIONS
+             ========================================= -->
+
+        <div class="form-actions">
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="EventDetails"
+               asp-route-id="@Model.Id"
+               class="secondary-action-button">
+
+                <i class="bi bi-x-lg"></i>
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="primary-action-button">
+
+                <i class="bi bi-check2-circle"></i>
+                Save Changes
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const targetType =
+                    document.getElementById(
+                        "targetType");
+
+                const roleGroup =
+                    document.getElementById(
+                        "targetRoleGroup");
+
+                const gradeGroup =
+                    document.getElementById(
+                        "targetGradeGroup");
+
+                const classGroup =
+                    document.getElementById(
+                        "targetClassGroup");
+
+
+                function updateTargetFields() {
+
+                    const selected =
+                        targetType.value;
+
+
+                    roleGroup.style.display =
+                        selected === "Role"
+                            ? ""
+                            : "none";
+
+
+                    gradeGroup.style.display =
+                        selected === "Grade"
+                            ? ""
+                            : "none";
+
+
+                    classGroup.style.display =
+                        selected === "Class"
+                            ? ""
+                            : "none";
+                }
+
+
+                targetType.addEventListener(
+                    "change",
+                    updateTargetFields);
+
+
+                updateTargetFields();
+            });
+    </script>
+}

@@ -1,0 +1,979 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherEditEventViewModel
+
+@{
+    ViewData["Title"] = "Edit Event";
+    Layout = "_TeacherLayout";
+}
+
+<style>
+    /* ========================================
+           TEACHER EDIT EVENT - PAGE STYLING
+           ======================================== */
+
+    .te-edit-page,
+    .te-edit-page * {
+        box-sizing: border-box;
+    }
+
+    .te-edit-page {
+        --te-green: #073f32;
+        --te-gold: #d9aa35;
+        --te-text: #183b32;
+        --te-muted: #718078;
+        --te-border: #e4e8e2;
+        --te-background: #f8f6ee;
+        padding: 30px 32px 48px;
+        background: var(--te-background);
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: var(--te-text);
+        min-height: 100%;
+    }
+
+    .te-edit-container {
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    .te-edit-page [hidden] {
+        display: none !important;
+    }
+
+    /* PAGE HEADER */
+
+    .te-edit-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+        .te-edit-header h2 {
+            margin: 0 0 7px;
+            color: var(--te-green);
+            font-size: 28px;
+            font-weight: 750;
+        }
+
+        .te-edit-header p {
+            margin: 0;
+            color: var(--te-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+    .te-edit-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 11px 17px;
+        border: 1px solid var(--te-border);
+        border-radius: 9px;
+        background: white;
+        color: var(--te-green);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        transition: 0.2s;
+    }
+
+        .te-edit-back:hover {
+            background: #edf5ef;
+            color: var(--te-green);
+        }
+
+    /* FORM CARDS */
+
+    .te-edit-card {
+        background: #fff;
+        border: 1px solid var(--te-border);
+        border-radius: 15px;
+        padding: 26px 28px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 18px rgba(0, 45, 30, 0.035);
+    }
+
+    .te-edit-card-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding-bottom: 19px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid #edf0eb;
+    }
+
+    .te-edit-card-icon {
+        flex-shrink: 0;
+        width: 47px;
+        height: 47px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: #fff5d7;
+        color: #9d7413;
+        font-size: 20px;
+    }
+
+    .te-edit-card-header h3 {
+        margin: 0 0 5px;
+        color: var(--te-green);
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .te-edit-card-header p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--te-muted);
+    }
+
+    /* FORM FIELDS */
+
+    .te-edit-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: 23px;
+        row-gap: 22px;
+    }
+
+    .te-edit-field {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        gap: 8px;
+    }
+
+    .te-edit-full {
+        grid-column: 1 / -1;
+    }
+
+    .te-edit-field label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--te-green);
+    }
+
+    .te-edit-required {
+        color: #bc7822;
+    }
+
+    .te-edit-input,
+    .te-edit-select,
+    .te-edit-textarea {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-height: 46px;
+        padding: 11px 13px;
+        border: 1px solid #d8dfd6;
+        background: white;
+        border-radius: 9px;
+        color: #1c3930;
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 1.5;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .te-edit-textarea {
+        min-height: 115px;
+        resize: vertical;
+    }
+
+        .te-edit-input:focus,
+        .te-edit-select:focus,
+        .te-edit-textarea:focus {
+            border-color: var(--te-gold);
+            box-shadow: 0 0 0 3px rgba(217, 170, 53, 0.16);
+        }
+
+    .te-edit-field small {
+        color: var(--te-muted);
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .te-edit-validation,
+    .te-edit-validation-summary {
+        color: #ad3030;
+        font-size: 12px;
+    }
+
+        .te-edit-validation-summary:not(:empty) {
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            background: #fff1f1;
+            border: 1px solid #f2cccc;
+            border-radius: 8px;
+        }
+
+    /* INFORMATION PANEL */
+
+    .te-edit-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        margin-top: 24px;
+        padding: 16px 18px;
+        background: #f1f8f3;
+        border: 1px solid #d8e9dd;
+        border-radius: 10px;
+    }
+
+        .te-edit-notice > i {
+            color: #31845a;
+            font-size: 19px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .te-edit-notice strong {
+            display: block;
+            color: var(--te-green);
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .te-edit-notice p {
+            margin: 0;
+            color: #557064;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+    /* FOOTER ACTIONS */
+
+    .te-edit-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-top: 5px;
+    }
+
+    .te-edit-cancel,
+    .te-edit-save {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 45px;
+        padding: 11px 22px;
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 650;
+        cursor: pointer;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .te-edit-cancel {
+        background: white;
+        color: var(--te-green);
+        border: 1px solid #d5dfd5;
+    }
+
+        .te-edit-cancel:hover {
+            background: #edf5ef;
+            color: var(--te-green);
+        }
+
+    .te-edit-save {
+        background: var(--te-green);
+        color: white;
+        border: 1px solid var(--te-green);
+    }
+
+        .te-edit-save:hover:not(:disabled) {
+            background: #0b5945;
+            color: white;
+        }
+
+        .te-edit-save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+    /* RESPONSIVE */
+
+    @@media (max-width: 850px) {
+        .te-edit-page {
+            padding: 22px 16px 36px;
+        }
+
+        .te-edit-grid {
+            grid-template-columns: minmax(0, 1fr);
+            row-gap: 18px;
+        }
+
+        .te-edit-full {
+            grid-column: auto;
+        }
+
+        .te-edit-card {
+            padding: 20px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .te-edit-header h2 {
+            font-size: 24px;
+        }
+
+        .te-edit-actions > * {
+            flex: 1;
+        }
+
+        .te-edit-card-header {
+            align-items: flex-start;
+        }
+    }
+</style>
+
+
+<section class="dashboard-content te-edit-page">
+
+    <div class="te-edit-container">
+
+        <!-- =====================================
+             PAGE HEADER
+             ===================================== -->
+
+        <div class="te-edit-header">
+
+            <div>
+                <h2>Edit Event</h2>
+
+                <p>
+                    Update event details, schedule
+                    and target audience.
+                </p>
+            </div>
+
+            <a asp-controller="Teacher"
+               asp-action="EventDetails"
+               asp-route-id="@Model.Id"
+               class="te-edit-back">
+
+                <i class="bi bi-arrow-left"></i>
+                Back to Event Details
+
+            </a>
+
+        </div>
+
+
+        <!-- =====================================
+             EDIT FORM
+             ===================================== -->
+
+        <form asp-controller="Teacher"
+              asp-action="EditEvent"
+              method="post"
+              asp-antiforgery="false"
+              class="te-edit-form">
+
+            @Html.AntiForgeryToken()
+
+            <input asp-for="Id"
+                   type="hidden" />
+
+            <div asp-validation-summary="ModelOnly"
+                 class="te-edit-validation-summary"></div>
+
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger"
+                     role="alert">
+
+                    @TempData["ErrorMessage"]
+
+                </div>
+            }
+
+
+            <!-- =====================================
+                 EVENT INFORMATION
+                 ===================================== -->
+
+            <section class="te-edit-card">
+
+                <div class="te-edit-card-header">
+
+                    <div class="te-edit-card-icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+
+                    <div>
+                        <h3>Event Information</h3>
+
+                        <p>
+                            Update the event name
+                            and description.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="te-edit-grid">
+
+                    <!-- EVENT NAME -->
+
+                    <div class="te-edit-field te-edit-full">
+
+                        <label asp-for="EventName">
+                            Event Name
+                            <span class="te-edit-required">*</span>
+                        </label>
+
+                        <input asp-for="EventName"
+                               class="te-edit-input"
+                               maxlength="150"
+                               placeholder="Enter event name"
+                               required />
+
+                        <span asp-validation-for="EventName"
+                              class="te-edit-validation"></span>
+
+                    </div>
+
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="te-edit-field te-edit-full">
+
+                        <label asp-for="Description">
+                            Description
+                        </label>
+
+                        <textarea asp-for="Description"
+                                  class="te-edit-textarea"
+                                  rows="4"
+                                  maxlength="500"
+                                  placeholder="Enter event description..."></textarea>
+
+                        <span asp-validation-for="Description"
+                              class="te-edit-validation"></span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================
+                 EVENT SCHEDULE
+                 ===================================== -->
+
+            <section class="te-edit-card">
+
+                <div class="te-edit-card-header">
+
+                    <div class="te-edit-card-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                    <div>
+                        <h3>Event Schedule</h3>
+
+                        <p>
+                            Choose the event date,
+                            times and venue.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="te-edit-grid">
+
+                    <!-- EVENT DATE -->
+
+                    <div class="te-edit-field">
+
+                        <label asp-for="EventDate">
+                            Event Date
+                            <span class="te-edit-required">*</span>
+                        </label>
+
+                        <input asp-for="EventDate"
+                               type="date"
+                               asp-format="{0:yyyy-MM-dd}"
+                               class="te-edit-input"
+                               required />
+
+                        <span asp-validation-for="EventDate"
+                              class="te-edit-validation"></span>
+
+                    </div>
+
+
+                    <!-- VENUE -->
+
+                    <div class="te-edit-field">
+
+                        <label asp-for="Venue">
+                            Venue
+                        </label>
+
+                        <input asp-for="Venue"
+                               class="te-edit-input"
+                               maxlength="150"
+                               placeholder="Event venue" />
+
+                        <span asp-validation-for="Venue"
+                              class="te-edit-validation"></span>
+
+                    </div>
+
+
+                    <!-- START TIME -->
+
+                    <div class="te-edit-field">
+
+                        <label asp-for="StartTime">
+                            Start Time
+                        </label>
+
+                        <input asp-for="StartTime"
+                               type="time"
+                               step="60"
+                               class="te-edit-input" />
+
+                        <span asp-validation-for="StartTime"
+                              class="te-edit-validation"></span>
+
+                    </div>
+
+
+                    <!-- END TIME -->
+
+                    <div class="te-edit-field">
+
+                        <label asp-for="EndTime">
+                            End Time
+                        </label>
+
+                        <input asp-for="EndTime"
+                               type="time"
+                               step="60"
+                               class="te-edit-input" />
+
+                        <span asp-validation-for="EndTime"
+                              class="te-edit-validation"></span>
+
+                        <small>
+                            If both times are entered,
+                            the end time must be later.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================
+                 TARGET AUDIENCE
+                 ===================================== -->
+
+            <section class="te-edit-card">
+
+                <div class="te-edit-card-header">
+
+                    <div class="te-edit-card-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+
+                    <div>
+                        <h3>Target Audience</h3>
+
+                        <p>
+                            Choose an assigned class
+                            or one eligible parent.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="te-edit-grid">
+
+                    <!-- TARGET TYPE -->
+
+                    <div class="te-edit-field">
+
+                        <label asp-for="TargetType">
+                            Target Type
+                            <span class="te-edit-required">*</span>
+                        </label>
+
+                        <select asp-for="TargetType"
+                                id="teTargetType"
+                                class="te-edit-select">
+
+                            <option value="Class">
+                                Class (All Linked Parents)
+                            </option>
+
+                            <option value="Specific Users">
+                                Specific User (One Parent)
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="TargetType"
+                              class="te-edit-validation"></span>
+
+                    </div>
+
+
+                    <!-- TARGET CLASS -->
+
+                    <div class="te-edit-field">
+
+                        <label asp-for="TargetClassId">
+                            Target Class
+                            <span class="te-edit-required">*</span>
+                        </label>
+
+                        <select asp-for="TargetClassId"
+                                id="teTargetClass"
+                                class="te-edit-select"
+                                required>
+
+                            <option value="">
+                                Select assigned class
+                            </option>
+
+                            @foreach (var schoolClass in Model.Classes)
+                            {
+                                <option value="@schoolClass.Id">
+                                    @schoolClass.DisplayName
+                                </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="TargetClassId"
+                              class="te-edit-validation"></span>
+
+                    </div>
+
+
+                    <!-- SPECIFIC PARENT -->
+
+                    <div id="teParentGroup"
+                         class="te-edit-field te-edit-full"
+                         hidden>
+
+                        <label asp-for="ParentUserId">
+                            Select Parent
+                            <span class="te-edit-required">*</span>
+                        </label>
+
+                        <select asp-for="ParentUserId"
+                                id="teTargetParent"
+                                class="te-edit-select">
+
+                            <option value="">
+                                Select one parent
+                            </option>
+
+                            @foreach (var parent in Model.Parents)
+                            {
+                                <option value="@parent.UserId"
+                                        data-class-id="@parent.ClassId">
+
+                                    @parent.ParentName — @parent.LearnerNames
+
+                                </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="ParentUserId"
+                              class="te-edit-validation"></span>
+
+                        <small id="teParentHelp">
+                            Select an assigned class first.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NOTIFICATION INFORMATION -->
+
+                <div class="te-edit-notice">
+
+                    <i class="bi bi-bell"></i>
+
+                    <div>
+
+                        <strong>
+                            Event Notification Update
+                        </strong>
+
+                        <p>
+                            Class events are intended for linked
+                            parents in the selected class.
+                            Specific User events are intended
+                            for one selected eligible parent.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================
+                 FOOTER ACTIONS
+                 ===================================== -->
+
+            <div class="te-edit-actions">
+
+                <a asp-controller="Teacher"
+                   asp-action="EventDetails"
+                   asp-route-id="@Model.Id"
+                   class="te-edit-cancel">
+
+                    <i class="bi bi-x-lg"></i>
+                    Cancel
+
+                </a>
+
+                <button type="submit"
+                        id="teSaveButton"
+                        class="te-edit-save">
+
+                    <i class="bi bi-check2-circle"></i>
+                    Save Changes
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const form = document.querySelector(
+                ".te-edit-form");
+
+            const targetType = document.getElementById(
+                "teTargetType");
+
+            const targetClass = document.getElementById(
+                "teTargetClass");
+
+            const parentGroup = document.getElementById(
+                "teParentGroup");
+
+            const parentSelect = document.getElementById(
+                "teTargetParent");
+
+            const parentHelp = document.getElementById(
+                "teParentHelp");
+
+            const saveButton = document.getElementById(
+                "teSaveButton");
+
+            if (!form || !targetType || !targetClass ||
+                !parentGroup || !parentSelect || !saveButton) {
+                return;
+            }
+
+            // =====================================
+            // LOAD ELIGIBLE PARENT OPTIONS
+            // =====================================
+
+            const allParents = Array.from(
+                parentSelect.querySelectorAll(
+                    "option[data-class-id]")
+            ).map(option => ({
+                id: option.value,
+                classId: (
+                    option.dataset.classId || ""
+                ).trim().toLowerCase(),
+                name: option.textContent.trim()
+            }));
+
+            const initialParentId =
+                parentSelect.value;
+
+            // =====================================
+            // AUDIENCE VALIDATION
+            // =====================================
+
+            function isValidAudience() {
+
+                if (!targetClass.value) {
+                    return false;
+                }
+
+                if (targetType.value === "Class") {
+                    return true;
+                }
+
+                if (targetType.value === "Specific Users") {
+                    return !parentSelect.disabled &&
+                        parentSelect.value !== "";
+                }
+
+                return false;
+            }
+
+            function updateSaveButton() {
+                saveButton.disabled =
+                    !isValidAudience();
+            }
+
+            // =====================================
+            // FILTER PARENTS
+            // =====================================
+
+            function updateAudience(
+                preserveSelection = false) {
+
+                const isSpecific =
+                    targetType.value === "Specific Users";
+
+                const selectedClass =
+                    targetClass.value.trim().toLowerCase();
+
+                const previousSelection =
+                    preserveSelection
+                        ? initialParentId
+                        : "";
+
+                parentGroup.hidden = !isSpecific;
+
+                parentSelect.replaceChildren(
+                    new Option("Select one parent", "")
+                );
+
+                const matchingParents = isSpecific
+                    ? allParents.filter(parent =>
+                        parent.classId === selectedClass)
+                    : [];
+
+                matchingParents.forEach(parent => {
+                    parentSelect.add(
+                        new Option(parent.name, parent.id)
+                    );
+                });
+
+                if (previousSelection) {
+
+                    const matchingParent =
+                        matchingParents.find(parent =>
+                            parent.id.toLowerCase() ===
+                            previousSelection.toLowerCase());
+
+                    if (matchingParent) {
+                        parentSelect.value =
+                            matchingParent.id;
+                    }
+                }
+
+                parentSelect.disabled =
+                    !isSpecific ||
+                    !selectedClass ||
+                    matchingParents.length === 0;
+
+                parentSelect.required = isSpecific;
+
+                if (parentHelp) {
+
+                    if (!isSpecific) {
+                        parentHelp.textContent = "";
+                    }
+                    else if (!selectedClass) {
+                        parentHelp.textContent =
+                            "Select an assigned class first.";
+                    }
+                    else if (!matchingParents.length) {
+                        parentHelp.textContent =
+                            "No eligible parents found for this class.";
+                    }
+                    else {
+                        parentHelp.textContent =
+                            matchingParents.length +
+                            " eligible parent(s) available.";
+                    }
+                }
+
+                updateSaveButton();
+            }
+
+            // =====================================
+            // HANDLE CHANGES
+            // =====================================
+
+            targetType.addEventListener(
+                "change",
+                () => updateAudience(false)
+            );
+
+            targetClass.addEventListener(
+                "change",
+                () => updateAudience(false)
+            );
+
+            parentSelect.addEventListener(
+                "change",
+                updateSaveButton
+            );
+
+            // =====================================
+            // VALIDATE BEFORE SUBMIT
+            // =====================================
+
+            form.addEventListener("submit", function (event) {
+
+                if (!isValidAudience()) {
+
+                    event.preventDefault();
+
+                    if (!targetClass.value) {
+                        targetClass.focus();
+                    }
+                    else {
+                        parentSelect.focus();
+                    }
+                }
+            });
+
+            // =====================================
+            // INITIALIZE EXISTING EVENT
+            // =====================================
+
+            updateAudience(true);
+
+        });
+    </script>
+}

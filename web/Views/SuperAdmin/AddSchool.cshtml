@@ -1,0 +1,420 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.AddSchoolViewModel
+
+@{
+    ViewData["Title"] = "Add School";
+}
+
+
+<section class="sa-school-form-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="sa-school-form-header">
+
+        <div>
+
+            <a asp-controller="SuperAdmin"
+               asp-action="Dashboard"
+               class="sa-back-link">
+
+                <i class="bi bi-arrow-left"></i>
+                Back to Dashboard
+
+            </a>
+
+
+            <h2>
+                Add New School
+            </h2>
+
+            <p>
+                Register a new school in the
+                School-Parental System.
+            </p>
+
+        </div>
+
+
+        <div class="sa-school-form-header-icon">
+
+            <i class="bi bi-building-add"></i>
+
+        </div>
+
+    </div>
+
+
+    <!-- FORM -->
+
+    <form asp-controller="SuperAdmin"
+          asp-action="AddSchool"
+          method="post"
+          class="sa-school-form">
+
+        @Html.AntiForgeryToken()
+
+
+        <div asp-validation-summary="ModelOnly"
+             class="sa-form-error-summary">
+        </div>
+
+
+        <!-- SCHOOL INFORMATION -->
+
+        <section class="sa-form-card">
+
+            <div class="sa-form-section-header">
+
+                <div class="sa-form-section-icon">
+
+                    <i class="bi bi-buildings-fill"></i>
+
+                </div>
+
+                <div>
+
+                    <h3>
+                        School Information
+                    </h3>
+
+                    <p>
+                        Enter the school's basic details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="sa-form-grid">
+
+                <div class="sa-form-group sa-form-wide">
+
+                    <label asp-for="SchoolName"></label>
+
+                    <input asp-for="SchoolName"
+                           class="sa-form-control"
+                           placeholder="e.g. Thabong Secondary School" />
+
+                    <span asp-validation-for="SchoolName"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+
+                <div class="sa-form-group">
+
+                    <label asp-for="SchoolCode"></label>
+
+                    <input asp-for="SchoolCode"
+                           class="sa-form-control"
+                           placeholder="e.g. TSS001" />
+
+                    <span asp-validation-for="SchoolCode"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+
+                <div class="sa-form-group">
+
+                    <label asp-for="AdmissionPrefix"></label>
+
+                    <input asp-for="AdmissionPrefix"
+                           class="sa-form-control"
+                           placeholder="e.g. TSS" />
+
+                    <small class="sa-field-help">
+                        Used when generating learner admission numbers.
+                    </small>
+
+                    <span asp-validation-for="AdmissionPrefix"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+
+                <div class="sa-form-group">
+
+                    <label asp-for="SchoolType"></label>
+
+                    <select asp-for="SchoolType"
+                            class="sa-form-control">
+
+                        <option value="">
+                            Select school type
+                        </option>
+
+                        @foreach (var type in Model.SchoolTypes)
+                        {
+                            <option value="@type">
+                                @type
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="SchoolType"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+
+                <div class="sa-form-group">
+
+                    <label asp-for="Status"></label>
+
+                    <select asp-for="Status"
+                            class="sa-form-control">
+
+                        @foreach (var status in Model.Statuses)
+                        {
+                            <option value="@status">
+                                @status
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="Status"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- LOCATION -->
+
+        <section class="sa-form-card">
+
+            <div class="sa-form-section-header">
+
+                <div class="sa-form-section-icon">
+
+                    <i class="bi bi-geo-alt-fill"></i>
+
+                </div>
+
+                <div>
+
+                    <h3>
+                        Location
+                    </h3>
+
+                    <p>
+                        Where is the school located?
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="sa-form-grid">
+
+                <div class="sa-form-group sa-form-wide">
+
+                    <label asp-for="Address"></label>
+
+                    <input asp-for="Address"
+                           class="sa-form-control"
+                           placeholder="Street address" />
+
+                    <span asp-validation-for="Address"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+
+                <div class="sa-form-group">
+
+                    <label asp-for="Province"></label>
+
+                    <select asp-for="Province"
+                            class="sa-form-control">
+
+                        <option value="">
+                            Select province
+                        </option>
+
+                        @foreach (var province in Model.Provinces)
+                        {
+                            <option value="@province">
+                                @province
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="Province"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+
+                <div class="sa-form-group">
+
+                    <label asp-for="TownCity"></label>
+
+                    <input asp-for="TownCity"
+                           class="sa-form-control"
+                           placeholder="Town or city" />
+
+                    <span asp-validation-for="TownCity"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CONTACT DETAILS -->
+
+        <section class="sa-form-card">
+
+            <div class="sa-form-section-header">
+
+                <div class="sa-form-section-icon">
+
+                    <i class="bi bi-person-lines-fill"></i>
+
+                </div>
+
+                <div>
+
+                    <h3>
+                        Contact & Administration
+                    </h3>
+
+                    <p>
+                        Contact and management information.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="sa-form-grid">
+
+                <div class="sa-form-group">
+
+                    <label asp-for="PrincipalName"></label>
+
+                    <input asp-for="PrincipalName"
+                           class="sa-form-control"
+                           placeholder="Principal's full name" />
+
+                    <span asp-validation-for="PrincipalName"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+
+                <div class="sa-form-group">
+
+                    <label asp-for="Phone"></label>
+
+                    <input asp-for="Phone"
+                           class="sa-form-control"
+                           placeholder="School telephone number" />
+
+                    <span asp-validation-for="Phone"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+
+                <div class="sa-form-group">
+
+                    <label asp-for="Email"></label>
+
+                    <input asp-for="Email"
+                           class="sa-form-control"
+                           placeholder="school@example.co.za" />
+
+                    <span asp-validation-for="Email"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+
+                <div class="sa-form-group">
+
+                    <label asp-for="MaxLearners"></label>
+
+                    <input asp-for="MaxLearners"
+                           class="sa-form-control"
+                           placeholder="e.g. 1200" />
+
+                    <span asp-validation-for="MaxLearners"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+
+                <div class="sa-form-group sa-form-wide">
+
+                    <label asp-for="Notes"></label>
+
+                    <textarea asp-for="Notes"
+                              class="sa-form-control sa-form-textarea"
+                              rows="4"
+                              placeholder="Optional notes about the school...">
+                    </textarea>
+
+                    <span asp-validation-for="Notes"
+                          class="sa-field-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACTIONS -->
+
+        <div class="sa-form-actions">
+
+            <a asp-controller="SuperAdmin"
+               asp-action="Dashboard"
+               class="sa-secondary-button">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="sa-save-school-button">
+
+                <i class="bi bi-check2-circle"></i>
+
+                Register School
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>

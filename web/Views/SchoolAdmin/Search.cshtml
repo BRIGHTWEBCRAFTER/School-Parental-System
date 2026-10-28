@@ -1,0 +1,239 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SchoolAdminSearchViewModel
+
+@{
+    ViewData["Title"] = "Search Results";
+    Layout = "_SchoolAdminLayout";
+
+    var hasQuery = !string.IsNullOrWhiteSpace(Model.Query);
+    var searchError = ViewData["SearchError"]?.ToString();
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-search.css"
+      asp-append-version="true" />
+
+<section class="dashboard-content sa-search-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="sa-search-heading">
+
+        <div>
+            <h2>Search Results</h2>
+
+            <p>
+                Find learners, teachers and classes
+                in your school.
+            </p>
+        </div>
+
+        <span class="sa-search-total">
+            @Model.TotalResults results
+        </span>
+
+    </div>
+
+    <!-- SEARCH FORM -->
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="Search"
+          method="get"
+          class="sa-search-form">
+
+        <i class="bi bi-search"></i>
+
+        <input type="search"
+               name="query"
+               value="@Model.Query"
+               placeholder="Search school records..."
+               maxlength="100"
+               aria-label="Search school records"
+               required />
+
+        <button type="submit">
+            Search
+        </button>
+
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(searchError))
+    {
+        <div class="alert alert-danger">
+            @searchError
+        </div>
+    }
+
+    @if (string.IsNullOrWhiteSpace(searchError))
+    {
+        if (!hasQuery)
+        {
+            <div class="sa-search-empty">
+                <i class="bi bi-search"></i>
+                <h3>Start searching</h3>
+                <p>
+                    Enter a learner, teacher or class name.
+                </p>
+            </div>
+        }
+        else if (Model.TotalResults == 0)
+        {
+            <div class="sa-search-empty">
+                <i class="bi bi-search"></i>
+                <h3>No results found</h3>
+                <p>
+                    No matching school records were found
+                    for "@Model.Query".
+                </p>
+            </div>
+        }
+        else
+        {
+            <p class="sa-search-query">
+                Showing results for
+                <strong>"@Model.Query"</strong>
+            </p>
+
+            <div class="sa-search-grid">
+
+                <!-- LEARNERS -->
+
+                <section class="sa-search-card">
+
+                    <div class="sa-search-card-header">
+                        <h3>
+                            <i class="bi bi-people"></i>
+                            Learners
+                        </h3>
+
+                        <span>@Model.Learners.Count</span>
+                    </div>
+
+                    <div class="sa-search-card-body">
+
+                        @if (Model.Learners.Count == 0)
+                        {
+                            <p class="sa-search-no-match">
+                                No matching learners.
+                            </p>
+                        }
+
+                        @foreach (var learner in Model.Learners)
+                        {
+                            <a asp-controller="SchoolAdmin"
+                               asp-action="LearnerDetails"
+                               asp-route-id="@learner.Id"
+                               class="sa-search-result">
+
+                                <div class="sa-search-result-icon">
+                                    <i class="bi bi-person"></i>
+                                </div>
+
+                                <div class="sa-search-result-text">
+                                    <strong>@learner.Name</strong>
+                                    <small>@learner.Description</small>
+                                </div>
+
+                                <i class="bi bi-chevron-right"></i>
+
+                            </a>
+                        }
+
+                    </div>
+                </section>
+
+                <!-- TEACHERS -->
+
+                <section class="sa-search-card">
+
+                    <div class="sa-search-card-header">
+                        <h3>
+                            <i class="bi bi-person-workspace"></i>
+                            Teachers
+                        </h3>
+
+                        <span>@Model.Teachers.Count</span>
+                    </div>
+
+                    <div class="sa-search-card-body">
+
+                        @if (Model.Teachers.Count == 0)
+                        {
+                            <p class="sa-search-no-match">
+                                No matching teachers.
+                            </p>
+                        }
+
+                        @foreach (var teacher in Model.Teachers)
+                        {
+                            <a asp-controller="SchoolAdmin"
+                               asp-action="Teachers"
+                               class="sa-search-result">
+
+                                <div class="sa-search-result-icon">
+                                    <i class="bi bi-person-badge"></i>
+                                </div>
+
+                                <div class="sa-search-result-text">
+                                    <strong>@teacher.Name</strong>
+                                    <small>@teacher.Description</small>
+                                </div>
+
+                                <i class="bi bi-chevron-right"></i>
+
+                            </a>
+                        }
+
+                    </div>
+                </section>
+
+                <!-- CLASSES -->
+
+                <section class="sa-search-card">
+
+                    <div class="sa-search-card-header">
+                        <h3>
+                            <i class="bi bi-easel"></i>
+                            Classes
+                        </h3>
+
+                        <span>@Model.Classes.Count</span>
+                    </div>
+
+                    <div class="sa-search-card-body">
+
+                        @if (Model.Classes.Count == 0)
+                        {
+                            <p class="sa-search-no-match">
+                                No matching classes.
+                            </p>
+                        }
+
+                        @foreach (var schoolClass in Model.Classes)
+                        {
+                            <a asp-controller="SchoolAdmin"
+                               asp-action="ClassDetails"
+                               asp-route-id="@schoolClass.Id"
+                               class="sa-search-result">
+
+                                <div class="sa-search-result-icon">
+                                    <i class="bi bi-journal-bookmark"></i>
+                                </div>
+
+                                <div class="sa-search-result-text">
+                                    <strong>@schoolClass.Name</strong>
+                                    <small>@schoolClass.Description</small>
+                                </div>
+
+                                <i class="bi bi-chevron-right"></i>
+
+                            </a>
+                        }
+
+                    </div>
+                </section>
+
+            </div>
+        }
+    }
+
+</section>

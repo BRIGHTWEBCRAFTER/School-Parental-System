@@ -1,0 +1,218 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.EditTeacherViewModel
+
+@{
+    ViewData["Title"] = "Edit Teacher";
+    Layout = "_SchoolAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+            <h2>Edit Teacher</h2>
+            <p>Update teacher personal and employment information.</p>
+        </div>
+
+        <a class="secondary-action"
+           asp-controller="SchoolAdmin"
+           asp-action="TeacherDetails"
+           asp-route-id="@Model.Id">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Details
+
+        </a>
+
+    </div>
+
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="EditTeacher"
+          asp-route-id="@Model.Id"
+          method="post"
+          class="learner-form">
+
+        @Html.AntiForgeryToken()
+
+        <input asp-for="Id"
+               type="hidden" />
+
+
+        <div asp-validation-summary="All"
+             class="validation-summary">
+        </div>
+
+
+        <section class="form-card">
+
+            <div class="form-section-header">
+
+                <i class="bi bi-person-badge-fill"></i>
+
+                <div>
+                    <h3>Teacher Information</h3>
+                    <p>Update teacher personal and employment details.</p>
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label asp-for="EmployeeId">
+                        Employee ID
+                    </label>
+
+                    <input asp-for="EmployeeId"
+                           readonly />
+
+                    <small>
+                        Employee ID cannot be changed.
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="FullName"></label>
+
+                    <input asp-for="FullName" />
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Email"></label>
+
+                    <input asp-for="Email"
+                           type="email"
+                           readonly />
+
+                    <small>
+                        Login email changes require
+                        the secure account workflow.
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Phone"></label>
+
+                    <input asp-for="Phone"
+                           placeholder="+27..." />
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Specialization"></label>
+
+                    <input asp-for="Specialization" />
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="JoiningDate"></label>
+
+                    <input asp-for="JoiningDate"
+                           type="date" />
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="DateOfBirth"></label>
+
+                    <input asp-for="DateOfBirth"
+                           type="date" />
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="Gender"></label>
+
+                    <select asp-for="Gender">
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label asp-for="AlternativePhone"></label>
+
+                    <input asp-for="AlternativePhone" />
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label asp-for="Address"></label>
+
+                    <textarea asp-for="Address"
+                              rows="3">
+                    </textarea>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div class="form-actions">
+
+            <a class="cancel-button"
+               asp-controller="SchoolAdmin"
+               asp-action="TeacherDetails"
+               asp-route-id="@Model.Id">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="primary-action">
+
+                <i class="bi bi-check-circle-fill"></i>
+                Save Changes
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>

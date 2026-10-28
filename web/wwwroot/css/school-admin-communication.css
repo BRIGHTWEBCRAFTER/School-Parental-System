@@ -1,0 +1,980 @@
+﻿.communication-info-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    margin-bottom: 16px;
+    border: 1px solid #d8e7df;
+    border-radius: 10px;
+    background: #eef7f2;
+    color: #0b4a32;
+}
+
+    .communication-info-banner p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+.communication-info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: #dcefe5;
+    color: #0e5b3d;
+}
+
+
+.communication-filter-bar {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.4fr) minmax(145px, .8fr) minmax(155px, .85fr) minmax(135px, .7fr) auto auto;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.communication-search,
+.communication-filter {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+    .communication-search i,
+    .communication-filter i {
+        position: absolute;
+        left: 11px;
+        z-index: 2;
+        color: #71847b;
+        font-size: 14px;
+        pointer-events: none;
+    }
+
+    .communication-search input,
+    .communication-filter select {
+        width: 100%;
+        height: 40px;
+        min-height: 40px;
+        padding: 0 11px 0 34px;
+        border: 1px solid #ddd9ce;
+        border-radius: 8px;
+        background: #fff;
+        color: #16352a;
+        font: inherit;
+        font-size: 13px;
+        outline: none;
+    }
+
+        .communication-search input:focus,
+        .communication-filter select:focus {
+            border-color: #147348;
+            box-shadow: 0 0 0 3px rgba(20, 115, 72, .08);
+        }
+
+
+.communication-filter-button,
+.communication-clear-button {
+    height: 40px;
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.communication-filter-button {
+    border: 0;
+    background: #0b4a32;
+    color: #fff;
+    cursor: pointer;
+}
+
+    .communication-filter-button i {
+        margin-right: 5px;
+    }
+
+.communication-clear-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd9ce;
+    background: #fff;
+    color: #16352a;
+}
+
+
+.communication-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.communication-summary-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 82px;
+    padding: 13px 15px;
+    border: 1px solid #e2ded3;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 3px 10px rgba(22, 53, 42, .04);
+}
+
+.communication-summary-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+.communication-summary-card span {
+    display: block;
+    margin-bottom: 3px;
+    color: #71847b;
+    font-size: 12px;
+}
+
+.communication-summary-card strong {
+    color: #16352a;
+    font-size: 21px;
+    line-height: 1;
+}
+
+.communication-summary-card.total .communication-summary-icon {
+    background: #f7f3e8;
+    color: #0b4a32;
+}
+
+.communication-summary-card.read .communication-summary-icon {
+    background: #e1eee7;
+    color: #147348;
+}
+
+.communication-summary-card.important .communication-summary-icon {
+    background: #fff1c8;
+    color: #b87900;
+}
+
+.communication-summary-card.acknowledged .communication-summary-icon {
+    background: #eee7f7;
+    color: #72539b;
+}
+
+
+.communication-tabs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding: 4px;
+    width: fit-content;
+    border: 1px solid #e0dccf;
+    border-radius: 9px;
+    background: #fff;
+}
+
+.communication-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 7px;
+    color: #71847b;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+    .communication-tab:hover {
+        background: #f7f3e8;
+        color: #0b4a32;
+    }
+
+    .communication-tab.active {
+        background: #0b4a32;
+        color: #fff;
+    }
+
+
+.communication-panel,
+.communication-mini-panel {
+    border: 1px solid #e0dccf;
+    border-radius: 13px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(22, 53, 42, .04);
+}
+
+.communication-panel {
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.communication-panel-header,
+.communication-mini-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 15px 17px;
+    border-bottom: 1px solid #ece7dc;
+}
+
+    .communication-panel-header h3,
+    .communication-mini-header h3 {
+        margin: 0 0 3px;
+        color: #073a28;
+        font-size: 16px;
+    }
+
+        .communication-panel-header h3 i,
+        .communication-mini-header h3 i {
+            margin-right: 6px;
+            color: #e89a00;
+        }
+
+    .communication-panel-header p,
+    .communication-mini-header p {
+        margin: 0;
+        color: #71847b;
+        font-size: 12px;
+    }
+
+.communication-result-count {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #f7f3e8;
+    color: #0b4a32;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.communication-table-wrapper {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.communication-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+    .communication-table th:nth-child(1),
+    .communication-table td:nth-child(1) {
+        width: 25%;
+    }
+
+    .communication-table th:nth-child(2),
+    .communication-table td:nth-child(2) {
+        width: 10%;
+    }
+
+    .communication-table th:nth-child(3),
+    .communication-table td:nth-child(3) {
+        width: 11%;
+    }
+
+    .communication-table th:nth-child(4),
+    .communication-table td:nth-child(4) {
+        width: 10%;
+    }
+
+    .communication-table th:nth-child(5),
+    .communication-table td:nth-child(5) {
+        width: 7%;
+    }
+
+    .communication-table th:nth-child(6),
+    .communication-table td:nth-child(6) {
+        width: 11%;
+    }
+
+    .communication-table th:nth-child(7),
+    .communication-table td:nth-child(7) {
+        width: 8%;
+    }
+
+    .communication-table th:nth-child(8),
+    .communication-table td:nth-child(8) {
+        width: 18%;
+    }
+
+    .communication-table th {
+        padding: 11px 12px;
+        border-bottom: 1px solid #e6dcc3;
+        background: #f6dda0;
+        color: #16352a;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .communication-table td {
+        padding: 11px 12px;
+        border-bottom: 1px solid #eee9df;
+        color: #16352a;
+        font-size: 12px;
+        vertical-align: middle;
+    }
+
+    .communication-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .communication-table tbody tr:hover {
+        background: #fffdf7;
+    }
+
+
+.announcement-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.announcement-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: #eef7f2;
+    color: #0e5b3d;
+}
+
+.announcement-details {
+    min-width: 0;
+}
+
+    .announcement-details strong,
+    .announcement-details span {
+        display: block;
+    }
+
+    .announcement-details strong {
+        margin-bottom: 2px;
+        color: #16352a;
+    }
+
+    .announcement-details span {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        color: #71847b;
+        font-size: 11px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+.communication-table th,
+.communication-table td {
+    overflow-wrap: break-word;
+}
+
+.priority-badge,
+.communication-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+    .priority-badge.normal {
+        background: #eef7f2;
+        color: #147348;
+    }
+
+    .priority-badge.important {
+        background: #fff1c8;
+        color: #a86f00;
+    }
+
+    .priority-badge.urgent {
+        background: #fde6e3;
+        color: #b63b32;
+    }
+
+    .communication-status.active {
+        background: #dcf3e5;
+        color: #147348;
+    }
+
+    .communication-status.expired {
+        background: #eeeeee;
+        color: #71847b;
+    }
+
+
+.communication-date strong,
+.communication-date span,
+.engagement-value strong,
+.engagement-value span {
+    display: block;
+}
+
+.communication-date span,
+.engagement-value span {
+    margin-top: 2px;
+    color: #71847b;
+    font-size: 11px;
+}
+
+.communication-muted {
+    color: #9ca9a3;
+}
+
+
+.communication-bottom-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.notice-list,
+.event-list {
+    padding: 4px 15px 10px;
+}
+
+.notice-item,
+.event-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 11px 0;
+    border-bottom: 1px solid #eee9df;
+}
+
+    .notice-item:last-child,
+    .event-item:last-child {
+        border-bottom: 0;
+    }
+
+.notice-priority {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+}
+
+    .notice-priority.important {
+        background: #fff1c8;
+        color: #a86f00;
+    }
+
+    .notice-priority.urgent {
+        background: #fde6e3;
+        color: #b63b32;
+    }
+
+.notice-content,
+.event-content {
+    min-width: 0;
+}
+
+    .notice-content strong,
+    .notice-content span,
+    .event-content strong,
+    .event-content span,
+    .event-content small {
+        display: block;
+    }
+
+    .notice-content strong,
+    .event-content strong {
+        margin-bottom: 3px;
+        color: #16352a;
+        font-size: 13px;
+    }
+
+    .notice-content span,
+    .event-content span,
+    .event-content small {
+        color: #71847b;
+        font-size: 11px;
+    }
+
+    .event-content small {
+        margin-top: 2px;
+    }
+
+
+.event-date-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: #f7f3e8;
+    color: #0b4a32;
+}
+
+    .event-date-box strong {
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .event-date-box span {
+        margin-top: 3px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+
+.communication-empty-state {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.communication-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: #f7f3e8;
+    color: #71847b;
+    font-size: 22px;
+}
+
+.communication-empty-state h3 {
+    margin: 0 0 7px;
+    color: #16352a;
+    font-size: 16px;
+}
+
+.communication-empty-state p,
+.mini-empty-state {
+    color: #71847b;
+    font-size: 12px;
+}
+
+.communication-empty-state p {
+    margin: 0;
+}
+
+.mini-empty-state {
+    padding: 28px 17px;
+}
+
+
+@media (max-width: 1100px) {
+
+    .communication-filter-bar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .communication-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .communication-bottom-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .communication-filter-bar,
+    .communication-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .communication-tabs {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .communication-tab {
+        white-space: nowrap;
+    }
+
+    .communication-panel-header,
+    .communication-mini-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+.communication-info-banner {
+    position: relative;
+}
+
+    .communication-info-banner p {
+        flex: 1;
+    }
+
+.communication-info-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    margin-left: auto;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #0b4a32;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+    .communication-info-close:hover {
+        background: #dcefe5;
+    }
+
+.communication-page-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.create-announcement-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 0 15px;
+    border-radius: 8px;
+    background: #0b4a32;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+    .create-announcement-button:hover {
+        background: #073a28;
+        color: #fff;
+    }
+
+@media (max-width: 700px) {
+
+    .communication-page-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .create-announcement-button {
+        width: 100%;
+    }
+}
+
+.communication-actions-cell {
+    text-align: center;
+}
+
+.communication-action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.communication-view-button,
+.communication-edit-button,
+.communication-delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 31px;
+    padding: 0 7px;
+    border-radius: 7px;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+
+/* View */
+
+.communication-view-button {
+    border: 1px solid #ddd5bd;
+    background: #fffdf7;
+    color: #725600;
+}
+
+    .communication-view-button:hover {
+        border-color: #e89a00;
+        background: #fff6d8;
+        color: #654900;
+    }
+
+
+/* Edit */
+
+.communication-edit-button {
+    border: 1px solid #cddfd5;
+    background: #f4faf7;
+    color: #0b4a32;
+}
+
+    .communication-edit-button:hover {
+        border-color: #147348;
+        background: #e7f3ec;
+        color: #073a28;
+    }
+
+
+/* Delete */
+
+.communication-delete-button {
+    border: 1px solid #efcbc7;
+    background: #fff6f5;
+    color: #b33e35;
+}
+
+    .communication-delete-button:hover {
+        border-color: #d86459;
+        background: #fde9e7;
+        color: #942f27;
+    }
+
+/* =================================================
+   DELETE ANNOUNCEMENT MODAL
+   ================================================= */
+
+.communication-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+    .communication-modal.show {
+        display: flex;
+    }
+
+.communication-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(7, 58, 40, .45);
+    backdrop-filter: blur(2px);
+}
+
+.communication-modal-dialog {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 14px;
+    width: 100%;
+    max-width: 480px;
+    padding: 20px;
+    border: 1px solid #eadbd8;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 18px 45px rgba(22, 53, 42, .18);
+}
+
+.communication-modal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 43px;
+    width: 43px;
+    height: 43px;
+    border-radius: 11px;
+    background: #fde9e7;
+    color: #b33e35;
+    font-size: 18px;
+}
+
+.communication-modal-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.communication-modal-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+    .communication-modal-heading h3 {
+        margin: 0 0 3px;
+        color: #16352a;
+        font-size: 17px;
+    }
+
+    .communication-modal-heading p {
+        margin: 0;
+        color: #8a746f;
+        font-size: 11px;
+    }
+
+.communication-modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #71847b;
+    cursor: pointer;
+}
+
+    .communication-modal-close:hover {
+        background: #f5f2ec;
+        color: #16352a;
+    }
+
+
+/* Delete message */
+
+.communication-delete-message {
+    margin-top: 18px;
+    padding: 13px;
+    border: 1px solid #f0dedb;
+    border-radius: 9px;
+    background: #fff9f8;
+}
+
+    .communication-delete-message p {
+        margin: 0;
+        color: #71847b;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .communication-delete-message strong {
+        display: block;
+        margin: 5px 0 9px;
+        color: #942f27;
+        font-size: 13px;
+        overflow-wrap: anywhere;
+    }
+
+
+/* Modal actions */
+
+.communication-delete-form {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.communication-modal-cancel,
+.communication-modal-confirm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 38px;
+    padding: 0 13px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.communication-modal-cancel {
+    border: 1px solid #ddd9ce;
+    background: #fff;
+    color: #16352a;
+}
+
+    .communication-modal-cancel:hover {
+        border-color: #b7c7bf;
+        background: #faf9f5;
+    }
+
+.communication-modal-confirm {
+    border: 1px solid #b33e35;
+    background: #b33e35;
+    color: #fff;
+}
+
+    .communication-modal-confirm:hover {
+        border-color: #942f27;
+        background: #942f27;
+    }
+
+
+@media (max-width: 520px) {
+
+    .communication-modal-dialog {
+        align-items: flex-start;
+        padding: 16px;
+    }
+
+    .communication-delete-form {
+        flex-direction: column-reverse;
+    }
+
+    .communication-modal-cancel,
+    .communication-modal-confirm {
+        width: 100%;
+    }
+}
+
+.create-event-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid #0b4a32;
+    border-radius: 8px;
+    background: #0b4a32;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+    .create-event-button:hover {
+        background: #073a28;
+        border-color: #073a28;
+        color: #fff;
+    }

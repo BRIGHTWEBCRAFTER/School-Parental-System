@@ -1,0 +1,1264 @@
+﻿@using System
+@using System.Linq
+@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherEventManagementViewModel
+
+@{
+    ViewData["Title"] = "Events Management";
+    Layout = "_TeacherLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-communication.css"
+      asp-append-version="true" />
+
+<link rel="stylesheet"
+      href="~/css/school-admin-events.css"
+      asp-append-version="true" />
+
+
+<!-- ==========================================
+     TEACHER EVENTS - DELETE STYLING
+     ========================================== -->
+
+<style>
+
+    /* =========================================
+               EVENT ACTION BUTTONS
+               ========================================= */
+
+    .teacher-events-page .events-action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+    }
+
+    .teacher-events-page .events-actions-cell {
+        white-space: nowrap;
+    }
+
+    .teacher-events-page .events-table-wrapper {
+        overflow-x: auto;
+    }
+
+    /* EDIT EVENT BUTTON */
+
+    .teacher-events-page .events-edit-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 8px 13px;
+        border: 1px solid #d7e4dd;
+        border-radius: 8px;
+        background: #f0f7f2;
+        color: #073f32;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: 0.2s ease;
+    }
+
+        .teacher-events-page .events-edit-button:hover {
+            background: #073f32;
+            border-color: #073f32;
+            color: #fff;
+        }
+
+    /* DELETE EVENT BUTTON */
+
+    .teacher-delete-event-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 8px 13px;
+        border: 1px solid #f1c7c7;
+        border-radius: 8px;
+        background: #fff5f5;
+        color: #b52d32;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: 0.2s ease;
+    }
+
+        .teacher-delete-event-button:hover {
+            background: #b52d32;
+            color: #fff;
+            border-color: #b52d32;
+        }
+
+        .teacher-delete-event-button:focus-visible {
+            outline: 3px solid #d9aa35;
+            outline-offset: 2px;
+        }
+
+    /* =========================================
+               MODAL OVERLAY
+               ========================================= */
+
+    .teacher-event-delete-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(8, 32, 25, 0.65);
+    }
+
+        .teacher-event-delete-overlay[hidden] {
+            display: none !important;
+        }
+
+    /* =========================================
+               DELETE CONFIRMATION CARD
+               ========================================= */
+
+    .teacher-event-delete-modal {
+        width: 100%;
+        max-width: 470px;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        padding: 30px;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 22px 65px rgba(0, 0, 0, 0.22);
+        text-align: center;
+    }
+
+    .teacher-event-delete-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #fff0f0;
+        color: #be3030;
+        font-size: 27px;
+    }
+
+    .teacher-event-delete-modal h3 {
+        margin: 0 0 12px;
+        color: #073f32;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .teacher-event-delete-modal p {
+        margin: 0 0 20px;
+        color: #63736b;
+        font-size: 14px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+        .teacher-event-delete-modal p strong {
+            color: #073f32;
+        }
+
+    /* =========================================
+               WARNING MESSAGE
+               ========================================= */
+
+    .teacher-event-delete-warning {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        padding: 14px;
+        margin-bottom: 24px;
+        border: 1px solid #f5d6ac;
+        border-radius: 9px;
+        background: #fff9ed;
+        text-align: left;
+    }
+
+        .teacher-event-delete-warning i {
+            flex-shrink: 0;
+            color: #b97919;
+            font-size: 18px;
+        }
+
+        .teacher-event-delete-warning span {
+            color: #805c23;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+    /* =========================================
+               MODAL ACTION BUTTONS
+               ========================================= */
+
+    .teacher-event-delete-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .teacher-event-cancel-button,
+    .teacher-event-confirm-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 43px;
+        padding: 11px 17px;
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 650;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    /* CANCEL BUTTON */
+
+    .teacher-event-cancel-button {
+        border: 1px solid #dce3dc;
+        background: #fff;
+        color: #073f32;
+    }
+
+        .teacher-event-cancel-button:hover {
+            background: #eef5ef;
+        }
+
+    /* CONFIRM DELETE BUTTON */
+
+    .teacher-event-confirm-button {
+        border: 1px solid #b52d32;
+        background: #b52d32;
+        color: #fff;
+    }
+
+        .teacher-event-confirm-button:hover {
+            background: #962328;
+            border-color: #962328;
+        }
+
+        .teacher-event-confirm-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+    /* =========================================
+               RESPONSIVE
+               ========================================= */
+
+    @@media (max-width: 768px) {
+
+        .teacher-events-page .events-action-buttons {
+            gap: 6px;
+        }
+
+        .teacher-delete-event-button,
+        .teacher-events-page .events-edit-button {
+            padding: 7px 10px;
+            font-size: 12px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+
+        .teacher-event-delete-modal {
+            padding: 24px 18px;
+        }
+
+        .teacher-event-delete-actions {
+            flex-direction: column;
+        }
+
+            .teacher-event-delete-actions button {
+                width: 100%;
+            }
+    }
+
+</style>
+
+
+<section class="dashboard-content teacher-events-page">
+
+    <!-- ==========================================
+         PAGE HEADING
+         ========================================== -->
+
+    <div class="page-heading events-page-heading">
+
+        <div>
+
+            <h2>Events Management</h2>
+
+            <p>
+                Create, view and manage events
+                for your assigned classes.
+            </p>
+
+        </div>
+
+
+        <!-- CREATE EVENT -->
+
+        <a asp-controller="Teacher"
+           asp-action="CreateEvent"
+           class="events-create-button">
+
+            <i class="bi bi-calendar-plus"></i>
+            Create Event
+
+        </a>
+
+    </div>
+
+
+    <!-- ==========================================
+         SUCCESS AND ERROR MESSAGES
+         ========================================== -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success"
+             role="status">
+
+            <i class="bi bi-check-circle-fill"></i>
+
+            @TempData["SuccessMessage"]
+
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill"></i>
+
+            @TempData["ErrorMessage"]
+
+        </div>
+    }
+
+
+    <!-- ==========================================
+         COMMUNICATION NAVIGATION
+         ========================================== -->
+
+    <div class="communication-tabs">
+
+        <!-- ANNOUNCEMENTS -->
+
+        <a asp-controller="Teacher"
+           asp-action="Communication"
+           class="communication-tab">
+
+            <i class="bi bi-megaphone"></i>
+            Announcements
+
+        </a>
+
+
+        <!-- EVENTS -->
+
+        <a asp-controller="Teacher"
+           asp-action="Events"
+           class="communication-tab active"
+           aria-current="page">
+
+            <i class="bi bi-calendar-event"></i>
+            Events
+
+        </a>
+
+
+        <!-- STATISTICS -->
+
+        <a asp-controller="Teacher"
+           asp-action="CommunicationStatistics"
+           class="communication-tab">
+
+            <i class="bi bi-bar-chart"></i>
+            Statistics
+
+        </a>
+
+    </div>
+
+
+    <!-- ==========================================
+         EVENTS SUMMARY CARDS
+         ========================================== -->
+
+    <div class="events-summary-grid">
+
+        <!-- TOTAL EVENTS -->
+
+        <div class="events-summary-card">
+
+            <div class="events-summary-icon">
+
+                <i class="bi bi-calendar-event-fill"></i>
+
+            </div>
+
+            <div>
+
+                <span>Total Events</span>
+
+                <strong>
+                    @Model.TotalEvents
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- UPCOMING EVENTS -->
+
+        <div class="events-summary-card">
+
+            <div class="events-summary-icon">
+
+                <i class="bi bi-calendar-check-fill"></i>
+
+            </div>
+
+            <div>
+
+                <span>Upcoming Events</span>
+
+                <strong>
+                    @Model.UpcomingEventsCount
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- PAST EVENTS -->
+
+        <div class="events-summary-card">
+
+            <div class="events-summary-icon">
+
+                <i class="bi bi-calendar-x-fill"></i>
+
+            </div>
+
+            <div>
+
+                <span>Past Events</span>
+
+                <strong>
+                    @Model.PastEventsCount
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         EVENTS MANAGEMENT TABLE
+         ========================================== -->
+
+    <section class="events-table-card">
+
+        <div class="events-table-heading">
+
+            <div>
+
+                <h3>
+
+                    <i class="bi bi-calendar3"></i>
+                    School Events
+
+                </h3>
+
+                <p>
+                    Events created for your
+                    assigned classes.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             DATA LOAD ERROR
+             ===================================== -->
+        @if (Model.DataLoadFailed)
+        {
+            <div class="events-empty-state">
+
+                <div class="events-empty-icon">
+
+                    <i class="bi bi-exclamation-triangle"></i>
+
+                </div>
+
+                <h3>Unable to Load Events</h3>
+
+                <p>
+                    Your events could not be loaded.
+                    Please try again.
+                </p>
+
+                <a asp-controller="Teacher"
+                   asp-action="Events"
+                   class="events-empty-button">
+
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Try Again
+
+                </a>
+
+            </div>
+        }
+
+
+        <!-- =====================================
+             TEACHER PROFILE UNAVAILABLE
+             ===================================== -->
+        @if (!Model.DataLoadFailed && !Model.HasTeacherProfile)
+        {
+            <div class="events-empty-state">
+
+                <div class="events-empty-icon">
+
+                    <i class="bi bi-person-exclamation"></i>
+
+                </div>
+
+                <h3>Teacher Profile Unavailable</h3>
+
+                <p>
+                    Your Teacher profile could not
+                    be found. Please contact your
+                    School Administrator.
+                </p>
+
+            </div>
+        }
+
+
+        <!-- =====================================
+             NO EVENTS FOUND
+             ===================================== -->
+        @if (!Model.DataLoadFailed && Model.HasTeacherProfile && (Model.Events?.Count ?? 0) == 0)
+        {
+            <div class="events-empty-state">
+
+                <div class="events-empty-icon">
+
+                    <i class="bi bi-calendar-event"></i>
+
+                </div>
+
+                <h3>No Events Yet</h3>
+
+                <p>
+                    You have not created any events
+                    for your assigned classes.
+                </p>
+
+                <a asp-controller="Teacher"
+                   asp-action="CreateEvent"
+                   class="events-empty-button">
+
+                    <i class="bi bi-calendar-plus"></i>
+                    Create Event
+
+                </a>
+
+            </div>
+        }
+
+
+        <!-- =====================================
+             EVENTS TABLE
+             ===================================== -->
+        @if (!Model.DataLoadFailed && Model.HasTeacherProfile && (Model.Events?.Count ?? 0) > 0)
+        {
+            <div class="events-table-wrapper">
+
+                <table class="events-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Event</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Venue</th>
+                            <th>Target</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var schoolEvent in Model.Events)
+                        {
+                            var eventStatus =
+                            schoolEvent.EventDate.Date < DateTime.Today
+                            ? "Past"
+                            : schoolEvent.EventDate.Date == DateTime.Today
+                            ? "Today"
+                            : "Upcoming";
+
+                            <tr>
+
+                                <!-- =====================================
+                                     EVENT NAME AND DESCRIPTION
+                                     ===================================== -->
+
+                                <td>
+
+                                    <div class="events-event-cell">
+
+                                        <div class="events-event-icon">
+
+                                            <i class="bi bi-calendar-event-fill"></i>
+
+                                        </div>
+
+
+                                        <div class="events-event-details">
+
+                                            <strong title="@schoolEvent.EventName">
+
+                                                @schoolEvent.EventName
+
+                                            </strong>
+
+
+                                            @if (!string.IsNullOrWhiteSpace(
+                                           schoolEvent.Description))
+                                            {
+                                                <span title="@schoolEvent.Description">
+
+                                                    @schoolEvent.Description
+
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span>
+                                                    No description provided
+                                                </span>
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- =====================================
+                                     EVENT DATE
+                                     ===================================== -->
+
+                                <td>
+
+                                    <div class="events-date">
+
+                                        <strong>
+
+                                            @(schoolEvent.EventDate.ToString(
+                                                "dd MMM yyyy"))
+
+                                        </strong>
+
+                                        <span>
+
+                                            @(schoolEvent.EventDate.ToString(
+                                                "dddd"))
+
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- =====================================
+                                     EVENT TIME
+                                     ===================================== -->
+
+                                <td>
+
+                                    <div class="events-time">
+
+                                        @if (schoolEvent.StartTime.HasValue)
+                                        {
+                                            <strong>
+
+                                                @(schoolEvent.StartTime.Value
+                                                    .ToString(@"hh\:mm"))
+
+                                            </strong>
+                                        }
+                                        else
+                                        {
+                                            <strong class="events-muted">
+                                                Not specified
+                                            </strong>
+                                        }
+
+
+                                        @if (schoolEvent.EndTime.HasValue)
+                                        {
+                                            <span>
+
+                                                Until
+
+                                                @(schoolEvent.EndTime.Value
+                                                    .ToString(@"hh\:mm"))
+
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- =====================================
+                                     VENUE
+                                     ===================================== -->
+
+                                <td>
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                   schoolEvent.Venue))
+                                    {
+                                        <span class="events-venue">
+
+                                            <i class="bi bi-geo-alt-fill"></i>
+
+                                            @schoolEvent.Venue
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="events-muted">
+                                            Not specified
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- =====================================
+                                     TARGET AUDIENCE
+                                     ===================================== -->
+
+                                <td>
+
+                                    <span class="events-target"
+                                          title="@schoolEvent.TargetDisplay">
+
+                                        @schoolEvent.TargetDisplay
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- =====================================
+                                     STATUS
+                                     ===================================== -->
+
+                                <td>
+
+                                    <span class="event-status @eventStatus.ToLowerInvariant()">
+
+                                        @eventStatus
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- =====================================
+                                     ACTION BUTTONS
+                                     ===================================== -->
+
+                                <td class="events-actions-cell">
+
+                                    <div class="events-action-buttons">
+
+
+                                        <!-- VIEW EVENT -->
+
+                                        <a asp-controller="Teacher"
+                                           asp-action="EventDetails"
+                                           asp-route-id="@schoolEvent.Id"
+                                           class="events-view-button"
+                                           title="View Event"
+                                           aria-label="View @schoolEvent.EventName">
+
+                                            <i class="bi bi-eye"></i>
+                                            View
+
+                                        </a>
+
+
+                                        <!-- EDIT EVENT -->
+
+                                        <a asp-controller="Teacher"
+                                           asp-action="EditEvent"
+                                           asp-route-id="@schoolEvent.Id"
+                                           class="events-edit-button"
+                                           title="Edit Event"
+                                           aria-label="Edit @schoolEvent.EventName">
+
+                                            <i class="bi bi-pencil-square"></i>
+                                            Edit
+
+                                        </a>
+
+
+                                        <!-- DELETE EVENT -->
+
+                                        <button type="button"
+                                                class="teacher-delete-event-button"
+                                                data-event-id="@schoolEvent.Id"
+                                                data-event-name="@schoolEvent.EventName"
+                                                title="Delete Event"
+                                                aria-label="Delete @schoolEvent.EventName">
+
+                                            <i class="bi bi-trash3"></i>
+                                            Delete
+
+                                        </button>
+
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </section>
+
+</section>
+
+
+<!-- ==========================================
+     DELETE EVENT CONFIRMATION MODAL
+     ========================================== -->
+
+<div id="teacherDeleteEventModal"
+     class="teacher-event-delete-overlay"
+     hidden>
+
+    <div class="teacher-event-delete-modal"
+         role="alertdialog"
+         aria-modal="true"
+         aria-labelledby="teacherDeleteEventTitle"
+         aria-describedby="teacherDeleteEventDescription">
+
+        <!-- MODAL ICON -->
+
+        <div class="teacher-event-delete-icon">
+
+            <i class="bi bi-trash3"></i>
+
+        </div>
+
+
+        <!-- MODAL TITLE -->
+
+        <h3 id="teacherDeleteEventTitle">
+
+            Delete Event?
+
+        </h3>
+
+
+        <!-- MODAL DESCRIPTION -->
+
+        <p id="teacherDeleteEventDescription">
+
+            Are you sure you want to delete
+
+            <strong id="teacherDeleteEventName"></strong>?
+
+        </p>
+
+
+        <!-- WARNING MESSAGE -->
+
+        <div class="teacher-event-delete-warning">
+
+            <i class="bi bi-exclamation-triangle"></i>
+
+            <span>
+
+                This action cannot be undone.
+
+                The event and its associated
+                notifications will be
+                permanently deleted.
+
+            </span>
+
+        </div>
+
+
+        <!-- =====================================
+             DELETE EVENT FORM
+             ===================================== -->
+
+        <form asp-controller="Teacher"
+              asp-action="DeleteEvent"
+              method="post"
+              asp-antiforgery="false"
+              id="teacherDeleteEventForm">
+
+            @Html.AntiForgeryToken()
+
+
+            <!-- EVENT ID -->
+
+            <input type="hidden"
+                   name="id"
+                   id="teacherDeleteEventId" />
+
+
+            <!-- ACTION BUTTONS -->
+
+            <div class="teacher-event-delete-actions">
+
+
+                <!-- CANCEL -->
+
+                <button type="button"
+                        id="teacherCancelDeleteEvent"
+                        class="teacher-event-cancel-button">
+
+                    Cancel
+
+                </button>
+
+
+                <!-- CONFIRM DELETE -->
+
+                <button type="submit"
+                        id="teacherConfirmDeleteEvent"
+                        class="teacher-event-confirm-button">
+
+                    <i class="bi bi-trash3"></i>
+                    Delete Event
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     DELETE EVENT JAVASCRIPT
+     ========================================== -->
+@section Scripts
+{
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                // =====================================
+                // ELEMENT REFERENCES
+                // =====================================
+
+                const modal =
+                    document.getElementById(
+                        "teacherDeleteEventModal");
+
+                const eventIdInput =
+                    document.getElementById(
+                        "teacherDeleteEventId");
+
+                const eventName =
+                    document.getElementById(
+                        "teacherDeleteEventName");
+
+                const cancelButton =
+                    document.getElementById(
+                        "teacherCancelDeleteEvent");
+
+                const confirmButton =
+                    document.getElementById(
+                        "teacherConfirmDeleteEvent");
+
+                const deleteForm =
+                    document.getElementById(
+                        "teacherDeleteEventForm");
+
+                const deleteButtons =
+                    document.querySelectorAll(
+                        ".teacher-delete-event-button");
+
+
+                if (!modal ||
+                    !eventIdInput ||
+                    !eventName ||
+                    !cancelButton ||
+                    !confirmButton ||
+                    !deleteForm) {
+
+                    return;
+                }
+
+
+                let lastFocusedButton = null;
+
+                let previousBodyOverflow = "";
+
+                let isSubmitting = false;
+
+
+                // =====================================
+                // OPEN DELETE CONFIRMATION
+                // =====================================
+
+                function openDeleteModal(button) {
+
+                    const id =
+                        button.dataset.eventId;
+
+                    const name =
+                        button.dataset.eventName;
+
+
+                    if (!id || isSubmitting) {
+                        return;
+                    }
+
+
+                    lastFocusedButton = button;
+
+                    eventIdInput.value = id;
+
+                    // Use textContent so event names
+                    // are displayed as plain text.
+
+                    eventName.textContent =
+                        name || "this event";
+
+
+                    confirmButton.disabled = false;
+
+
+                    previousBodyOverflow =
+                        document.body.style.overflow;
+
+
+                    modal.hidden = false;
+
+                    document.body.style.overflow =
+                        "hidden";
+
+
+                    cancelButton.focus();
+                }
+
+
+                // =====================================
+                // CLOSE DELETE CONFIRMATION
+                // =====================================
+
+                function closeDeleteModal() {
+
+                    if (isSubmitting) {
+                        return;
+                    }
+
+                    modal.hidden = true;
+
+                    eventIdInput.value = "";
+
+                    eventName.textContent = "";
+
+                    document.body.style.overflow =
+                        previousBodyOverflow;
+
+
+                    if (lastFocusedButton &&
+                        lastFocusedButton.isConnected) {
+
+                        lastFocusedButton.focus();
+                    }
+                }
+
+
+                // =====================================
+                // DELETE BUTTON CLICK
+                // =====================================
+
+                deleteButtons.forEach(
+                    function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            function () {
+
+                                openDeleteModal(button);
+
+                            }
+                        );
+
+                    }
+                );
+
+
+                // =====================================
+                // CANCEL DELETE
+                // =====================================
+
+                cancelButton.addEventListener(
+                    "click",
+                    closeDeleteModal
+                );
+
+
+                // =====================================
+                // CLICK OUTSIDE MODAL
+                // =====================================
+
+                modal.addEventListener(
+                    "click",
+                    function (event) {
+
+                        if (event.target === modal) {
+
+                            closeDeleteModal();
+
+                        }
+
+                    }
+                );
+
+
+                // =====================================
+                // ESCAPE KEY / KEYBOARD FOCUS
+                // =====================================
+
+                document.addEventListener(
+                    "keydown",
+                    function (event) {
+
+                        if (modal.hidden) {
+                            return;
+                        }
+
+
+                        // CLOSE ON ESCAPE
+
+                        if (event.key === "Escape") {
+
+                            event.preventDefault();
+
+                            closeDeleteModal();
+
+                            return;
+                        }
+
+
+                        // KEEP FOCUS INSIDE MODAL
+
+                        if (event.key === "Tab") {
+
+                            const first = cancelButton;
+
+                            const last = confirmButton;
+
+
+                            if (event.shiftKey &&
+                                document.activeElement === first) {
+
+                                event.preventDefault();
+
+                                last.focus();
+
+                            }
+                            else if (!event.shiftKey &&
+                                document.activeElement === last) {
+
+                                event.preventDefault();
+
+                                first.focus();
+                            }
+                        }
+
+                    }
+                );
+
+
+                // =====================================
+                // PREVENT DOUBLE SUBMISSION
+                // =====================================
+
+                deleteForm.addEventListener(
+                    "submit",
+                    function (event) {
+
+                        if (isSubmitting) {
+
+                            event.preventDefault();
+
+                            return;
+                        }
+
+
+                        if (!eventIdInput.value) {
+
+                            event.preventDefault();
+
+                            return;
+                        }
+
+
+                        isSubmitting = true;
+
+                        confirmButton.disabled = true;
+
+                    }
+                );
+
+            }
+        );
+
+    </script>
+}

@@ -1,0 +1,457 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherEditProfileViewModel
+
+@{
+    ViewData["Title"] = "Edit Profile";
+    Layout = "_TeacherLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-profile.css"
+      asp-append-version="true" />
+
+<style>
+    /* =========================================
+           TEACHER EDIT PROFILE STYLING
+           ========================================= */
+
+    .teacher-edit-page {
+        max-width: 1250px;
+        margin: 0 auto;
+    }
+
+    .teacher-edit-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+        .teacher-edit-heading h2 {
+            margin: 0 0 6px;
+            color: #073f32;
+            font-weight: 750;
+        }
+
+        .teacher-edit-heading p {
+            margin: 0;
+            color: #718078;
+        }
+
+    /* BACK / CANCEL */
+
+    .teacher-edit-back,
+    .teacher-edit-cancel {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        border: 1px solid #d8e0d9;
+        color: #073f32;
+        background: #fff;
+        padding: 10px 17px;
+        border-radius: 9px;
+    }
+
+        .teacher-edit-back:hover,
+        .teacher-edit-cancel:hover {
+            background: #f0f7f2;
+            color: #073f32;
+        }
+
+    /* FORM CARD */
+
+    .teacher-edit-card {
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .teacher-edit-card-intro {
+        padding: 24px 26px;
+        border-bottom: 1px solid #e6eae6;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+        .teacher-edit-card-intro .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: #fff4d5;
+            color: #926b16;
+            font-size: 21px;
+        }
+
+        .teacher-edit-card-intro h3 {
+            color: #073f32;
+            font-size: 19px;
+            margin: 0 0 4px;
+        }
+
+        .teacher-edit-card-intro p {
+            color: #718078;
+            margin: 0;
+            font-size: 13px;
+        }
+
+    .teacher-edit-card-body {
+        padding: 25px 26px;
+    }
+
+    /* FIELDS */
+
+    .teacher-edit-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+    }
+
+    .teacher-edit-field {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        min-width: 0;
+    }
+
+        .teacher-edit-field label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #073f32;
+        }
+
+    .teacher-edit-input {
+        display: block;
+        width: 100%;
+        min-height: 44px;
+        padding: 10px 13px;
+        background: #fff;
+        color: #173e31;
+        border: 1px solid #d8e0d9;
+        border-radius: 8px;
+        outline: none;
+    }
+
+        .teacher-edit-input:focus {
+            border-color: #d9aa35;
+            box-shadow: 0 0 0 3px #d9aa3529;
+        }
+
+    .teacher-edit-readonly {
+        background: #f5f7f5;
+        color: #64756b;
+        cursor: default;
+    }
+
+    .teacher-edit-error {
+        color: #b52d32;
+        font-size: 12px;
+    }
+
+    .teacher-edit-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 17px;
+        border-radius: 9px;
+        padding: 12px 14px;
+        background: #f0f7f2;
+        color: #315d49;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    /* SAVE ACTIONS */
+
+    .teacher-edit-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 22px;
+        flex-wrap: wrap;
+    }
+
+    .teacher-edit-save {
+        border: 1px solid #073f32;
+        border-radius: 9px;
+        padding: 11px 23px;
+        background: #073f32;
+        color: #fff;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-weight: 700;
+    }
+
+        .teacher-edit-save:hover {
+            background: #0d5944;
+        }
+
+    /* RESPONSIVE */
+
+    @@media (max-width: 700px) {
+
+        .teacher-edit-fields {
+            grid-template-columns: 1fr;
+        }
+
+        .teacher-edit-card-intro,
+        .teacher-edit-card-body {
+            padding: 20px;
+        }
+
+        .teacher-edit-actions > * {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+</style>
+
+
+<section class="dashboard-content sa-profile-page teacher-edit-page">
+
+    <!-- PAGE HEADING -->
+
+    <div class="teacher-edit-heading">
+
+        <div>
+            <h2>Edit Profile</h2>
+
+            <p>
+                Update your name and contact number.
+            </p>
+        </div>
+
+
+        <a asp-controller="Teacher"
+           asp-action="Profile"
+           class="teacher-edit-back">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back to Profile
+
+        </a>
+
+    </div>
+
+
+    <!-- ERROR FEEDBACK -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger"
+             role="alert">
+
+            @TempData["ErrorMessage"]
+
+        </div>
+    }
+
+
+    <!-- ==========================================
+         EDIT PROFILE FORM
+         ========================================== -->
+
+    <form asp-controller="Teacher"
+          asp-action="EditProfile"
+          method="post"
+          asp-antiforgery="false">
+
+        @Html.AntiForgeryToken()
+
+
+        <section class="sa-profile-card teacher-edit-card">
+
+            <!-- CARD HEADING -->
+
+            <div class="teacher-edit-card-intro">
+
+                <span class="icon">
+
+                    <i class="bi bi-person-vcard"></i>
+
+                </span>
+
+
+                <div>
+
+                    <h3>Personal Information</h3>
+
+                    <p>
+                        Changes to your name and phone
+                        are saved to your Teacher account.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CARD CONTENT -->
+
+            <div class="teacher-edit-card-body">
+
+                <div asp-validation-summary="ModelOnly"
+                     class="teacher-edit-error"></div>
+
+
+                <div class="teacher-edit-fields">
+
+
+                    <!-- FULL NAME -->
+
+                    <div class="teacher-edit-field">
+
+                        <label asp-for="FullName"></label>
+
+                        <input asp-for="FullName"
+                               class="teacher-edit-input"
+                               maxlength="150"
+                               autocomplete="name"
+                               required />
+
+                        <span asp-validation-for="FullName"
+                              class="teacher-edit-error"></span>
+
+                    </div>
+
+
+                    <!-- PHONE NUMBER -->
+
+                    <div class="teacher-edit-field">
+
+                        <label asp-for="Phone"></label>
+
+                        <input asp-for="Phone"
+                               type="tel"
+                               class="teacher-edit-input"
+                               maxlength="20"
+                               autocomplete="tel"
+                               placeholder="Enter phone number" />
+
+                        <span asp-validation-for="Phone"
+                              class="teacher-edit-error"></span>
+
+                    </div>
+
+
+                    <!-- EMAIL ADDRESS -->
+
+                    <div class="teacher-edit-field">
+
+                        <label>Email Address</label>
+
+                        <input type="text"
+                               class="teacher-edit-input teacher-edit-readonly"
+                               value="@Model.Email"
+                               readonly
+                               aria-label="Email Address (read only)" />
+
+                    </div>
+
+
+                    <!-- ACCOUNT ROLE -->
+
+                    <div class="teacher-edit-field">
+
+                        <label>Account Role</label>
+
+                        <input type="text"
+                               class="teacher-edit-input teacher-edit-readonly"
+                               value="@Model.Role"
+                               readonly
+                               aria-label="Account Role (read only)" />
+
+                    </div>
+
+
+                    <!-- ASSIGNED SCHOOL -->
+
+                    <div class="teacher-edit-field">
+
+                        <label>Assigned School</label>
+
+                        <input type="text"
+                               class="teacher-edit-input teacher-edit-readonly"
+                               value="@Model.SchoolName"
+                               readonly
+                               aria-label="Assigned School (read only)" />
+
+                    </div>
+
+
+                    <!-- ACCOUNT STATUS -->
+
+                    <div class="teacher-edit-field">
+
+                        <label>Account Status</label>
+
+                        <input type="text"
+                               class="teacher-edit-input teacher-edit-readonly"
+                               value="@Model.AccountStatus"
+                               readonly
+                               aria-label="Account Status (read only)" />
+
+                    </div>
+
+                </div>
+
+
+                <!-- INFORMATION NOTE -->
+
+                <div class="teacher-edit-badge">
+
+                    <i class="bi bi-shield-lock"></i>
+
+                    Your email, role, assigned school
+                    and account status are
+                    administrator-controlled.
+
+                </div>
+
+
+                <!-- FORM ACTIONS -->
+
+                <div class="teacher-edit-actions">
+
+                    <a asp-controller="Teacher"
+                       asp-action="Profile"
+                       class="teacher-edit-cancel">
+
+                        <i class="bi bi-x-lg"></i>
+
+                        Cancel
+
+                    </a>
+
+
+                    <button type="submit"
+                            class="teacher-edit-save">
+
+                        <i class="bi bi-check2-circle"></i>
+
+                        Save Changes
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </form>
+
+</section>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

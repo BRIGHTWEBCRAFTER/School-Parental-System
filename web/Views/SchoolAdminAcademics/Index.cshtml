@@ -1,0 +1,695 @@
+﻿@using System
+@using System.Linq
+@model SchoolParentalSystem.Web.ViewModels.SchoolAdminAcademicsViewModel
+
+@{
+    ViewData["Title"] = "Subjects & Timetable";
+    Layout = "_SchoolAdminLayout";
+}
+
+<!--
+    Page Name : School Admin Subjects and Timetable
+    Purpose   : Create, view, edit, and delete subjects and weekly lessons.
+    Re-use    : SchoolAdminAcademicsController actions; existing Supabase models.
+    Notes     : Edit forms open as dialogs instead of expanding table cells.
+-->
+<style>
+    .ac-page {
+        color: #073f32;
+        max-width: 1480px;
+        margin: 0 auto;
+    }
+
+        .ac-page * {
+            box-sizing: border-box;
+        }
+
+    .ac-heading {
+        margin-bottom: 24px;
+    }
+
+        .ac-heading h1 {
+            margin: 0 0 7px;
+            font-size: 30px;
+            font-weight: 750;
+            color: #073f32;
+        }
+
+        .ac-heading p, .ac-muted {
+            margin: 0;
+            color: #6b7f75;
+        }
+
+    .ac-card {
+        background: white;
+        padding: 27px 30px;
+        border-radius: 18px;
+        border: 1px solid #e9e6dc;
+        box-shadow: 0 5px 17px rgba(20,50,35,.035);
+        margin-bottom: 26px;
+    }
+
+    .ac-card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .ac-card h2 {
+        font-size: 23px;
+        margin: 0 0 6px;
+        color: #073f32;
+    }
+
+    .ac-card-head p {
+        color: #71877a;
+        margin: 0;
+    }
+
+    .ac-form-title {
+        font-size: 17px;
+        margin: 0 0 14px;
+    }
+
+    .ac-add-form {
+        border: 1px solid #e7e5da;
+        background: #fcfcf8;
+        padding: 18px;
+        border-radius: 12px;
+        margin: 20px 0;
+    }
+
+    .ac-form-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 13px 16px;
+    }
+
+    .ac-field {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        gap: 6px;
+    }
+
+        .ac-field label {
+            color: #123c30;
+            font-weight: 650;
+            font-size: 13px;
+        }
+
+        .ac-field input, .ac-field select, .ac-field textarea, .ac-filter select {
+            width: 100%;
+            min-width: 0;
+            height: 43px;
+            border: 1px solid #d6ded7;
+            border-radius: 9px;
+            padding: 9px 12px;
+            font: inherit;
+            background: #fff;
+            color: #123e32;
+        }
+
+        .ac-field textarea {
+            height: auto;
+            min-height: 74px;
+            resize: vertical;
+        }
+
+            .ac-field input:focus, .ac-field select:focus, .ac-field textarea:focus {
+                outline: 2px solid #e9bf46;
+                outline-offset: 1px;
+            }
+
+    .ac-add-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 15px;
+    }
+
+    .ac-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 36px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: inherit;
+        font-weight: 650;
+        text-decoration: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .ac-btn-primary {
+        background: #064932;
+        border: 1px solid #064932;
+        color: #fff;
+    }
+
+        .ac-btn-primary:hover {
+            background: #0b6448;
+            color: #fff;
+        }
+
+    .ac-btn-edit {
+        background: #f0f8f2;
+        border: 1px solid #c9dfd2;
+        color: #064932;
+    }
+
+        .ac-btn-edit:hover {
+            background: #dfefdf;
+        }
+
+    .ac-btn-delete {
+        background: #fff5f4;
+        border: 1px solid #f1cccc;
+        color: #b52d32;
+    }
+
+        .ac-btn-delete:hover {
+            background: #fde8e8;
+        }
+
+    .ac-btn-cancel {
+        background: #fff;
+        border: 1px solid #d5ded7;
+        color: #174537;
+    }
+
+    .ac-btn:focus-visible {
+        outline: 3px solid #efc657;
+        outline-offset: 2px;
+    }
+
+    .ac-alert {
+        padding: 13px 16px;
+        margin-bottom: 17px;
+        border-radius: 10px;
+    }
+
+    .ac-success {
+        background: #e7f5e9;
+        color: #075d37;
+    }
+
+    .ac-error {
+        background: #fff0f0;
+        color: #b42318;
+    }
+
+    .ac-table-scroll {
+        overflow-x: auto;
+        border: 1px solid #e8e3d9;
+        border-radius: 10px;
+    }
+
+    .ac-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 760px;
+    }
+
+        .ac-table th {
+            background: #f6f3ea;
+            color: #123c30;
+            padding: 14px 15px;
+            font-size: 13px;
+            text-align: left;
+            font-weight: 750;
+        }
+
+        .ac-table td {
+            padding: 14px 15px;
+            border-top: 1px solid #ebe7df;
+            font-size: 14px;
+            line-height: 1.5;
+            vertical-align: middle;
+        }
+
+        .ac-table tr:hover td {
+            background: #fcfbf5;
+        }
+
+        .ac-table td:last-child, .ac-table th:last-child {
+            width: 172px;
+        }
+
+        .ac-table .ac-actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-wrap: nowrap;
+        }
+
+            .ac-table .ac-actions form {
+                margin: 0;
+            }
+
+    .ac-filter {
+        max-width: 360px;
+        margin-bottom: 18px;
+    }
+
+        .ac-filter label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+    .ac-empty {
+        border: 1px dashed #d5dcd4;
+        border-radius: 10px;
+        color: #667a70;
+        text-align: center;
+        padding: 28px 16px;
+    }
+
+    .ac-status {
+        color: #07643e;
+        font-weight: 650;
+    }
+
+    /* Native dialog appears above the page: forms no longer stretch table cells. */
+    .ac-dialog {
+        position: fixed;
+        width: min(600px, calc(100vw - 28px));
+        max-width: none;
+        max-height: min(88vh, 800px);
+        border: 0;
+        padding: 0;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 22px 75px rgba(0,0,0,.25);
+        color: #073f32;
+        overflow-y: auto;
+    }
+
+        .ac-dialog::backdrop {
+            background: rgba(3, 33, 23, .66);
+        }
+
+    .ac-dialog-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid #e7e7df;
+        padding: 19px 23px;
+    }
+
+        .ac-dialog-header h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #073f32;
+        }
+
+    .ac-close {
+        border: 0;
+        background: #f0f4f0;
+        color: #194938;
+        font-size: 20px;
+        border-radius: 8px;
+        width: 36px;
+        height: 36px;
+        cursor: pointer;
+    }
+
+    .ac-dialog-body {
+        padding: 22px 23px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+        .ac-dialog-body .ac-span-2 {
+            grid-column: 1 / -1;
+        }
+
+    .ac-dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 17px 23px;
+        border-top: 1px solid #e7e7df;
+    }
+
+    .ac-dialog-subtitle {
+        font-size: 13px;
+        color: #6c8075;
+        font-weight: 500;
+        margin-top: 4px;
+    }
+
+    @@media (max-width: 900px) {
+        .ac-form-grid {
+            grid-template-columns: repeat(2, minmax(0,1fr));
+        }
+
+        .ac-card {
+            padding: 20px;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .ac-form-grid, .ac-dialog-body {
+            grid-template-columns: minmax(0,1fr);
+        }
+
+            .ac-dialog-body .ac-span-2 {
+                grid-column: auto;
+            }
+
+        .ac-heading h1 {
+            font-size: 25px;
+        }
+
+        .ac-card {
+            padding: 17px;
+        }
+
+        .ac-dialog-actions {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+
+<section class="dashboard-content ac-page">
+    <div class="ac-heading">
+        <h1><i class="bi bi-journal-bookmark"></i> Subjects &amp; Timetable</h1>
+        <p>Manage your school's subjects and weekly lesson schedule.</p>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div role="status" class="ac-alert ac-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div role="alert" class="ac-alert ac-error">@TempData["ErrorMessage"]</div>
+    }
+
+    <!-- SCHOOL SUBJECTS -->
+    <section class="ac-card">
+        <div class="ac-card-head">
+            <div>
+                <h2><i class="bi bi-book"></i> School Subjects</h2>
+                <p>@Model.Subjects.Count active subject(s)</p>
+            </div>
+        </div>
+
+        <details class="ac-add-form">
+            <summary class="ac-btn ac-btn-primary"><i class="bi bi-plus-lg"></i> Add Subject</summary>
+            <form asp-controller="SchoolAdminAcademics" asp-action="AddSubject" method="post" style="margin-top:17px;">
+                @Html.AntiForgeryToken()
+                <div class="ac-form-grid">
+                    <div class="ac-field">
+                        <label asp-for="NewSubject.Name">Subject Name *</label>
+                        <input asp-for="NewSubject.Name" required maxlength="100" placeholder="e.g. Mathematics" />
+                    </div>
+                    <div class="ac-field">
+                        <label asp-for="NewSubject.Code">Subject Code *</label>
+                        <input asp-for="NewSubject.Code" required maxlength="20" placeholder="e.g. MAT" />
+                    </div>
+                    <div class="ac-field">
+                        <label asp-for="NewSubject.Description">Description (optional)</label>
+                        <input asp-for="NewSubject.Description" maxlength="255" placeholder="Short description" />
+                    </div>
+                </div>
+                <div class="ac-add-actions"><button class="ac-btn ac-btn-primary" type="submit"><i class="bi bi-check-lg"></i> Save Subject</button></div>
+            </form>
+        </details>
+
+        @if (Model.Subjects.Count == 0)
+        {
+            <div class="ac-empty">No active subjects have been added yet.</div>
+        }
+        else
+        {
+            <div class="ac-table-scroll">
+                <table class="ac-table">
+                    <thead>
+                        <tr><th>Code</th><th>Subject Name</th><th>Description</th><th>Status</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var subject in Model.Subjects)
+                        {
+                            <tr>
+                                <td><strong>@subject.Code</strong></td>
+                                <td>@subject.Name</td>
+                                <td>@(string.IsNullOrWhiteSpace(subject.Description) ? "—" : subject.Description)</td>
+                                <td><span class="ac-status">@(subject.IsActive ? "Active" : "Inactive")</span></td>
+                                <td>
+                                    <div class="ac-actions">
+                                        <button type="button" class="ac-btn ac-btn-edit"
+                                                onclick="document.getElementById('editSubject-@subject.Id').showModal()">
+                                            <i class="bi bi-pencil-square"></i> Edit
+                                        </button>
+                                        <form asp-controller="SchoolAdminAcademics" asp-action="DeleteSubject" method="post"
+                                              onsubmit="return confirm('Remove this subject from the active list?');">
+                                            @Html.AntiForgeryToken()
+                                            <input name="id" type="hidden" value="@subject.Id" />
+                                            <button type="submit" class="ac-btn ac-btn-delete"><i class="bi bi-trash3"></i> Delete</button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Editing is in a dialog, never inside an expanding table row. -->
+                                    <dialog id="editSubject-@subject.Id" class="ac-dialog" aria-label="Edit @subject.Name">
+                                        <form asp-controller="SchoolAdminAcademics" asp-action="EditSubject" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@subject.Id" />
+                                            <div class="ac-dialog-header">
+                                                <div><h3>Edit Subject</h3><div class="ac-dialog-subtitle">@subject.Name</div></div>
+                                                <button type="button" class="ac-close" aria-label="Close"
+                                                        onclick="this.closest('dialog').close()">
+                                                    &times;
+                                                </button>
+                                            </div>
+                                            <div class="ac-dialog-body">
+                                                <div class="ac-field"><label>Subject Name *</label><input name="name" value="@subject.Name" maxlength="100" required /></div>
+                                                <div class="ac-field"><label>Subject Code *</label><input name="code" value="@subject.Code" maxlength="20" required /></div>
+                                                <div class="ac-field ac-span-2"><label>Description</label><textarea name="description" maxlength="255">@subject.Description</textarea></div>
+                                            </div>
+                                            <div class="ac-dialog-actions">
+                                                <button type="button" class="ac-btn ac-btn-cancel" onclick="this.closest('dialog').close()">Cancel</button>
+                                                <button type="submit" class="ac-btn ac-btn-primary"><i class="bi bi-check-lg"></i> Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </dialog>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <!-- CLASS TIMETABLE -->
+    <section class="ac-card">
+        <div class="ac-card-head">
+            <div>
+                <h2><i class="bi bi-calendar3"></i> Class Timetable</h2>
+                <p>Weekly lesson periods for your school's classes.</p>
+            </div>
+        </div>
+
+        <!-- Existing AddLesson POST endpoint and ViewModel prefix are retained. -->
+        <details class="ac-add-form">
+            <summary class="ac-btn ac-btn-primary"><i class="bi bi-plus-lg"></i> Add Timetable Lesson</summary>
+            <form asp-controller="SchoolAdminAcademics" asp-action="AddLesson" method="post" style="margin-top:17px;">
+                @Html.AntiForgeryToken()
+                <div class="ac-form-grid">
+                    <div class="ac-field">
+                        <label asp-for="NewLesson.ClassId">Class *</label>
+                        <select asp-for="NewLesson.ClassId" required>
+                            <option value="">Select class</option>
+                            @foreach (var schoolClass in Model.Classes)
+                            {
+                                <option value="@schoolClass.Id">@schoolClass.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="ac-field">
+                        <label asp-for="NewLesson.SubjectId">Subject *</label>
+                        <select asp-for="NewLesson.SubjectId" required>
+                            <option value="">Select subject</option>
+                            @foreach (var subject in Model.Subjects)
+                            {
+                                <option value="@subject.Id">@subject.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="ac-field">
+                        <label asp-for="NewLesson.TeacherId">Teacher (optional)</label>
+                        <select asp-for="NewLesson.TeacherId">
+                            <option value="">Not assigned</option>
+                            @foreach (var teacher in Model.Teachers)
+                            {
+                                <option value="@teacher.Id">@teacher.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="ac-field">
+                        <label asp-for="NewLesson.DayOfWeek">Day *</label>
+                        <select asp-for="NewLesson.DayOfWeek" required>
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                        </select>
+                    </div>
+                    <div class="ac-field"><label asp-for="NewLesson.StartTime">Start Time *</label><input asp-for="NewLesson.StartTime" type="time" required /></div>
+                    <div class="ac-field"><label asp-for="NewLesson.EndTime">End Time *</label><input asp-for="NewLesson.EndTime" type="time" required /></div>
+                    <div class="ac-field"><label asp-for="NewLesson.Room">Room</label><input asp-for="NewLesson.Room" maxlength="50" placeholder="e.g. A10" /></div>
+                </div>
+                <div class="ac-add-actions"><button class="ac-btn ac-btn-primary" type="submit"><i class="bi bi-check-lg"></i> Save Lesson</button></div>
+            </form>
+        </details>
+
+        <div class="ac-filter">
+            <label for="classFilter">Filter by Class</label>
+            <select id="classFilter">
+                <option value="">All Classes</option>
+                @foreach (var schoolClass in Model.Classes)
+                {
+                    <option value="@schoolClass.Id">@schoolClass.Name</option>
+                }
+            </select>
+        </div>
+
+        @if (Model.Lessons.Count == 0)
+        {
+            <div class="ac-empty">No timetable lessons found. Use Add Timetable Lesson to create one.</div>
+        }
+        else
+        {
+            <div class="ac-table-scroll">
+                <table class="ac-table">
+                    <thead>
+                        <tr><th>Day</th><th>Class</th><th>Subject</th><th>Teacher</th><th>Time</th><th>Room</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var lesson in Model.Lessons)
+                        {
+                            <tr class="timetable-row" data-class-id="@lesson.ClassId">
+                                <td><strong>@lesson.DayName</strong></td>
+                                <td>@lesson.ClassName</td>
+                                <td>@lesson.SubjectName</td>
+                                <td>@lesson.TeacherName</td>
+                                <td style="white-space:nowrap">@lesson.StartTime – @lesson.EndTime</td>
+                                <td>@lesson.Room</td>
+                                <td>
+                                    <div class="ac-actions">
+                                        <button type="button" class="ac-btn ac-btn-edit"
+                                                onclick="document.getElementById('editLesson-@lesson.Id').showModal()">
+                                            <i class="bi bi-pencil-square"></i> Edit
+                                        </button>
+                                        <form asp-controller="SchoolAdminAcademics" asp-action="DeleteLesson" method="post"
+                                              onsubmit="return confirm('Delete this timetable lesson?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@lesson.Id" />
+                                            <button type="submit" class="ac-btn ac-btn-delete"><i class="bi bi-trash3"></i> Delete</button>
+                                        </form>
+                                    </div>
+
+                                    <dialog id="editLesson-@lesson.Id" class="ac-dialog" aria-label="Edit timetable lesson">
+                                        <form asp-controller="SchoolAdminAcademics" asp-action="EditLesson" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@lesson.Id" />
+                                            <div class="ac-dialog-header">
+                                                <div><h3>Edit Timetable Lesson</h3><div class="ac-dialog-subtitle">@lesson.ClassName — @lesson.SubjectName</div></div>
+                                                <button type="button" class="ac-close" aria-label="Close"
+                                                        onclick="this.closest('dialog').close()">
+                                                    &times;
+                                                </button>
+                                            </div>
+                                            <div class="ac-dialog-body">
+                                                <div class="ac-field">
+                                                    <label>Day *</label>
+                                                    <select name="dayOfWeek" required>
+                                                        @for (var day = 1; day <= 5; day++)
+                                                        {
+                                                            var dayName = day switch { 1 => "Monday", 2 => "Tuesday", 3 => "Wednesday", 4 => "Thursday", _ => "Friday" };
+                                                            if (lesson.DayOfWeek == day)
+                                                            {
+                                                                <option value="@day" selected>@dayName</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@day">@dayName</option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="ac-field">
+                                                    <label>Teacher</label>
+                                                    <select name="teacherId">
+                                                        <option value="">Not assigned</option>
+                                                        @foreach (var teacher in Model.Teachers)
+                                                        {
+                                                            if (string.Equals(lesson.TeacherName, teacher.Name, StringComparison.OrdinalIgnoreCase))
+                                                            {
+                                                                <option value="@teacher.Id" selected>@teacher.Name</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@teacher.Id">@teacher.Name</option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="ac-field"><label>Start Time *</label><input type="time" name="startTime" value="@lesson.StartTime" required /></div>
+                                                <div class="ac-field"><label>End Time *</label><input type="time" name="endTime" value="@lesson.EndTime" required /></div>
+                                                <div class="ac-field ac-span-2"><label>Room</label><input type="text" name="room" value="@(lesson.Room == "Not assigned" ? "" : lesson.Room)" maxlength="50" /></div>
+                                            </div>
+                                            <div class="ac-dialog-actions">
+                                                <button type="button" class="ac-btn ac-btn-cancel" onclick="this.closest('dialog').close()">Cancel</button>
+                                                <button type="submit" class="ac-btn ac-btn-primary"><i class="bi bi-check-lg"></i> Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </dialog>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+</section>
+
+<script>
+    //
+    // Method Name      : filterAcademicsTimetable
+    // Purpose          : Show only lessons for the selected class.
+    // Re-use           : Class Timetable dropdown filter.
+    // Input Parameters : Selected class ID from the filter.
+    // Output Type      : None.
+    //
+    document.addEventListener('DOMContentLoaded', function () {
+        const filter = document.getElementById('classFilter');
+        if (filter) {
+            filter.addEventListener('change', function () {
+                const selectedClass = filter.value;
+                document.querySelectorAll('.timetable-row').forEach(function (row) {
+                    row.hidden = !!selectedClass && row.dataset.classId !== selectedClass;
+                });
+            });
+        }
+        // Escape key closes native dialogs automatically.
+        document.querySelectorAll('.ac-dialog').forEach(function (dialog) {
+            dialog.addEventListener('click', function (event) {
+                if (event.target === dialog) dialog.close();
+            });
+        });
+    });
+</script>

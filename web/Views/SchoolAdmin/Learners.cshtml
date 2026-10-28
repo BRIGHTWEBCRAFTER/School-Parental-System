@@ -174,26 +174,30 @@
 
                                         @if (learner.Status == "Active")
                                         {
-                                            <form asp-controller="SchoolAdmin"
-                                                  asp-action="DeactivateLearner"
-                                                  asp-route-id="@learner.Id"
-                                                  method="post">
+                                            <button type="button"
+                                                    class="action-icon deactivate-action open-deactivate-confirmation"
+                                                    title="Deactivate learner"
+                                                    data-record-type="Learner"
+                                                    data-record-name="@learner.FullName"
+                                                    data-action="@Url.Action(
+                "DeactivateLearner",
+                "SchoolAdmin",
+                new
+                {
+                    id = learner.Id,
+                    returnUrl = "/SchoolAdmin/Learners"
+                })">
 
-                                                @Html.AntiForgeryToken()
+                                                <i class="bi bi-person-dash-fill"></i>
 
-                                                <button type="submit"
-                                                        class="action-icon deactivate-action"
-                                                        title="Deactivate learner">
-                                                    <i class="bi bi-person-dash-fill"></i>
-                                                </button>
-
-                                            </form>
+                                            </button>
                                         }
                                         else
                                         {
                                             <form asp-controller="SchoolAdmin"
                                                   asp-action="ReactivateLearner"
                                                   asp-route-id="@learner.Id"
+                                                  asp-route-returnUrl="/SchoolAdmin/Learners"
                                                   method="post">
 
                                                 @Html.AntiForgeryToken()
@@ -201,11 +205,14 @@
                                                 <button type="submit"
                                                         class="action-icon reactivate-action"
                                                         title="Reactivate learner">
+
                                                     <i class="bi bi-person-check-fill"></i>
+
                                                 </button>
 
                                             </form>
                                         }
+                                       
 
                                     </div>
 
@@ -249,6 +256,9 @@
 
     </div>
 }
+
+<partial name="_DeactivateConfirmation" />
+
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {

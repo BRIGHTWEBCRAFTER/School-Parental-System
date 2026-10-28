@@ -1,0 +1,410 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SchoolAdminTermReportViewModel
+
+@{
+    ViewData["Title"] = "Term Reports";
+    Layout = "_SchoolAdminLayout";
+}
+
+<style>
+    .reports-page {
+        padding: 24px;
+    }
+
+        .reports-page h2 {
+            color: #073f32;
+            font-weight: 750;
+        }
+
+    .reports-card {
+        background: #fff;
+        padding: 25px;
+        border: 1px solid #e4e8e3;
+        border-radius: 14px;
+        margin: 20px 0;
+        box-shadow: 0 5px 20px rgba(0,0,0,.04);
+    }
+
+    .reports-grid {
+        display: grid;
+        grid-template-columns: repeat(2,1fr);
+        gap: 16px;
+    }
+
+    .reports-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .reports-field label {
+            font-weight: 600;
+            color: #073f32;
+        }
+
+        .reports-field select,
+        .reports-field input {
+            padding: 11px;
+            border: 1px solid #d7e0d9;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+    .reports-btn {
+        display: inline-block;
+        background: #073f32;
+        color: white;
+        padding: 11px 18px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+        .reports-btn:hover {
+            background: #0b5945;
+            color: white;
+        }
+
+    .reports-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+        .reports-table th,
+        .reports-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e9e4;
+            text-align: left;
+        }
+
+        .reports-table th {
+            color: #073f32;
+            background: #f2f7f3;
+        }
+
+    @@media(max-width:700px) {
+        .reports-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<section class="dashboard-content reports-page">
+
+    <h2>
+        <i class="bi bi-file-earmark-pdf"></i>
+        Generate Term Reports
+    </h2>
+
+    <p class="text-muted">
+        Generate and send official learner term results.
+    </p>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- REPORT SELECTION -->
+
+    <div class="reports-card">
+
+        <h4>Choose Report Details</h4>
+
+        <form method="get"
+              asp-controller="SchoolAdminTermReports"
+              asp-action="Index">
+
+            <div class="reports-grid">
+
+                <div class="reports-field">
+                    <label>Academic Year</label>
+
+                    <input type="number"
+                           name="academicYear"
+                           value="@Model.AcademicYear"
+                           min="2000"
+                           max="2100"
+                           required />
+                </div>
+
+                <div class="reports-field">
+                    <label>Term</label>
+
+                    <select name="term">
+                        @for (var i = 1; i <= 4; i++)
+                        {
+                            var t = $"Term {i}";
+
+                            if (t == Model.Term)
+                            {
+                                <option value="@t" selected>
+                                    @t
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@t">
+                                    @t
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="reports-field">
+                    <label>Class</label>
+
+                    <select name="classId"
+                            id="reportClass">
+
+                        <option value="">
+                            All Classes
+                        </option>
+
+                        @foreach (var c in Model.Classes)
+                        {
+                            if (Model.ClassId == c.Id)
+                            {
+                                <option value="@c.Id" selected>
+                                    @c.Name
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@c.Id">
+                                    @c.Name
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="reports-field">
+                    <label>Learner</label>
+
+                    <select name="learnerId"
+                            id="reportLearner">
+
+                        <option value="">
+                            Select Learner
+                        </option>
+
+                        @foreach (var l in Model.Learners)
+                        {
+                            if (Model.LearnerId == l.Id)
+                            {
+                                <option value="@l.Id" selected>
+                                    @l.FullName
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@l.Id">
+                                    @l.FullName
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+            </div>
+
+            <button type="submit"
+                    class="reports-btn mt-4">
+
+                <i class="bi bi-search"></i>
+                Preview Report
+
+            </button>
+
+        </form>
+
+    </div>
+
+    @if (Model.Report != null)
+    {
+        var report = Model.Report;
+
+        <div class="reports-card">
+
+            <h4>@report.SchoolName</h4>
+
+            <p>Official Learner Term Report</p>
+
+            <hr />
+
+            <p>
+                <strong>Learner:</strong>
+                @report.LearnerName
+            </p>
+
+            <p>
+                <strong>Admission Number:</strong>
+                @report.AdmissionNumber
+            </p>
+
+            <p>
+                <strong>Class:</strong>
+                @report.ClassName
+            </p>
+
+            <p>
+                <strong>Reporting Period:</strong>
+                @report.Term, @report.AcademicYear
+            </p>
+
+            @if (report.HasResults)
+            {
+                <table class="reports-table">
+
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Assessments</th>
+                            <th>Term Average</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var subject in report.Subjects)
+                        {
+                            <tr>
+                                <td>@subject.SubjectName</td>
+
+                                <td>
+                                    @subject.AssessmentCount
+                                </td>
+
+                                <td>
+                                    @subject.AveragePercentage.ToString("0.0")%
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+                <h4 class="mt-4">
+                    Overall Average:
+                    @report.OverallAverage?.ToString("0.0")%
+                </h4>
+
+                <a asp-controller="SchoolAdminTermReports"
+                   asp-action="Pdf"
+                   asp-route-learnerId="@report.LearnerId"
+                   asp-route-academicYear="@report.AcademicYear"
+                   asp-route-term="@report.Term"
+                   class="reports-btn mt-3">
+
+                    <i class="bi bi-file-earmark-arrow-down"></i>
+                    Download PDF
+
+                </a>
+
+                <hr class="my-4" />
+
+                <h4>Send Report to Parent / Guardian</h4>
+
+                @if (report.Guardians.Count > 0)
+                {
+                    <form asp-controller="SchoolAdminTermReports"
+                          asp-action="Send"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="LearnerId"
+                               value="@report.LearnerId" />
+
+                        <input type="hidden"
+                               name="AcademicYear"
+                               value="@report.AcademicYear" />
+
+                        <input type="hidden"
+                               name="Term"
+                               value="@report.Term" />
+
+                        <div class="reports-field"
+                             style="max-width:500px;">
+
+                            <label>Select Guardian</label>
+
+                            <select name="ParentId" required>
+
+                                <option value="">
+                                    Select Guardian
+                                </option>
+
+                                @foreach (var guardian in report.Guardians)
+                                {
+                                    <option value="@guardian.ParentId">
+
+                                        @guardian.FullName
+                                        (@guardian.Email)
+
+                                    </option>
+                                }
+
+                            </select>
+
+                        </div>
+
+                        <button type="submit"
+                                class="reports-btn mt-3"
+                                onclick="return confirm('Send this confidential report to the selected guardian?');">
+
+                            <i class="bi bi-envelope"></i>
+                            Send PDF to Guardian
+
+                        </button>
+
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        No active guardian with an email
+                        is linked to this learner.
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No published results for this learner
+                    in the selected term.
+                </div>
+            }
+
+        </div>
+    }
+
+</section>
+
+@section Scripts
+{
+    <script>
+        document.getElementById("reportClass")
+            ?.addEventListener("change", function () {
+
+                document.getElementById("reportLearner")
+                    .value = "";
+
+            });
+    </script>
+}

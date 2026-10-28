@@ -1,0 +1,344 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SchoolAdminProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "_SchoolAdminLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-profile.css"
+      asp-append-version="true" />
+
+<section class="dashboard-content sa-profile-page">
+
+    <!-- PAGE HEADING -->
+
+    <div class="sa-profile-heading">
+        <div>
+            <h2>My Profile</h2>
+            <p>
+                View your account information
+                and manage your security settings.
+            </p>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- PROFILE OVERVIEW -->
+
+    <div class="sa-profile-hero">
+
+
+        <div class="sa-profile-avatar">
+
+            @if (!string.IsNullOrWhiteSpace(Model.ProfilePicture))
+            {
+                <img src="@Model.ProfilePicture"
+                     alt="Profile picture of @Model.FullName"
+                     class="sa-profile-avatar-image" />
+            }
+            else
+            {
+                @Model.Initials
+            }
+
+        </div>
+
+
+        <div class="sa-profile-identity">
+
+            <h3>@Model.FullName</h3>
+
+            <div class="sa-profile-role">
+                <i class="bi bi-shield-check"></i>
+                @Model.Role
+            </div>
+
+            <p>
+                <i class="bi bi-building"></i>
+                @Model.SchoolName
+            </p>
+
+            <p>
+                <i class="bi bi-envelope"></i>
+                @Model.Email
+            </p>
+
+        </div>
+
+
+        <div class="sa-profile-hero-status">
+
+            <span class="sa-profile-status @(Model.IsActive ? "is-active" : "is-inactive")">
+                <i class="bi bi-circle-fill"></i>
+                @Model.AccountStatus
+            </span>
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="EditProfile"
+               class="sa-edit-profile-button">
+
+                <i class="bi bi-pencil-square"></i>
+                Edit Profile
+
+            </a>
+
+
+            <!-- PROFILE PICTURE UPLOAD -->
+
+            <form asp-controller="SchoolAdmin"
+                  asp-action="UploadProfilePicture"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="sa-profile-upload-form">
+
+                @Html.AntiForgeryToken()
+
+                <label for="profilePictureInput"
+                       class="sa-profile-upload-label">
+
+                    <i class="bi bi-camera"></i>
+                    Choose Profile Picture
+
+                </label>
+
+                <input type="file"
+                       id="profilePictureInput"
+                       name="picture"
+                       accept="image/jpeg,image/png,image/webp"
+                       class="sa-profile-picture-input"
+                       required />
+
+                <small class="sa-profile-upload-hint">
+                    JPG, PNG or WebP · Maximum 2 MB
+                </small>
+
+                <button type="submit"
+                        class="sa-profile-upload-button">
+
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    Upload Picture
+
+                </button>
+
+            </form>
+
+
+            @if (!string.IsNullOrWhiteSpace(Model.ProfilePicture))
+            {
+                <!-- REMOVE PROFILE PICTURE -->
+
+                <form asp-controller="SchoolAdmin"
+                      asp-action="RemoveProfilePicture"
+                      method="post"
+                      class="sa-profile-remove-form"
+                      onsubmit="return confirm('Are you sure you want to remove your profile picture?');">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="sa-profile-remove-button">
+
+                        <i class="bi bi-trash3"></i>
+                        Remove Picture
+
+                    </button>
+
+                </form>
+            }
+
+
+
+        </div>
+
+
+    </div>
+
+    <!-- PROFILE CONTENT -->
+
+    <div class="sa-profile-grid">
+
+        <!-- ACCOUNT INFORMATION -->
+
+        <section class="sa-profile-card">
+
+            <div class="sa-profile-card-header">
+
+                <div>
+                    <h3>
+                        <i class="bi bi-person-vcard"></i>
+                        Account Information
+                    </h3>
+
+                    <p>
+                        Your registered administrator details
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="sa-profile-card-body">
+
+                <div class="sa-profile-field">
+                    <span>Full Name</span>
+                    <strong>@Model.FullName</strong>
+                </div>
+
+                <div class="sa-profile-field">
+                    <span>Email Address</span>
+                    <strong>@Model.Email</strong>
+                </div>
+
+                <div class="sa-profile-field">
+                    <span>Phone Number</span>
+
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.Phone)
+                            ? "Not provided"
+                            : Model.Phone)
+                    </strong>
+                </div>
+
+                <div class="sa-profile-field">
+                    <span>Account Role</span>
+                    <strong>@Model.Role</strong>
+                </div>
+
+                <div class="sa-profile-field">
+                    <span>School</span>
+                    <strong>@Model.SchoolName</strong>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.SchoolAddress))
+                {
+                    <div class="sa-profile-field">
+                        <span>School Address</span>
+                        <strong>@Model.SchoolAddress</strong>
+                    </div>
+                }
+
+            </div>
+
+        </section>
+
+        <!-- ACCOUNT ACTIONS -->
+
+        <div class="sa-profile-side-column">
+
+            <section class="sa-profile-card">
+
+                <div class="sa-profile-card-header">
+
+                    <div>
+                        <h3>
+                            <i class="bi bi-shield-lock"></i>
+                            Account & Security
+                        </h3>
+
+                        <p>
+                            Manage your account access
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="sa-profile-card-body">
+
+                    <a asp-controller="Auth"
+                       asp-action="ForgotPassword"
+                       class="sa-profile-action">
+
+                        <div class="sa-profile-action-icon">
+                            <i class="bi bi-key"></i>
+                        </div>
+
+                        <div class="sa-profile-action-text">
+                            <strong>Reset Password</strong>
+                            <small>
+                                Request a secure password reset link
+                            </small>
+                        </div>
+
+                        <i class="bi bi-chevron-right sa-profile-arrow"></i>
+
+                    </a>
+
+                    <div class="sa-profile-security-note">
+
+                        <i class="bi bi-info-circle"></i>
+
+                        <span>
+                            Your profile information is linked
+                            to your school administrator account.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- SCHOOL INFORMATION -->
+
+            <section class="sa-profile-card">
+
+                <div class="sa-profile-card-header">
+
+                    <div>
+                        <h3>
+                            <i class="bi bi-building"></i>
+                            School Information
+                        </h3>
+
+                        <p>
+                            Your assigned school
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="sa-profile-card-body">
+
+                    <div class="sa-profile-school">
+
+                        <div class="sa-profile-school-icon">
+                            <i class="bi bi-buildings"></i>
+                        </div>
+
+                        <div>
+                            <strong>@Model.SchoolName</strong>
+                            <span>Assigned School</span>
+                        </div>
+
+                    </div>
+
+                    <div class="sa-profile-field">
+                        <span>Account Status</span>
+
+                        <strong class="@(Model.IsActive ? "sa-status-active" : "sa-status-inactive")">
+                            @Model.AccountStatus
+                        </strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</section>

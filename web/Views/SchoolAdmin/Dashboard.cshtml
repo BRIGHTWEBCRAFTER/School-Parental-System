@@ -5,6 +5,61 @@
     Layout = "_SchoolAdminLayout";
 }
 
+<style>
+    /* SCHOOL ADMIN ATTENDANCE OVERVIEW */
+
+    .sa-attendance-chart {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        gap: 12px;
+        min-height: 210px;
+        overflow-x: auto;
+        padding: 12px 0 4px;
+    }
+
+    .sa-attendance-column {
+        display: flex;
+        flex: 1 0 48px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 7px;
+        min-width: 48px;
+    }
+
+    .sa-attendance-value {
+        color: #073f32;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .sa-attendance-track {
+        width: 44px;
+        height: 150px;
+        display: flex;
+        align-items: flex-end;
+        background: #fff5df;
+        border-radius: 9px 9px 0 0;
+        overflow: hidden;
+    }
+
+    .sa-attendance-fill {
+        width: 100%;
+        flex-shrink: 0;
+        background: linear-gradient( 180deg, #ffbb28, #eda000 );
+        border-radius: 9px 9px 0 0;
+    }
+
+    .sa-attendance-date {
+        font-size: 11px;
+        color: #536e62;
+        white-space: nowrap;
+    }
+</style>
+
+
 <section class="dashboard-content">
 
     <!-- WELCOME -->
@@ -126,33 +181,50 @@
         <section class="panel">
 
             <div class="panel-header">
+
                 <h3>
                     <i class="bi bi-calendar3"></i>
                     Attendance Overview
                 </h3>
+
+                <a asp-controller="SchoolAdmin"
+                   asp-action="Attendance">
+                    View attendance
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
             </div>
 
             @if (Model.AttendanceOverview.Any())
             {
-                <div class="attendance-chart">
+
+                <div class="sa-attendance-chart">
 
                     @foreach (var item in Model.AttendanceOverview)
                     {
-                        <div class="bar-column">
+                        var percentage = Math.Clamp(
+                        item.Percentage, 0m, 100m);
 
-                            <span class="percentage">
-                                @item.Percentage.ToString("0.#")%
+                        var barHeight = (int)Math.Round(
+                        percentage * 1.5m);
+
+                        <div class="sa-attendance-column">
+
+                            <span class="sa-attendance-value">
+                                @percentage.ToString("0.#")%
                             </span>
 
-                            <div class="bar-track">
+                            <div class="sa-attendance-track">
 
-                                <div class="bar-fill"
-                                     style="height:@item.Percentage%;">
+                                <div class="sa-attendance-fill"
+                                     style="height:@(barHeight)px;"
+                                     role="img"
+                                     aria-label="@item.Date: @percentage% attendance">
                                 </div>
 
                             </div>
 
-                            <span class="bar-label">
+                            <span class="sa-attendance-date">
                                 @item.Date
                             </span>
 
@@ -160,6 +232,7 @@
                     }
 
                 </div>
+
             }
             else
             {
@@ -186,10 +259,18 @@
         <section class="panel">
 
             <div class="panel-header">
+
                 <h3>
                     <i class="bi bi-megaphone-fill"></i>
                     Recent Announcements
                 </h3>
+
+                <a asp-controller="SchoolAdmin"
+                   asp-action="Communication">
+                    View all
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
             </div>
 
             @if (Model.RecentAnnouncements.Any())
@@ -245,10 +326,18 @@
         <section class="panel">
 
             <div class="panel-header">
+
                 <h3>
                     <i class="bi bi-calendar-event-fill"></i>
                     Upcoming Events
                 </h3>
+
+                <a asp-controller="SchoolAdmin"
+                   asp-action="Events">
+                    View all
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
             </div>
 
             @if (Model.UpcomingEvents.Any())
@@ -367,13 +456,18 @@
         <section class="panel">
 
             <div class="panel-header">
+
                 <h3>
                     <i class="bi bi-rocket-takeoff-fill"></i>
                     Quick Actions
                 </h3>
+
             </div>
 
+
             <div class="quick-actions">
+
+                <!-- ADD LEARNER -->
 
                 <a class="quick-action green-action"
                    asp-controller="SchoolAdmin"
@@ -382,65 +476,99 @@
                     <i class="bi bi-person-plus-fill"></i>
 
                     <span>
-                        <strong>Add Learner</strong>
+
+                        <strong>
+                            Add Learner
+                        </strong>
 
                         <small>
                             Register a new learner
                         </small>
+
                     </span>
+
+                    <i class="bi bi-arrow-right
+                      quick-action-arrow"></i>
 
                 </a>
 
 
-                <div class="quick-action
-                            green-action
-                            quick-action-disabled">
+                <!-- ADD TEACHER -->
+
+                <a class="quick-action green-action"
+                   asp-controller="SchoolAdmin"
+                   asp-action="AddTeacher">
 
                     <i class="bi bi-person-workspace"></i>
 
                     <span>
-                        <strong>Add Teacher</strong>
+
+                        <strong>
+                            Add Teacher
+                        </strong>
 
                         <small>
-                            Teacher management coming next
+                            Register a new teacher
                         </small>
+
                     </span>
 
-                </div>
+                    <i class="bi bi-arrow-right
+                      quick-action-arrow"></i>
+
+                </a>
 
 
-                <div class="quick-action
-                            green-action
-                            quick-action-disabled">
+                <!-- CREATE ANNOUNCEMENT -->
+
+                <a class="quick-action gold-action"
+                   asp-controller="SchoolAdmin"
+                   asp-action="CreateAnnouncement">
 
                     <i class="bi bi-megaphone-fill"></i>
 
                     <span>
-                        <strong>Create Announcement</strong>
+
+                        <strong>
+                            Create Announcement
+                        </strong>
 
                         <small>
-                            Announcement management
+                            Send a school announcement
                         </small>
+
                     </span>
 
-                </div>
+                    <i class="bi bi-arrow-right
+                      quick-action-arrow"></i>
+
+                </a>
 
 
-                <div class="quick-action
-                            green-action
-                            quick-action-disabled">
+                <!-- CREATE EVENT -->
 
-                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                <a class="quick-action gold-action"
+                   asp-controller="SchoolAdmin"
+                   asp-action="CreateEvent">
+
+                    <i class="bi bi-calendar-plus-fill"></i>
 
                     <span>
-                        <strong>Generate Report</strong>
+
+                        <strong>
+                            Create Event
+                        </strong>
 
                         <small>
-                            Reports and analytics
+                            Schedule a school event
                         </small>
+
                     </span>
 
-                </div>
+                    <i class="bi bi-arrow-right
+                      quick-action-arrow"></i>
+
+                </a>
 
             </div>
 
@@ -451,10 +579,18 @@
         <section class="panel performance-panel">
 
             <div class="panel-header">
+
                 <h3>
                     <i class="bi bi-bar-chart-fill"></i>
                     Class Performance
                 </h3>
+
+                <a asp-controller="SchoolAdmin"
+                   asp-action="Grades">
+                    View grades
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
             </div>
 
             @if (Model.ClassPerformance.Any())

@@ -66,6 +66,23 @@
 
                 <div class="form-group">
 
+                    <label>Employee ID</label>
+
+                    <div class="automatic-field">
+
+                        <i class="bi bi-magic"></i>
+
+                        <span>
+                            Automatically generated when the teacher is saved
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
                     <label asp-for="FullName"></label>
 
                     <input asp-for="FullName"
@@ -74,20 +91,6 @@
                     <span asp-validation-for="FullName"
                           class="field-validation-error">
                     </span>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>Employee ID</label>
-
-                    <input type="text"
-                           value="Generated automatically"
-                           readonly />
-
-                    <small>
-                        The system will assign the next available teacher number.
-                    </small>
 
                 </div>
 

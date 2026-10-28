@@ -1,0 +1,510 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.CreateEventViewModel
+
+@{
+    ViewData["Title"] = "Create Event";
+    Layout = "_SchoolAdminLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-create-announcement.css"
+      asp-append-version="true" />
+
+
+<section class="dashboard-content">
+
+    <div class="page-heading announcement-page-heading">
+
+        <div>
+            <h2>Create Event</h2>
+
+            <p>
+                Schedule a school event and choose
+                the audience who should be notified.
+            </p>
+        </div>
+
+
+        <a asp-controller="SchoolAdmin"
+           asp-action="Communication"
+           class="announcement-back-button">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Communication
+
+        </a>
+
+    </div>
+
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="CreateEvent"
+          method="post"
+          class="announcement-form">
+
+        <div asp-validation-summary="ModelOnly"
+             class="announcement-validation-summary">
+        </div>
+
+
+        <!-- =========================================
+             EVENT DETAILS
+             ========================================= -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-calendar-event-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Event Details</h3>
+
+                    <p>
+                        Enter the event information,
+                        date and venue.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="announcement-form-grid">
+
+                <div class="announcement-field full-width">
+
+                    <label asp-for="EventName">
+                        Event Name
+                    </label>
+
+                    <input asp-for="EventName"
+                           placeholder="Enter event name" />
+
+                    <span asp-validation-for="EventName"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <div class="announcement-field full-width">
+
+                    <label asp-for="Description">
+                        Description
+                    </label>
+
+                    <textarea asp-for="Description"
+                              rows="5"
+                              placeholder="Enter event details or additional information...">
+                    </textarea>
+
+                    <span asp-validation-for="Description"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <div class="announcement-field">
+
+                    <label asp-for="EventDate">
+                        Event Date
+                    </label>
+
+                    <input asp-for="EventDate"
+                           type="date"
+                           asp-format="{0:yyyy-MM-dd}"
+                           min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+
+                    <span asp-validation-for="EventDate"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <div class="announcement-field">
+
+                    <label asp-for="Venue">
+                        Venue
+                    </label>
+
+                    <input asp-for="Venue"
+                           placeholder="e.g. School Hall" />
+
+                    <span asp-validation-for="Venue"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <div class="announcement-field">
+
+                    <label asp-for="StartTime">
+                        Start Time
+                    </label>
+
+                    <input asp-for="StartTime"
+                           type="time"
+                           value="@(Model.StartTime.HasValue
+                               ? Model.StartTime.Value.ToString(@"hh\:mm")
+                               : "")" />
+
+                    <span asp-validation-for="StartTime"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <div class="announcement-field">
+
+                    <label asp-for="EndTime">
+                        End Time
+                    </label>
+
+                    <input asp-for="EndTime"
+                           type="time"
+                           value="@(Model.EndTime.HasValue
+                               ? Model.EndTime.Value.ToString(@"hh\:mm")
+                               : "")" />
+
+                    <span asp-validation-for="EndTime"
+                          class="field-validation">
+                    </span>
+
+                    <small>
+                        If both times are entered,
+                        the end time must be later than the start time.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             TARGET AUDIENCE
+             ========================================= -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Target Audience</h3>
+
+                    <p>
+                        Choose who should receive
+                        this event notification.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="announcement-field">
+
+                <label asp-for="TargetType">
+                    Target Type
+                </label>
+
+                <select asp-for="TargetType"
+                        id="eventTargetType">
+
+                    <option value="Whole School">
+                        Whole School
+                    </option>
+
+                    <option value="Role">
+                        Role
+                    </option>
+
+                    <option value="Grade">
+                        Grade
+                    </option>
+
+                    <option value="Class">
+                        Class
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="TargetType"
+                      class="field-validation">
+                </span>
+
+            </div>
+
+
+            <!-- ROLE -->
+
+            <div id="eventRoleSection"
+                 class="target-section">
+
+                <div class="announcement-field">
+
+                    <label asp-for="TargetRole">
+                        Target Role
+                    </label>
+
+                    <select asp-for="TargetRole"
+                            id="eventTargetRole">
+
+                        <option value="">
+                            Select role
+                        </option>
+
+                        <option value="Parent">
+                            Parents
+                        </option>
+
+                        <option value="Teacher">
+                            Teachers
+                        </option>
+
+                        <option value="School Admin">
+                            School Administrators
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- GRADE -->
+
+            <div id="eventGradeSection"
+                 class="target-section">
+
+                <div class="announcement-field">
+
+                    <label asp-for="TargetGrade">
+                        Target Grade
+                    </label>
+
+                    <select asp-for="TargetGrade"
+                            id="eventTargetGrade">
+
+                        <option value="">
+                            Select grade
+                        </option>
+
+                        @foreach (var grade in Model.Grades)
+                        {
+                            <option value="@grade">
+                                @grade
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- CLASS -->
+
+            <div id="eventClassSection"
+                 class="target-section">
+
+                <div class="announcement-field">
+
+                    <label asp-for="TargetClassId">
+                        Target Class
+                    </label>
+
+                    <select asp-for="TargetClassId"
+                            id="eventTargetClass">
+
+                        <option value="">
+                            Select class
+                        </option>
+
+                        @foreach (var schoolClass in Model.Classes)
+                        {
+                            <option value="@schoolClass.Id">
+                                @schoolClass.DisplayName
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             INFO
+             ========================================= -->
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-bell-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Event Notification</h3>
+
+                    <p>
+                        Recipients will automatically be
+                        notified when this event is created.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="details-no-ack"
+                 style="display:flex;
+                        align-items:center;
+                        gap:8px;
+                        padding:12px;
+                        border-radius:8px;
+                        background:#f7f3e8;
+                        color:#66766f;
+                        font-size:12px;">
+
+                <i class="bi bi-info-circle-fill"></i>
+
+                <span>
+                    The notification audience is determined
+                    from the Target Type selected above.
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             ACTIONS
+             ========================================= -->
+
+        <div class="announcement-form-actions">
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="Communication"
+               class="announcement-cancel-button">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="announcement-submit-button">
+
+                <i class="bi bi-calendar-plus"></i>
+                Create Event
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const targetType =
+                    document.getElementById(
+                        "eventTargetType");
+
+                const roleSection =
+                    document.getElementById(
+                        "eventRoleSection");
+
+                const gradeSection =
+                    document.getElementById(
+                        "eventGradeSection");
+
+                const classSection =
+                    document.getElementById(
+                        "eventClassSection");
+
+                const targetRole =
+                    document.getElementById(
+                        "eventTargetRole");
+
+                const targetGrade =
+                    document.getElementById(
+                        "eventTargetGrade");
+
+                const targetClass =
+                    document.getElementById(
+                        "eventTargetClass");
+
+
+                function updateTargetSections() {
+
+                    const selected =
+                        targetType.value;
+
+
+                    roleSection.style.display =
+                        selected === "Role"
+                            ? "block"
+                            : "none";
+
+
+                    gradeSection.style.display =
+                        selected === "Grade"
+                            ? "block"
+                            : "none";
+
+
+                    classSection.style.display =
+                        selected === "Class"
+                            ? "block"
+                            : "none";
+
+
+                    targetRole.disabled =
+                        selected !== "Role";
+
+                    targetGrade.disabled =
+                        selected !== "Grade";
+
+                    targetClass.disabled =
+                        selected !== "Class";
+                }
+
+
+                targetType.addEventListener(
+                    "change",
+                    updateTargetSections);
+
+
+                updateTargetSections();
+
+            });
+    </script>
+}

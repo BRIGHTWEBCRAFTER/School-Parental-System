@@ -1,0 +1,104 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdminTopbarSearchViewModel
+@{
+    ViewData["Title"] = "Search";
+    Layout = "_SuperAdminLayout";
+}
+<style>
+    .super-search-results {
+        display: grid;
+        gap: 22px;
+        max-width: 1100px;
+        margin: 10px auto;
+    }
+
+    .super-search-result-card {
+        padding: 22px;
+        background: #fff;
+        border: 1px solid #e7e2d4;
+        border-radius: 14px;
+    }
+
+        .super-search-result-card h2 {
+            font-size: 20px;
+            color: #073f32;
+            margin: 0 0 12px;
+        }
+
+    .super-search-result-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 14px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+        .super-search-result-row:last-child {
+            border-bottom: 0;
+        }
+
+        .super-search-result-row strong {
+            display: block;
+            font-size: 14px;
+            color: #073f32;
+        }
+
+        .super-search-result-row small {
+            display: block;
+            margin-top: 5px;
+            color: #6a796f;
+        }
+
+        .super-search-result-row a {
+            padding: 9px 13px;
+            border-radius: 8px;
+            background: #073f32;
+            color: white;
+            text-decoration: none;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+</style>
+<section class="super-search-results">
+    <h1>Search Results</h1>
+    @if (Model.LoadFailed)
+    {
+        <p role="alert">Search could not be loaded. Please sign in again or retry.</p>
+    }
+    else if (string.IsNullOrWhiteSpace(Model.Query))
+    {
+        <p>Type a school, code, user name or email in the search box above.</p>
+    }
+    else
+    {
+        <p>Results for <strong>@Model.Query</strong></p>
+        <section class="super-search-result-card">
+            <h2>Schools (@Model.Schools.Count)</h2>
+            @if (Model.Schools.Count == 0)
+            {
+                <p>No matching schools.</p>
+            }
+            @foreach (var s in Model.Schools)
+            {
+                <div class="super-search-result-row">
+                    <div><strong>@s.SchoolName</strong><small>@s.SchoolCode · @s.TownCity · @s.Status</small></div>
+                    <a asp-controller="SuperAdmin" asp-action="SchoolDetails" asp-route-id="@s.Id">View School</a>
+                </div>
+            }
+        </section>
+        <section class="super-search-result-card">
+            <h2>Users (@Model.Users.Count)</h2>
+            @if (Model.Users.Count == 0)
+            {
+                <p>No matching users.</p>
+            }
+            @foreach (var u in Model.Users)
+            {
+                <div class="super-search-result-row">
+                    <div><strong>@u.FullName</strong><small>@u.Role · @u.SchoolName · @u.Email</small></div>
+                    <a asp-controller="SuperAdmin" asp-action="UserDetails" asp-route-id="@u.Id">View User</a>
+                </div>
+            }
+        </section>
+    }
+</section>

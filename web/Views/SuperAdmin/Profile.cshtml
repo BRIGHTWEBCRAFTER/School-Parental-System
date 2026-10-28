@@ -1,0 +1,770 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.SuperAdminProfileViewModel
+
+@{
+    ViewData["Title"] = "Profile";
+
+    var initials =
+        string.IsNullOrWhiteSpace(Model.FullName)
+            ? "SA"
+            : string.Join(
+                "",
+                Model.FullName
+                    .Split(
+                        ' ',
+                        StringSplitOptions.RemoveEmptyEntries)
+                    .Take(2)
+                    .Select(x =>
+                        x.Substring(0, 1).ToUpper()));
+
+    var accountStatus =
+        Model.IsActive
+            ? "Active"
+            : "Inactive";
+}
+
+
+
+<style>
+    /* Super Admin profile matches the Teacher/School Admin picture controls. */
+    .settings-profile-avatar:has(.super-admin-avatar-image) {
+        overflow: hidden;
+    }
+
+    .super-admin-avatar-image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: inherit;
+    }
+
+    .super-admin-picture-panel {
+        margin: 26px 0;
+    }
+
+    .super-admin-photo-controls {
+        display: flex;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 22px 28px;
+    }
+
+    .super-admin-photo-form {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        flex: 1;
+        min-width: 220px;
+    }
+
+        .super-admin-photo-form label {
+            color: #073f32;
+            font-weight: 700;
+        }
+
+        .super-admin-photo-form input[type=file] {
+            max-width: 100%;
+            color: #073f32;
+        }
+
+        .super-admin-photo-form small {
+            font-size: 12px;
+            color: #718078;
+        }
+
+    .super-admin-upload-button, .super-admin-remove-button {
+        border-radius: 9px;
+        padding: 11px 16px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .super-admin-upload-button {
+        background: #074735;
+        color: white;
+        border: 1px solid #074735;
+    }
+
+        .super-admin-upload-button:hover {
+            background: #0b5945;
+        }
+
+    .super-admin-remove-button {
+        background: #fff5f5;
+        border: 1px solid #e3b9b9;
+        color: #b42318;
+    }
+
+        .super-admin-remove-button:hover {
+            background: #fde8e8;
+        }
+
+    .super-admin-picture-panel form {
+        margin: 0;
+    }
+</style>
+
+<div class="super-settings-page">
+
+
+    <!-- =========================================
+         PAGE HEADER
+         ========================================= -->
+
+    <div class="settings-page-header">
+
+        <div>
+
+            <h1>
+                Profile
+            </h1>
+
+            <p>
+                Manage your personal profile and account information.
+            </p>
+
+        </div>
+
+
+        <div class="settings-header-icon">
+
+            <i class="bi bi-person-circle"></i>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         MESSAGES
+         ========================================= -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="settings-message success">
+
+            <i class="bi bi-check-circle-fill"></i>
+
+            <span>
+                @TempData["SuccessMessage"]
+            </span>
+
+        </div>
+    }
+
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="settings-message error">
+
+            <i class="bi bi-exclamation-circle-fill"></i>
+
+            <span>
+                @TempData["ErrorMessage"]
+            </span>
+
+        </div>
+    }
+
+
+    <!-- =========================================
+         PROFILE OVERVIEW
+         ========================================= -->
+
+    <section class="settings-profile-card">
+
+
+        <div class="settings-profile-main">
+
+
+            <div class="settings-profile-avatar">
+                @if (!string.IsNullOrWhiteSpace(Model.ProfilePicture))
+                {
+                    <img class="super-admin-avatar-image"
+                         src="@Model.ProfilePicture"
+                         alt="Super Admin profile picture" />
+                }
+                else
+                {
+                    @initials
+                }
+            </div>
+
+
+            <div class="settings-profile-details">
+
+                <span class="settings-profile-label">
+                    Super Administrator
+                </span>
+
+
+                <h2>
+
+                    @(string.IsNullOrWhiteSpace(
+                        Model.FullName)
+                        ? "Super Admin"
+                        : Model.FullName)
+
+                </h2>
+
+
+                <p>
+
+                    <i class="bi bi-envelope-fill"></i>
+
+                    @(string.IsNullOrWhiteSpace(
+                        Model.Email)
+                        ? "No email available"
+                        : Model.Email)
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="settings-profile-status">
+
+            @if (Model.IsActive)
+            {
+                <span class="settings-status-badge active">
+
+                    <span></span>
+
+                    Active Account
+
+                </span>
+            }
+            else
+            {
+                <span class="settings-status-badge inactive">
+
+                    <span></span>
+
+                    Inactive Account
+
+                </span>
+            }
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         PROFILE PHOTO: Same feature as Teacher and School Admin
+         ========================================= -->
+    <section class="settings-panel super-admin-picture-panel">
+        <div class="settings-panel-header">
+            <div class="settings-panel-heading">
+                <span class="settings-panel-icon">
+                    <i class="bi bi-camera-fill"></i>
+                </span>
+                <div>
+                    <h2>Profile Picture</h2>
+                    <p>Upload a picture to display on your profile and top bar.</p>
+                </div>
+            </div>
+        </div>
+        <div class="super-admin-photo-controls">
+            <form asp-controller="SuperAdminProfile"
+                  asp-action="UploadProfilePicture"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="super-admin-photo-form">
+                @Html.AntiForgeryToken()
+                <label for="superAdminPicture">Choose a photo</label>
+                <input id="superAdminPicture" name="picture" type="file"
+                       accept="image/jpeg,image/png,image/webp" required />
+                <small>JPG, PNG or WebP. Maximum 2 MB.</small>
+                <button class="super-admin-upload-button" type="submit">
+                    <i class="bi bi-cloud-arrow-up-fill"></i> Upload Picture
+                </button>
+            </form>
+
+            @if (!string.IsNullOrWhiteSpace(Model.ProfilePicture))
+            {
+                <form asp-controller="SuperAdminProfile"
+                      asp-action="RemoveProfilePicture"
+                      method="post"
+                      onsubmit="return confirm('Remove your profile picture?');">
+                    @Html.AntiForgeryToken()
+                    <button class="super-admin-remove-button" type="submit">
+                        <i class="bi bi-trash3"></i> Remove Picture
+                    </button>
+                </form>
+            }
+        </div>
+    </section>
+
+    <!-- =========================================
+         PROFILE CONTENT GRID
+         ========================================= -->
+
+    <div class="settings-content-grid">
+
+
+        <!-- =====================================
+             PROFILE INFORMATION
+             ===================================== -->
+
+        <section class="settings-panel">
+
+
+            <div class="settings-panel-header">
+
+                <div class="settings-panel-heading">
+
+                    <span class="settings-panel-icon">
+
+                        <i class="bi bi-person-fill-gear"></i>
+
+                    </span>
+
+
+                    <div>
+
+                        <h2>
+                            Profile Information
+                        </h2>
+
+                        <p>
+                            Update your personal account details.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <form asp-controller="SuperAdminProfile"
+                  asp-action="UpdateProfile"
+                  method="post"
+                  class="settings-form">
+
+                @Html.AntiForgeryToken()
+
+
+                <!-- FULL NAME -->
+
+                <div class="settings-form-group">
+
+                    <label asp-for="UpdatedFullName">
+
+                        <i class="bi bi-person-fill"></i>
+
+                        Full Name
+
+                    </label>
+
+
+                    <input asp-for="UpdatedFullName"
+                           type="text"
+                           autocomplete="name"
+                           placeholder="Enter your full name" />
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="settings-form-group">
+
+                    <label>
+
+                        <i class="bi bi-envelope-fill"></i>
+
+                        Email Address
+
+                    </label>
+
+
+                    <div class="settings-readonly-field">
+
+                        <span>
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Email)
+                                ? "No email available"
+                                : Model.Email)
+
+                        </span>
+
+
+                        <i class="bi bi-lock-fill"></i>
+
+                    </div>
+
+
+                    <small>
+                        Email is linked to your authentication account
+                        and cannot be changed here.
+                    </small>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="settings-form-group">
+
+                    <label asp-for="UpdatedPhone">
+
+                        <i class="bi bi-telephone-fill"></i>
+
+                        Phone Number
+
+                    </label>
+
+
+                    <input asp-for="UpdatedPhone"
+                           type="tel"
+                           autocomplete="tel"
+                           placeholder="Enter your phone number" />
+
+                </div>
+
+
+                <!-- SAVE -->
+
+                <div class="settings-form-actions">
+
+                    <button type="submit"
+                            class="settings-save-button">
+
+                        <i class="bi bi-check-lg"></i>
+
+                        <span>
+                            Save Changes
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- =====================================
+             ACCOUNT INFORMATION
+             ===================================== -->
+
+        <section class="settings-panel">
+
+
+            <div class="settings-panel-header">
+
+                <div class="settings-panel-heading">
+
+                    <span class="settings-panel-icon gold">
+
+                        <i class="bi bi-shield-lock-fill"></i>
+
+                    </span>
+
+
+                    <div>
+
+                        <h2>
+                            Account Information
+                        </h2>
+
+                        <p>
+                            Details associated with your account.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-account-list">
+
+
+                <!-- ROLE -->
+
+                <div class="settings-account-item">
+
+                    <div class="settings-account-item-icon">
+
+                        <i class="bi bi-person-badge-fill"></i>
+
+                    </div>
+
+
+                    <div class="settings-account-item-content">
+
+                        <span>
+                            Role
+                        </span>
+
+                        <strong>
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Role)
+                                ? "Super Admin"
+                                : Model.Role)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="settings-account-item">
+
+                    <div class="settings-account-item-icon">
+
+                        <i class="bi bi-activity"></i>
+
+                    </div>
+
+
+                    <div class="settings-account-item-content">
+
+                        <span>
+                            Account Status
+                        </span>
+
+                        <strong>
+                            @accountStatus
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CREATED -->
+
+                <div class="settings-account-item">
+
+                    <div class="settings-account-item-icon">
+
+                        <i class="bi bi-calendar-check-fill"></i>
+
+                    </div>
+
+
+                    <div class="settings-account-item-content">
+
+                        <span>
+                            Member Since
+                        </span>
+
+                        <strong>
+
+                            @if (Model.CreatedAt.HasValue)
+                            {
+                                @Model.CreatedAt.Value.ToString(
+                                         "dd MMM yyyy")
+                            }
+                            else
+                            {
+                                <text>Not available</text>
+                            }
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- USER ID -->
+
+                <div class="settings-account-item">
+
+                    <div class="settings-account-item-icon">
+
+                        <i class="bi bi-fingerprint"></i>
+
+                    </div>
+
+
+                    <div class="settings-account-item-content">
+
+                        <span>
+                            Account ID
+                        </span>
+
+                        <strong class="settings-account-id">
+
+                            @Model.UserId
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             SECURITY
+             ===================================== -->
+
+        <section class="settings-panel settings-security-panel">
+
+
+            <div class="settings-panel-header">
+
+                <div class="settings-panel-heading">
+
+                    <span class="settings-panel-icon dark">
+
+                        <i class="bi bi-key-fill"></i>
+
+                    </span>
+
+
+                    <div>
+
+                        <h2>
+                            Security
+                        </h2>
+
+                        <p>
+                            Keep your Super Admin account secure.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-security-content">
+
+
+                <!-- PASSWORD STATUS -->
+
+                <div class="settings-security-item">
+
+                    <div>
+
+                        <div class="settings-security-title">
+
+                            <i class="bi bi-lock-fill"></i>
+
+                            <strong>
+                                Password
+                            </strong>
+
+                        </div>
+
+
+                        <p>
+                            Change your account password securely using
+                            the email address linked to your Super Admin account.
+                        </p>
+
+                    </div>
+
+
+                    <span class="settings-security-badge">
+
+                        Protected
+
+                    </span>
+
+                </div>
+
+
+                <!-- PASSWORD RESET ACTION -->
+
+                <div class="settings-password-action">
+
+
+                    <div class="settings-password-action-info">
+
+                        <span class="settings-password-action-icon">
+
+                            <i class="bi bi-envelope-lock-fill"></i>
+
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                Reset your password
+                            </strong>
+
+
+                            <p>
+
+                                A secure password reset link will be sent to
+
+                                <strong>
+                                    @Model.Email
+                                </strong>.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <form asp-controller="SuperAdminProfile"
+                          asp-action="SendPasswordReset"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+
+                        <button type="submit"
+                                class="settings-password-button">
+
+                            <i class="bi bi-key-fill"></i>
+
+                            <span>
+                                Change Password
+                            </span>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- SECURITY NOTE -->
+
+                <div class="settings-security-note">
+
+                    <i class="bi bi-shield-lock-fill"></i>
+
+                    <p>
+                        Password changes are completed through a secure
+                        Supabase Authentication reset link.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </div>
+
+</div>

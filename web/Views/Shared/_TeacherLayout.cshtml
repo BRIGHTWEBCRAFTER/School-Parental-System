@@ -1,0 +1,18 @@
+﻿@{
+    // Preserve existing shared navigation, authentication, profile menu and theme.
+    Layout = "_SchoolAdminLayout";
+}
+
+@RenderBody()
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/teacher/teacher-dashboard.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/teacher/teacher-assigned-classes.css"
+          asp-append-version="true" />
+}
+
+@await RenderSectionAsync("Scripts", required: false)

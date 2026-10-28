@@ -1,0 +1,444 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.AttendanceManagementViewModel
+
+@{
+    ViewData["Title"] = "Attendance Management";
+    Layout = "_SchoolAdminLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-attendance.css"
+      asp-append-version="true" />
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+            <h2>Attendance Management</h2>
+            <p>
+                View and monitor learner attendance records
+                for your school.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="attendance-info-banner">
+
+        <div class="attendance-info-icon">
+            <i class="bi bi-info-circle-fill"></i>
+        </div>
+
+        <p>
+            Attendance is recorded by teachers for their
+            assigned classes and subjects.
+            Use the filters below to review attendance records.
+        </p>
+
+    </div>
+
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="Attendance"
+          method="get"
+          class="attendance-filter-bar">
+
+        <div class="attendance-search">
+
+            <i class="bi bi-search"></i>
+
+            <input type="text"
+                   name="search"
+                   value="@Model.SearchTerm"
+                   placeholder="Search learners..." />
+
+        </div>
+
+
+        <div class="attendance-filter">
+
+            <i class="bi bi-easel"></i>
+
+            <select name="classId">
+
+                <option value="">
+                    All Classes
+                </option>
+
+                @foreach (var schoolClass in Model.Classes)
+                {
+                    if (Model.SelectedClassId ==
+                    schoolClass.Id)
+                    {
+                        <option value="@schoolClass.Id"
+                                selected>
+                            @schoolClass.DisplayName
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@schoolClass.Id">
+                            @schoolClass.DisplayName
+                        </option>
+                    }
+                }
+
+            </select>
+
+        </div>
+
+
+        <div class="attendance-filter">
+
+            <i class="bi bi-book"></i>
+
+            <select name="subjectId">
+
+                <option value="">
+                    All Subjects
+                </option>
+
+                @foreach (var subject in Model.Subjects)
+                {
+                    if (Model.SelectedSubjectId ==
+                    subject.Id)
+                    {
+                        <option value="@subject.Id"
+                                selected>
+                            @subject.Name
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@subject.Id">
+                            @subject.Name
+                        </option>
+                    }
+                }
+
+            </select>
+
+        </div>
+
+
+        <div class="attendance-date-filter">
+
+            <i class="bi bi-calendar3"></i>
+
+            <input type="date"
+                   name="date"
+                   value="@Model.AttendanceDate.ToString("yyyy-MM-dd")" />
+
+        </div>
+
+
+        <button type="submit"
+                class="attendance-filter-button">
+
+            <i class="bi bi-funnel-fill"></i>
+            Apply Filters
+
+        </button>
+
+
+        <a asp-controller="SchoolAdmin"
+           asp-action="Attendance"
+           class="attendance-clear-button">
+
+            Clear
+
+        </a>
+
+    </form>
+
+
+    <div class="attendance-summary-grid">
+
+        <div class="attendance-summary-card total">
+
+            <div class="attendance-summary-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+
+            <div>
+                <span>Total Records</span>
+                <strong>@Model.TotalRecords</strong>
+            </div>
+
+        </div>
+
+
+        <div class="attendance-summary-card present">
+
+            <div class="attendance-summary-icon">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+
+            <div>
+                <span>Present</span>
+                <strong>@Model.PresentCount</strong>
+            </div>
+
+        </div>
+
+
+        <div class="attendance-summary-card absent">
+
+            <div class="attendance-summary-icon">
+                <i class="bi bi-x-circle-fill"></i>
+            </div>
+
+            <div>
+                <span>Absent</span>
+                <strong>@Model.AbsentCount</strong>
+            </div>
+
+        </div>
+
+
+        <div class="attendance-summary-card late">
+
+            <div class="attendance-summary-icon">
+                <i class="bi bi-clock-fill"></i>
+            </div>
+
+            <div>
+                <span>Late</span>
+                <strong>@Model.LateCount</strong>
+            </div>
+
+        </div>
+
+
+        <div class="attendance-summary-card excused">
+
+            <div class="attendance-summary-icon">
+                <i class="bi bi-file-earmark-check-fill"></i>
+            </div>
+
+            <div>
+                <span>Excused</span>
+                <strong>@Model.ExcusedCount</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <section class="attendance-panel">
+
+        <div class="attendance-panel-header">
+
+            <div>
+
+                <h3>
+                    <i class="bi bi-calendar-check"></i>
+                    Attendance Records
+                </h3>
+
+                <p>
+                    @Model.AttendanceDate.ToString(
+                             "dd MMMM yyyy")
+                </p>
+
+            </div>
+
+
+            <div class="attendance-result-count">
+                @Model.TotalRecords
+                @(Model.TotalRecords == 1
+                    ? "record"
+                    : "records")
+            </div>
+
+        </div>
+
+
+        @if (Model.Records.Any())
+        {
+            <div class="attendance-table-wrapper">
+
+                <table class="attendance-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Admission No.</th>
+                            <th>Learner</th>
+                            <th>Class</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                            <th>Check-in</th>
+                            <th>Remarks</th>
+                            <th>Marked By</th>
+                            <th>Updated</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var record in Model.Records)
+                        {
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        @record.AdmissionNumber
+                                    </strong>
+                                </td>
+
+
+                                <td>
+
+                                    <div class="attendance-learner-cell">
+
+                                        <div class="attendance-avatar">
+
+                                            @(string.IsNullOrWhiteSpace(
+                                                record.LearnerName)
+                                                ? "?"
+                                                : record.LearnerName
+                                                .Substring(0, 1)
+                                                .ToUpper())
+
+                                        </div>
+
+                                        <a asp-controller="SchoolAdmin"
+                                           asp-action="LearnerDetails"
+                                           asp-route-id="@record.LearnerId">
+
+                                            @record.LearnerName
+
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="attendance-class-cell">
+
+                                        <strong>
+                                            @record.ClassName
+                                        </strong>
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                       record.ClassCode))
+                                        {
+                                            <span>
+                                                @record.ClassCode
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+                                    @record.SubjectName
+                                </td>
+
+
+                                <td>
+
+                                    <span class="attendance-status
+                                        @record.Status.ToLowerInvariant()">
+
+                                        @record.Status
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    @if (record.CheckInTime.HasValue)
+                                    {
+                                        @(record.CheckInTime.Value.ToString(@"hh\:mm"))
+                                    }
+                                    else
+                                    {
+                                        <span class="attendance-muted">
+                                            —
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <td>
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                   record.Remarks))
+                                    {
+                                        @record.Remarks
+                                    }
+                                    else
+                                    {
+                                        <span class="attendance-muted">
+                                            —
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <td>
+                                    @record.MarkedByName
+                                </td>
+
+
+                                <td>
+
+                                    <div class="attendance-updated">
+
+                                        <strong>
+                                            @(record.UpdatedAt.ToString("dd MMM yyyy"))
+                                        </strong>
+
+                                        <span>
+                                            @(record.UpdatedAt.ToString("HH:mm"))
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="attendance-empty-state">
+
+                <div class="attendance-empty-icon">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+
+                <h3>No attendance records found</h3>
+
+                <p>
+                    There are no attendance records matching
+                    the selected date and filters.
+                </p>
+
+            </div>
+        }
+
+    </section>
+
+</section>

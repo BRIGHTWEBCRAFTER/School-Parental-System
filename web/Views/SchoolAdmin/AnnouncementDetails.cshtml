@@ -1,0 +1,324 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.CommunicationAnnouncementItemViewModel
+
+@{
+    ViewData["Title"] = "Announcement Details";
+    Layout = "_SchoolAdminLayout";
+
+    var readRate =
+        Model.RecipientCount > 0
+            ? (int)Math.Round(
+                (double)Model.ReadCount /
+                Model.RecipientCount * 100)
+            : 0;
+
+    var acknowledgementRate =
+        Model.RecipientCount > 0
+            ? (int)Math.Round(
+                (double)Model.AcknowledgedCount /
+                Model.RecipientCount * 100)
+            : 0;
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-announcement-details.css"
+      asp-append-version="true" />
+
+
+<section class="dashboard-content">
+
+    <div class="page-heading announcement-details-heading">
+
+        <div>
+            <h2>Announcement Details</h2>
+
+            <p>
+                Review the announcement message,
+                audience and recipient activity.
+            </p>
+        </div>
+
+
+        <div class="announcement-details-actions">
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="Communication"
+               class="details-back-button">
+
+                <i class="bi bi-arrow-left"></i>
+                Back
+
+            </a>
+
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="EditAnnouncement"
+               asp-route-id="@Model.Id"
+               class="details-edit-button">
+
+                <i class="bi bi-pencil-square"></i>
+                Edit Announcement
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <section class="announcement-details-card">
+
+        <div class="announcement-details-header">
+
+            <div class="announcement-details-icon">
+                <i class="bi bi-megaphone-fill"></i>
+            </div>
+
+
+            <div class="announcement-details-title">
+
+                <div class="announcement-title-row">
+
+                    <h3>
+                        @Model.Title
+                    </h3>
+
+
+                    <span class="details-priority-badge
+                        @Model.Priority.ToLowerInvariant()">
+
+                        @Model.Priority
+
+                    </span>
+
+                </div>
+
+
+                <div class="announcement-meta">
+
+                    <span>
+                        <i class="bi bi-calendar3"></i>
+
+                        Sent
+                        @(Model.CreatedAt.ToString(
+                            "dd MMM yyyy"))
+                    </span>
+
+
+                    <span>
+                        <i class="bi bi-clock"></i>
+
+                        @(Model.CreatedAt.ToString(
+                            "HH:mm"))
+                    </span>
+
+
+                    <span class="details-status
+                        @Model.Status.ToLowerInvariant()">
+
+                        @Model.Status
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="announcement-message">
+
+            <span class="details-label">
+                Message
+            </span>
+
+            <p>
+                @Model.Content
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <div class="announcement-details-grid">
+
+        <section class="announcement-info-card">
+
+            <div class="details-section-heading">
+
+                <div class="details-section-icon">
+                    <i class="bi bi-bullseye"></i>
+                </div>
+
+                <div>
+                    <h3>Audience</h3>
+
+                    <p>
+                        Who this announcement was sent to.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="details-info-list">
+
+                <div class="details-info-row">
+
+                    <span>Target Audience</span>
+
+                    <strong>
+                        @Model.TargetDisplay
+                    </strong>
+
+                </div>
+
+
+                <div class="details-info-row">
+
+                    <span>Recipients</span>
+
+                    <strong>
+                        @Model.RecipientCount
+                    </strong>
+
+                </div>
+
+
+                <div class="details-info-row">
+
+                    <span>
+                        Acknowledgement Required
+                    </span>
+
+                    <strong>
+                        @(Model.AcknowledgementRequired
+                            ? "Yes"
+                            : "No")
+                    </strong>
+
+                </div>
+
+
+                <div class="details-info-row">
+
+                    <span>Expiry</span>
+
+                    <strong>
+                        @if (Model.ExpiresAt.HasValue)
+                        {
+                            @(Model.ExpiresAt.Value
+                                .ToString(
+                                    "dd MMM yyyy HH:mm"))
+                        }
+                        else
+                        {
+                            <text>No expiry</text>
+                        }
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="announcement-info-card">
+
+            <div class="details-section-heading">
+
+                <div class="details-section-icon">
+                    <i class="bi bi-bar-chart-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Recipient Activity</h3>
+
+                    <p>
+                        Read and acknowledgement progress.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="activity-block">
+
+                <div class="activity-heading">
+
+                    <span>Read</span>
+
+                    <strong>
+                        @Model.ReadCount /
+                        @Model.RecipientCount
+                    </strong>
+
+                </div>
+
+
+                <div class="activity-progress">
+
+                    <div class="activity-progress-bar"
+                         style="width: @readRate%">
+                    </div>
+
+                </div>
+
+
+                <span class="activity-percentage">
+                    @readRate% read
+                </span>
+
+            </div>
+
+
+            @if (Model.AcknowledgementRequired)
+            {
+                <div class="activity-block">
+
+                    <div class="activity-heading">
+
+                        <span>Acknowledged</span>
+
+                        <strong>
+                            @Model.AcknowledgedCount /
+                            @Model.RecipientCount
+                        </strong>
+
+                    </div>
+
+
+                    <div class="activity-progress">
+
+                        <div class="activity-progress-bar"
+                             style="width: @acknowledgementRate%">
+                        </div>
+
+                    </div>
+
+
+                    <span class="activity-percentage">
+                        @acknowledgementRate% acknowledged
+                    </span>
+
+                </div>
+            }
+            else
+            {
+                <div class="details-no-ack">
+
+                    <i class="bi bi-info-circle"></i>
+
+                    This announcement does not require
+                    acknowledgement.
+
+                </div>
+            }
+
+        </section>
+
+    </div>
+
+</section>

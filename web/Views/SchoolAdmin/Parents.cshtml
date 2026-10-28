@@ -1,0 +1,625 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.ParentsPageViewModel
+
+@{
+    ViewData["Title"] = "Parent Management";
+    Layout = "_SchoolAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+            <h2>Parents</h2>
+
+            <p>
+                Manage parents and guardians registered at your school.
+            </p>
+        </div>
+
+
+        <a class="primary-action"
+           asp-controller="SchoolAdmin"
+           asp-action="AddParent">
+
+            <i class="bi bi-person-plus-fill"></i>
+
+            Add Parent
+
+        </a>
+
+    </div>
+
+
+    <!-- SUMMARY CARDS -->
+    <div class="learner-summary-grid">
+
+        <div class="summary-card">
+
+            <div class="summary-icon gold">
+                <i class="bi bi-people-fill"></i>
+            </div>
+
+            <div>
+                <span>Total Parents</span>
+                <strong>@Model.TotalParents</strong>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon green-summary">
+                <i class="bi bi-person-check-fill"></i>
+            </div>
+
+            <div>
+                <span>Active Parents</span>
+                <strong>@Model.ActiveParents</strong>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon muted-summary">
+                <i class="bi bi-person-dash-fill"></i>
+            </div>
+
+            <div>
+                <span>Inactive Parents</span>
+                <strong>@Model.InactiveParents</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PARENT MANAGEMENT PANEL -->
+    <section class="panel learner-management-panel">
+
+        <div class="learner-toolbar">
+
+            <div class="table-search">
+
+                <i class="bi bi-search"></i>
+
+                <input type="text"
+                       id="parentSearch"
+                       placeholder="Search by parent name or guardian number..." />
+
+            </div>
+
+
+            <div class="learner-filters">
+
+                <select id="parentGenderFilter">
+
+                    <option value="">
+                        All Genders
+                    </option>
+
+                    <option value="Male">
+                        Male
+                    </option>
+
+                    <option value="Female">
+                        Female
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+
+                <select id="parentStatusFilter">
+
+                    <option value="">
+                        All Statuses
+                    </option>
+
+                    <option value="Active">
+                        Active
+                    </option>
+
+                    <option value="Inactive">
+                        Inactive
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        @if (Model.Parents.Any())
+        {
+            <div class="table-wrapper learner-table-wrapper">
+
+                <table class="learner-table"
+                       id="parentsTable">
+
+                    <thead>
+
+                        <tr>
+                            <th>Guardian No.</th>
+                            <th>Parent / Guardian</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Gender</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var parent in Model.Parents)
+                        {
+                            <tr data-name="@((parent.FullName ?? "").ToLowerInvariant())"
+                                data-guardian="@((parent.GuardianNumber ?? "").ToLowerInvariant())"
+                                data-email="@((parent.Email ?? "").ToLowerInvariant())"
+                                data-phone="@((parent.Phone ?? "").ToLowerInvariant())"
+                                data-gender="@parent.Gender"
+                                data-status="@parent.Status">
+
+
+                                <!-- GUARDIAN NUMBER -->
+                                <td>
+
+                                    <strong>
+                                        @parent.GuardianNumber
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- PARENT -->
+                                <td>
+
+                                    <div class="learner-name-cell">
+
+                                        <div class="learner-avatar">
+
+                                            @(string.IsNullOrWhiteSpace(
+                                                parent.FullName)
+                                                ? "P"
+                                                : parent.FullName
+                                                .Substring(0, 1)
+                                                .ToUpper())
+
+                                        </div>
+
+
+                                        <span>
+                                            @parent.FullName
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- EMAIL -->
+                                <td>
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        parent.Email)
+                                        ? "Not provided"
+                                        : parent.Email)
+
+                                </td>
+
+
+                                <!-- PHONE -->
+                                <td>
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        parent.Phone)
+                                        ? "Not provided"
+                                        : parent.Phone)
+
+                                </td>
+
+
+                                <!-- GENDER -->
+                                <td>
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        parent.Gender)
+                                        ? "Not provided"
+                                        : parent.Gender)
+
+                                </td>
+
+
+                                <!-- STATUS -->
+                                <td>
+
+                                    <span class="learner-status
+                                          @(parent.Status == "Active"
+                                              ? "active-status"
+                                              : "inactive-status")">
+
+                                        @parent.Status
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+                                <td>
+
+                                    <div class="learner-actions">
+
+                                        <button type="button"
+                                                class="more-actions-button"
+                                                aria-label="Parent actions">
+
+                                            <i class="bi bi-three-dots-vertical"></i>
+
+                                        </button>
+
+
+                                        <div class="learner-action-menu">
+
+                                            <!-- VIEW -->
+                                            <a asp-controller="SchoolAdmin"
+                                               asp-action="ParentDetails"
+                                               asp-route-id="@parent.Id"
+                                               class="action-icon view-action"
+                                               title="View parent">
+
+                                                <i class="bi bi-eye-fill"></i>
+
+                                            </a>
+
+
+                                            <!-- EDIT -->
+                                            <a asp-controller="SchoolAdmin"
+                                               asp-action="EditParent"
+                                               asp-route-id="@parent.Id"
+                                               class="action-icon edit-action"
+                                               title="Edit parent">
+
+                                                <i class="bi bi-pencil-fill"></i>
+
+                                            </a>
+
+
+                                            <!-- DEACTIVATE / REACTIVATE -->
+                                            @if (parent.Status == "Active")
+                                            {
+                                                <button type="button"
+                                                        class="action-icon deactivate-action open-deactivate-confirmation"
+                                                        title="Deactivate parent"
+                                                        data-record-type="Parent"
+                                                        data-record-name="@parent.FullName"
+                                                        data-action="@Url.Action(
+                    "DeactivateParent",
+                    "SchoolAdmin",
+                    new
+                    {
+                        id = parent.Id,
+                        returnUrl = "/SchoolAdmin/Parents"
+                    })">
+
+                                                    <i class="bi bi-person-dash-fill"></i>
+
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <form asp-controller="SchoolAdmin"
+                                                      asp-action="ReactivateParent"
+                                                      asp-route-id="@parent.Id"
+                                                      asp-route-returnUrl="/SchoolAdmin/Parents"
+                                                      method="post">
+
+                                                    @Html.AntiForgeryToken()
+
+                                                    <button type="submit"
+                                                            class="action-icon reactivate-action"
+                                                            title="Reactivate parent">
+
+                                                        <i class="bi bi-person-check-fill"></i>
+
+                                                    </button>
+
+                                                </form>
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="dashboard-empty-state">
+
+                <i class="bi bi-people-fill"></i>
+
+                <strong>
+                    No parents registered
+                </strong>
+
+                <span>
+                    Parents and guardians registered
+                    at this school will appear here.
+                </span>
+
+            </div>
+        }
+
+    </section>
+
+</section>
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="page-success-message">
+
+        <i class="bi bi-check-circle-fill"></i>
+
+        <span>
+            @TempData["SuccessMessage"]
+        </span>
+
+    </div>
+}
+
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="page-error-message">
+
+        <i class="bi bi-exclamation-circle-fill"></i>
+
+        <span>
+            @TempData["ErrorMessage"]
+        </span>
+
+    </div>
+}
+
+<partial name="_DeactivateConfirmation" />
+
+@section Scripts {
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                // ==========================================
+                // PARENT ACTION MENU
+                // ==========================================
+
+                const actionContainers =
+                    document.querySelectorAll(
+                        ".learner-actions"
+                    );
+
+
+                actionContainers.forEach(
+                    container => {
+
+                        const moreButton =
+                            container.querySelector(
+                                ".more-actions-button"
+                            );
+
+
+                        const menu =
+                            container.querySelector(
+                                ".learner-action-menu"
+                            );
+
+
+                        if (!moreButton || !menu) {
+                            return;
+                        }
+
+
+                        moreButton.addEventListener(
+                            "click",
+                            function (event) {
+
+                                event.stopPropagation();
+
+
+                                actionContainers.forEach(
+                                    otherContainer => {
+
+                                        if (otherContainer !==
+                                            container) {
+
+                                            otherContainer
+                                                .classList
+                                                .remove("open");
+                                        }
+
+                                    });
+
+
+                                container
+                                    .classList
+                                    .toggle("open");
+                            }
+                        );
+
+
+                        menu.addEventListener(
+                            "click",
+                            function (event) {
+
+                                event.stopPropagation();
+
+                            }
+                        );
+                    }
+                );
+
+
+                document.addEventListener(
+                    "click",
+                    function () {
+
+                        actionContainers.forEach(
+                            container => {
+
+                                container
+                                    .classList
+                                    .remove("open");
+
+                            }
+                        );
+                    }
+                );
+
+
+                // ==========================================
+                // PARENT SEARCH / FILTERS
+                // ==========================================
+
+                const parentSearch =
+                    document.getElementById(
+                        "parentSearch"
+                    );
+
+
+                const parentGenderFilter =
+                    document.getElementById(
+                        "parentGenderFilter"
+                    );
+
+
+                const parentStatusFilter =
+                    document.getElementById(
+                        "parentStatusFilter"
+                    );
+
+
+                const parentRows =
+                    document.querySelectorAll(
+                        "#parentsTable tbody tr"
+                    );
+
+
+                function filterParents() {
+
+                    const searchValue =
+                        parentSearch
+                            ?.value
+                            .trim()
+                            .toLowerCase() ?? "";
+
+
+                    const genderValue =
+                        parentGenderFilter
+                            ?.value ?? "";
+
+
+                    const statusValue =
+                        parentStatusFilter
+                            ?.value ?? "";
+
+
+                    parentRows.forEach(
+                        row => {
+
+                            const name =
+                                row.dataset.name ?? "";
+
+                            const guardian =
+                                row.dataset.guardian ?? "";
+
+                            const email =
+                                row.dataset.email ?? "";
+
+                            const phone =
+                                row.dataset.phone ?? "";
+
+                            const gender =
+                                row.dataset.gender ?? "";
+
+                            const status =
+                                row.dataset.status ?? "";
+
+
+                            const matchesSearch =
+                                !searchValue ||
+                                name.includes(searchValue) ||
+                                guardian.includes(searchValue) ||
+                                email.includes(searchValue) ||
+                                phone.includes(searchValue);
+
+
+                            const matchesGender =
+                                !genderValue ||
+                                gender === genderValue;
+
+
+                            const matchesStatus =
+                                !statusValue ||
+                                status === statusValue;
+
+
+                            row.style.display =
+                                matchesSearch &&
+                                    matchesGender &&
+                                    matchesStatus
+                                    ? ""
+                                    : "none";
+                        }
+                    );
+                }
+
+
+                parentSearch?.addEventListener(
+                    "input",
+                    filterParents
+                );
+
+
+                parentGenderFilter
+                    ?.addEventListener(
+                        "change",
+                        filterParents
+                    );
+
+
+                parentStatusFilter
+                    ?.addEventListener(
+                        "change",
+                        filterParents
+                    );
+
+            }
+        );
+
+    </script>
+
+}

@@ -5,10 +5,31 @@ using Supabase.Postgrest;
 
 namespace SchoolParentalSystem.Web.Services;
 
+//
+// Class Name       : SchoolAdminLearnerService
+// Purpose          : Encapsulates school admin learner operations for the
+//                    School Parental System.
+// Re-use           : Called by School Admin MVC controllers and related
+//                    services.
+// Input Parameters : Service dependencies or model property values.
+// Output Type      : Class instance.
+//
+
 public class SchoolAdminLearnerService
 {
     private readonly Supabase.Client _supabase;
     private readonly SupabaseSessionService _sessionService;
+
+    //
+    // Method Name      : SchoolAdminLearnerService
+    // Purpose          : Initializes the service with its required
+    //                    dependencies.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : Supabase.Client supabase; SupabaseSessionService
+    //                    sessionService
+    // Output Type      : Constructor.
+    //
 
     public SchoolAdminLearnerService(
         Supabase.Client supabase,
@@ -17,6 +38,15 @@ public class SchoolAdminLearnerService
         _supabase = supabase;
         _sessionService = sessionService;
     }
+
+    //
+    // Method Name      : GetLearnersAsync
+    // Purpose          : Retrieves learners.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : None.
+    // Output Type      : Task<LearnersPageViewModel>.
+    //
 
     public async Task<LearnersPageViewModel> GetLearnersAsync()
     {
@@ -191,6 +221,15 @@ public class SchoolAdminLearnerService
         };
     }
 
+    //
+    // Method Name      : GetDashboardAsync
+    // Purpose          : Retrieves dashboard.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : Guid schoolId; string adminName
+    // Output Type      : Task<SchoolAdminDashboardViewModel>.
+    //
+
     public async Task<SchoolAdminDashboardViewModel>
     GetDashboardAsync(
         Guid schoolId,
@@ -282,75 +321,97 @@ public class SchoolAdminLearnerService
                 .ToHashSet();
 
 
+
         // -------------------------------------------------
-        // ATTENDANCE
+        // ATTENDANCE OVERVIEW - REAL SCHOOL DATA
         // -------------------------------------------------
 
-        var attendanceResponse =
-            await _supabase
-                .From<DashboardAttendanceRecord>()
-                .Get();
+        var attendanceResponse = await _supabase
+            .From<DashboardAttendanceRecord>()
+            .Get();
 
-        var attendance =
-            attendanceResponse.Models
-                .Where(x =>
-                    learnerIds.Contains(x.LearnerId))
-                .ToList();
+        // Only attendance from this school's
+        // active classes and registered learners.
+
+        var schoolAttendance = attendanceResponse.Models
+            .Where(x =>
+                classIds.Contains(x.ClassId) &&
+                learnerIds.Contains(x.LearnerId))
+            .ToList();
 
 
-        var presentCount =
-            attendance.Count(x =>
-                string.Equals(
-                    x.Status,
-                    "Present",
-                    StringComparison.OrdinalIgnoreCase));
+        // Avoid counting one learner multiple times
+        // for the same class on the same date.
+        //
+        // Prefer daily class attendance when available.
+        // If none exists, use the latest subject record.
 
-        var attendanceRate =
-            attendance.Count == 0
-                ? 0m
-                : Math.Round(
-                    (decimal)presentCount /
-                    attendance.Count * 100m,
+        var normalizedAttendance = schoolAttendance
+            .GroupBy(x => new
+            {
+                x.ClassId,
+                x.LearnerId,
+                Day = x.AttendanceDate.Date
+            })
+            .Select(group => group
+                .OrderByDescending(x =>
+                    !x.SubjectId.HasValue)
+                .ThenByDescending(x => x.CreatedAt)
+                .First())
+            .Where(x =>
+                string.Equals(x.Status, "Present",
+                    StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(x.Status, "Late",
+                    StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(x.Status, "Absent",
+                    StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+
+        // Late learners count as attending.
+        // Excused records are excluded from the rate.
+
+        var presentCount = normalizedAttendance.Count(x =>
+            string.Equals(x.Status, "Present",
+                StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(x.Status, "Late",
+                StringComparison.OrdinalIgnoreCase));
+
+        var attendanceRate = normalizedAttendance.Count == 0
+            ? 0m
+            : Math.Round(
+                presentCount * 100m /
+                normalizedAttendance.Count,
+                1);
+
+
+        // Show the last five dates with attendance records.
+
+        var attendanceOverview = normalizedAttendance
+            .GroupBy(x => x.AttendanceDate.Date)
+            .OrderByDescending(x => x.Key)
+            .Take(5)
+            .OrderBy(x => x.Key)
+            .Select(group =>
+            {
+                var attended = group.Count(x =>
+                    string.Equals(x.Status, "Present",
+                        StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(x.Status, "Late",
+                        StringComparison.OrdinalIgnoreCase));
+
+                var rate = Math.Round(
+                    attended * 100m / group.Count(),
                     1);
 
-
-        var attendanceOverview =
-            attendance
-                .GroupBy(x =>
-                    x.AttendanceDate.Date)
-                .OrderByDescending(x => x.Key)
-                .Take(5)
-                .OrderBy(x => x.Key)
-                .Select(group =>
+                return new AttendanceOverviewItem
                 {
-                    var total =
-                        group.Count();
+                    Date = group.Key.ToString("MMM dd"),
+                    Percentage = rate
+                };
+            })
+            .ToList();
 
-                    var present =
-                        group.Count(x =>
-                            string.Equals(
-                                x.Status,
-                                "Present",
-                                StringComparison.OrdinalIgnoreCase));
-
-                    var percentage =
-                        total == 0
-                            ? 0m
-                            : Math.Round(
-                                (decimal)present /
-                                total * 100m,
-                                1);
-
-                    return new AttendanceOverviewItem
-                    {
-                        Date =
-                            group.Key.ToString("MMM dd"),
-
-                        Percentage =
-                            percentage
-                    };
-                })
-                .ToList();
 
 
         // -------------------------------------------------
@@ -565,14 +626,16 @@ public class SchoolAdminLearnerService
                     )));
 
 
+
         recentActivityData.AddRange(
-            attendance
+            schoolAttendance
                 .Select(x =>
                     (
                         x.CreatedAt,
                         "Learner attendance was updated.",
                         "attendance"
                     )));
+
 
 
         recentActivityData.AddRange(
@@ -671,6 +734,15 @@ public class SchoolAdminLearnerService
         };
     }
 
+    //
+    // Method Name      : ShortenDashboardText
+    // Purpose          : Shortens dashboard Text.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : string? value; int maximumLength
+    // Output Type      : string.
+    //
+
     private static string ShortenDashboardText(
     string? value,
     int maximumLength)
@@ -691,6 +763,15 @@ public class SchoolAdminLearnerService
         return text[..maximumLength].TrimEnd() + "...";
     }
 
+
+    //
+    // Method Name      : FormatDashboardTimeAgo
+    // Purpose          : Formats dashboard Time Ago.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : DateTime date
+    // Output Type      : string.
+    //
 
     private static string FormatDashboardTimeAgo(
         DateTime date)
@@ -720,6 +801,15 @@ public class SchoolAdminLearnerService
 
         return date.ToString("dd MMM yyyy");
     }
+
+    //
+    // Method Name      : GetAvailableClassesAsync
+    // Purpose          : Retrieves available Classes.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : Guid schoolId
+    // Output Type      : Task<List<ClassOptionViewModel>>.
+    //
 
     public async Task<List<ClassOptionViewModel>>
     GetAvailableClassesAsync(Guid schoolId)
@@ -754,6 +844,15 @@ public class SchoolAdminLearnerService
             .ToList();
     }
 
+    //
+    // Method Name      : AddLearnerAsync
+    // Purpose          : Adds learner.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : AddLearnerViewModel model; Guid schoolId
+    // Output Type      : Task<Guid>.
+    //
+
     public async Task<Guid> AddLearnerAsync(
     AddLearnerViewModel model,
     Guid schoolId)
@@ -772,37 +871,42 @@ public class SchoolAdminLearnerService
         // VALIDATE CLASS
         // -------------------------------------------------
 
-        ClassRecord? selectedClass = null;
-
-        if (model.ClassId.HasValue)
+        if (!model.ClassId.HasValue)
         {
-            var classResponse =
-                await _supabase
-                    .From<ClassRecord>()
-                    .Where(x =>
-                        x.Id == model.ClassId.Value)
-                    .Get();
+            throw new InvalidOperationException(
+                "Please select a class for the learner.");
+        }
 
-            selectedClass =
-                classResponse.Models
-                    .FirstOrDefault();
 
-            if (selectedClass == null ||
-                selectedClass.SchoolId != schoolId ||
-                !selectedClass.IsActive)
-            {
-                throw new InvalidOperationException(
-                    "The selected class is not valid.");
-            }
+        var classResponse =
+            await _supabase
+                .From<ClassRecord>()
+                .Where(x =>
+                    x.Id == model.ClassId.Value)
+                .Get();
 
-            if (!string.Equals(
-                    selectedClass.Grade,
-                    model.Grade,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                throw new InvalidOperationException(
-                    "The selected class does not match the learner's grade.");
-            }
+
+        var selectedClass =
+            classResponse.Models
+                .FirstOrDefault();
+
+
+        if (selectedClass == null ||
+            selectedClass.SchoolId != schoolId ||
+            !selectedClass.IsActive)
+        {
+            throw new InvalidOperationException(
+                "The selected class is not valid.");
+        }
+
+
+        if (!string.Equals(
+                selectedClass.Grade,
+                model.Grade,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                "The selected class does not match the learner's grade.");
         }
 
 
@@ -1016,6 +1120,15 @@ public class SchoolAdminLearnerService
         return learnerId;
     }
 
+    //
+    // Method Name      : SearchParentsAsync
+    // Purpose          : Searches parents.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : string query
+    // Output Type      : Task<List<ParentSearchResultViewModel>>.
+    //
+
     public async Task<List<ParentSearchResultViewModel>>
     SearchParentsAsync(string query)
     {
@@ -1053,6 +1166,15 @@ public class SchoolAdminLearnerService
                    response.Content)
                ?? [];
     }
+    //
+    // Method Name      : GetParentSelectionAsync
+    // Purpose          : Retrieves parent Selection.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : Guid parentId; Guid schoolId
+    // Output Type      : Task<ParentSearchResultViewModel?>.
+    //
+
     public async Task<ParentSearchResultViewModel?>
     GetParentSelectionAsync(
         Guid parentId,
@@ -1122,6 +1244,15 @@ public class SchoolAdminLearnerService
                 user.Email
         };
     }
+
+    //
+    // Method Name      : GetLearnerDetailsAsync
+    // Purpose          : Retrieves learner Details.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : Guid learnerId; Guid schoolId
+    // Output Type      : Task<LearnerDetailsViewModel?>.
+    //
 
     public async Task<LearnerDetailsViewModel?>
     GetLearnerDetailsAsync(
@@ -1302,6 +1433,15 @@ public class SchoolAdminLearnerService
         return model;
     }
 
+    //
+    // Method Name      : GetEditLearnerAsync
+    // Purpose          : Retrieves edit Learner.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : Guid learnerId; Guid schoolId
+    // Output Type      : Task<EditLearnerViewModel?>.
+    //
+
     public async Task<EditLearnerViewModel?>
     GetEditLearnerAsync(
         Guid learnerId,
@@ -1433,6 +1573,16 @@ public class SchoolAdminLearnerService
 
         return model;
     }
+
+    //
+    // Method Name      : UpdateLearnerAsync
+    // Purpose          : Updates learner.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : EditLearnerViewModel model; Guid schoolId
+    // Output Type      : Task.
+    //
+
     public async Task UpdateLearnerAsync(
     EditLearnerViewModel model,
     Guid schoolId)
@@ -1473,37 +1623,42 @@ public class SchoolAdminLearnerService
         // VALIDATE CLASS
         // ---------------------------------------------
 
-        ClassRecord? selectedClass = null;
-
-        if (model.ClassId.HasValue)
+        if (!model.ClassId.HasValue)
         {
-            var classResponse =
-                await _supabase
-                    .From<ClassRecord>()
-                    .Where(x =>
-                        x.Id == model.ClassId.Value)
-                    .Get();
+            throw new InvalidOperationException(
+                "Please select a class for the learner.");
+        }
 
-            selectedClass =
-                classResponse.Models
-                    .FirstOrDefault();
 
-            if (selectedClass == null ||
-                !selectedClass.IsActive ||
-                selectedClass.SchoolId != schoolId)
-            {
-                throw new InvalidOperationException(
-                    "The selected class is not valid.");
-            }
+        var classResponse =
+            await _supabase
+                .From<ClassRecord>()
+                .Where(x =>
+                    x.Id == model.ClassId.Value)
+                .Get();
 
-            if (!string.Equals(
-                    selectedClass.Grade,
-                    model.Grade,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                throw new InvalidOperationException(
-                    "The selected class does not match the learner's grade.");
-            }
+
+        var selectedClass =
+            classResponse.Models
+                .FirstOrDefault();
+
+
+        if (selectedClass == null ||
+            !selectedClass.IsActive ||
+            selectedClass.SchoolId != schoolId)
+        {
+            throw new InvalidOperationException(
+                "The selected class is not valid.");
+        }
+
+
+        if (!string.Equals(
+                selectedClass.Grade,
+                model.Grade,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                "The selected class does not match the learner's grade.");
         }
 
 
@@ -1594,27 +1749,71 @@ public class SchoolAdminLearnerService
                     x.IsActive)
                 .Get();
 
-        var enrollment =
+
+        var currentEnrollment =
             enrollmentResponse.Models
                 .FirstOrDefault();
 
 
-        if (selectedClass != null)
+        var classChanged =
+            currentEnrollment == null ||
+            currentEnrollment.ClassId !=
+                selectedClass.Id ||
+            currentEnrollment.AcademicYear !=
+                selectedClass.AcademicYear;
+
+
+        if (classChanged)
         {
-            if (enrollment != null)
+            // End the learner's current enrollment first.
+            if (currentEnrollment != null)
             {
                 await _supabase
                     .From<EnrollmentRecord>()
                     .Where(x =>
-                        x.Id == enrollment.Id)
+                        x.Id ==
+                            currentEnrollment.Id)
 
                     .Set(
-                        x => x.ClassId,
-                        selectedClass.Id)
+                        x => x.IsActive,
+                        false)
 
                     .Set(
-                        x => x.AcademicYear,
-                        selectedClass.AcademicYear)
+                        x => x.EndDate,
+                        DateTime.Today)
+
+                    .Update();
+            }
+
+
+            // Check whether this learner has already been
+            // enrolled in the selected class during this year.
+            var previousEnrollmentResponse =
+                await _supabase
+                    .From<EnrollmentRecord>()
+                    .Where(x =>
+                        x.LearnerId == model.Id &&
+                        x.ClassId == selectedClass.Id)
+                    .Get();
+
+
+            var previousEnrollment =
+                previousEnrollmentResponse.Models
+                    .FirstOrDefault(x =>
+                        x.AcademicYear ==
+                            selectedClass.AcademicYear);
+
+
+            if (previousEnrollment != null)
+            {
+                // Reuse the historical enrollment instead
+                // of violating the learner/class/year
+                // unique constraint.
+                await _supabase
+                    .From<EnrollmentRecord>()
+                    .Where(x =>
+                        x.Id ==
+                            previousEnrollment.Id)
 
                     .Set(
                         x => x.IsActive,
@@ -1650,27 +1849,11 @@ public class SchoolAdminLearnerService
                             true
                     };
 
+
                 await _supabase
                     .From<EnrollmentRecord>()
                     .Insert(newEnrollment);
             }
-        }
-        else if (enrollment != null)
-        {
-            await _supabase
-                .From<EnrollmentRecord>()
-                .Where(x =>
-                    x.Id == enrollment.Id)
-
-                .Set(
-                    x => x.IsActive,
-                    false)
-
-                .Set(
-                    x => x.EndDate,
-                    DateTime.Today)
-
-                .Update();
         }
 
 
@@ -1744,6 +1927,15 @@ public class SchoolAdminLearnerService
         }
     }
 
+    //
+    // Method Name      : SetLearnerActiveStatusAsync
+    // Purpose          : Sets learner Active Status.
+    // Re-use           : Called from School Admin pages or related service
+    //                    operations.
+    // Input Parameters : Guid learnerId; Guid schoolId; bool isActive
+    // Output Type      : Task.
+    //
+
     public async Task SetLearnerActiveStatusAsync(
     Guid learnerId,
     Guid schoolId,
@@ -1783,6 +1975,5 @@ public class SchoolAdminLearnerService
                 isActive)
             .Update();
     }
-
 
 }

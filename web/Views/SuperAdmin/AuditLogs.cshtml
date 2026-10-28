@@ -1,0 +1,190 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.SystemActivityViewModel
+
+@{
+    ViewData["Title"] = "System Activity";
+}
+
+<section class="sa-activity-page">
+
+    <section class="sa-activity-header">
+
+        <div>
+            <span class="sa-page-label">
+                SUPER ADMIN
+            </span>
+
+            <h2>System Activity</h2>
+
+            <p>
+                View activity across schools,
+                announcements and events.
+            </p>
+        </div>
+
+        <a asp-controller="SuperAdmin"
+           asp-action="Dashboard"
+           class="sa-edit-cancel-button">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Dashboard
+
+        </a>
+
+    </section>
+
+
+    <section class="sa-activity-card">
+
+        <div class="sa-activity-toolbar">
+
+            <div>
+                <h3>All Activity</h3>
+
+                <span>
+                    @Model.Activities.Count activity item(s)
+                </span>
+            </div>
+
+
+            <div class="sa-school-search">
+
+                <i class="bi bi-search"></i>
+
+                <input type="text"
+                       id="activitySearch"
+                       placeholder="Search activity..." />
+
+            </div>
+
+        </div>
+
+
+        @if (Model.Activities.Count > 0)
+        {
+            <div class="sa-activity-list">
+
+                @foreach (var activity in Model.Activities)
+                {
+                    var activityClass =
+                    activity.Type.ToLowerInvariant();
+
+                    <article class="sa-activity-item activity-row"
+                             data-activity="@(
+                             (
+                                 activity.Description + " " +
+                                 activity.Type
+                             ).ToLowerInvariant())">
+
+                <div class="sa-activity-icon @activityClass">
+
+                    @if (activity.Type == "School")
+                            {
+                                <i class="bi bi-buildings-fill"></i>
+                            }
+                            else if (activity.Type == "Announcement")
+                            {
+                                <i class="bi bi-megaphone-fill"></i>
+                            }
+                            else if (activity.Type == "Event")
+                            {
+                                <i class="bi bi-calendar-event-fill"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-activity"></i>
+                            }
+
+                        </div>
+
+
+                        <div class="sa-activity-content">
+
+                            <strong>
+                                @activity.Description
+                            </strong>
+
+                            <div class="sa-activity-meta">
+
+                                <span class="sa-activity-type @activityClass">
+                                    @activity.Type
+                                </span>
+
+                                <span>
+                                    <i class="bi bi-clock"></i>
+                                    @activity.TimeAgo
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="sa-empty-state">
+
+                <i class="bi bi-clock-history"></i>
+
+                <strong>
+                    No system activity available.
+                </strong>
+
+                <span>
+                    New activity will appear here.
+                </span>
+
+            </div>
+        }
+
+    </section>
+
+</section>
+
+
+@section Scripts
+{
+    <script>
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const search =
+                    document.getElementById(
+                        "activitySearch");
+
+                const rows =
+                    document.querySelectorAll(
+                        ".activity-row");
+
+                if (!search) {
+                    return;
+                }
+
+                search.addEventListener(
+                    "input",
+                    function () {
+
+                        const term =
+                            search.value
+                                .trim()
+                                .toLowerCase();
+
+                        rows.forEach(
+                            function (row) {
+
+                                const value =
+                                    row.dataset.activity || "";
+
+                                row.style.display =
+                                    value.includes(term)
+                                        ? ""
+                                        : "none";
+                            });
+                    });
+            });
+    </script>
+}

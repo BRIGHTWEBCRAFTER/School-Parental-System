@@ -1,0 +1,341 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "User Details";
+
+    var currentUserIdValue =
+        User.FindFirst(
+            System.Security.Claims
+                .ClaimTypes.NameIdentifier)
+            ?.Value;
+
+    var isCurrentUser =
+        Guid.TryParse(
+            currentUserIdValue,
+            out var currentUserId)
+        && currentUserId == Model.Id;
+}
+
+<div class="super-user-details-page">
+
+    <div class="user-details-header">
+
+        <div>
+            <h1>User Details</h1>
+
+            <p>
+                View user account and school information.
+            </p>
+        </div>
+
+        <a asp-controller="SuperAdmin"
+           asp-action="Users"
+           class="user-details-back-button">
+
+            ← Back to Users
+
+        </a>
+
+    </div>
+
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="user-details-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="user-details-error">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+
+    <div class="user-details-card">
+
+        <div class="user-details-profile">
+
+            <div class="user-details-avatar">
+
+                @(string.IsNullOrWhiteSpace(Model.FullName)
+                                ? "U"
+                                : Model.FullName
+                                .Substring(0, 1)
+                                .ToUpper())
+
+            </div>
+
+
+            <div class="user-details-profile-text">
+
+                <h2>
+                    @(string.IsNullOrWhiteSpace(Model.FullName)
+                                        ? "Unknown User"
+                                        : Model.FullName)
+                </h2>
+
+                <div class="user-details-badges">
+
+                    <span class="user-role-badge">
+                        @(string.IsNullOrWhiteSpace(Model.Role)
+                                                ? "Unknown"
+                                                : Model.Role)
+                    </span>
+
+
+                    @if (Model.IsActive)
+                    {
+                        <span class="user-status active">
+                            Active
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="user-status inactive">
+                            Inactive
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="user-details-divider"></div>
+
+
+        <div class="user-details-grid">
+
+            <div class="user-details-item">
+
+                <span class="user-details-label">
+                    Full Name
+                </span>
+
+                <span class="user-details-value">
+                    @(string.IsNullOrWhiteSpace(Model.FullName)
+                                        ? "—"
+                                        : Model.FullName)
+                </span>
+
+            </div>
+
+
+            <div class="user-details-item">
+
+                <span class="user-details-label">
+                    Email Address
+                </span>
+
+                <span class="user-details-value">
+                    @(string.IsNullOrWhiteSpace(Model.Email)
+                                        ? "—"
+                                        : Model.Email)
+                </span>
+
+            </div>
+
+
+            <div class="user-details-item">
+
+                <span class="user-details-label">
+                    Phone Number
+                </span>
+
+                <span class="user-details-value">
+                    @(string.IsNullOrWhiteSpace(Model.Phone)
+                                        ? "—"
+                                        : Model.Phone)
+                </span>
+
+            </div>
+
+
+            <div class="user-details-item">
+
+                <span class="user-details-label">
+                    Role
+                </span>
+
+                <span class="user-details-value">
+                    @(string.IsNullOrWhiteSpace(Model.Role)
+                                        ? "—"
+                                        : Model.Role)
+                </span>
+
+            </div>
+
+
+            <div class="user-details-item">
+
+                <span class="user-details-label">
+                    School
+                </span>
+
+                <span class="user-details-value">
+                    @(string.IsNullOrWhiteSpace(Model.SchoolName)
+                                        ? "Not assigned"
+                                        : Model.SchoolName)
+                </span>
+
+            </div>
+
+
+            <div class="user-details-item">
+
+                <span class="user-details-label">
+                    Account Status
+                </span>
+
+                <span class="user-details-value">
+
+                    @if (Model.IsActive)
+                    {
+                        <span class="user-status active">
+                            Active
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="user-status inactive">
+                            Inactive
+                        </span>
+                    }
+
+                </span>
+
+            </div>
+
+
+            @if (Model.CreatedAt.HasValue)
+            {
+                <div class="user-details-item">
+
+                    <span class="user-details-label">
+                        Date Created
+                    </span>
+
+                    <span class="user-details-value">
+                        @(Model.CreatedAt.Value.ToString(
+                                            "dd MMM yyyy HH:mm"))
+                </span>
+
+                </div>
+                        }
+
+        </div>
+
+
+        <div class="user-details-divider"></div>
+
+
+        <!-- ACCOUNT MANAGEMENT -->
+
+        <div class="user-account-management">
+
+            <div class="user-account-management-text">
+
+                <h3>
+                    Account Access
+                </h3>
+
+                @if (Model.IsActive)
+                {
+                    <p>
+                        Deactivating this account will prevent the user
+                        from using the system until the account is
+                        activated again.
+                    </p>
+                }
+                else
+                {
+                    <p>
+                        Activate this account to allow the user to use
+                        the system again.
+                    </p>
+                }
+
+            </div>
+
+
+            @if (Model.IsActive)
+            {
+                @if (isCurrentUser)
+                {
+                    <button type="button"
+                            class="user-status-action disabled"
+                            disabled>
+
+                        Deactivate User
+
+                    </button>
+
+                    <div class="user-self-account-note">
+                        You cannot deactivate your own account.
+                    </div>
+                }
+                else
+                {
+                    <form asp-controller="SuperAdmin"
+                          asp-action="SetUserActiveStatus"
+                          method="post"
+                          onsubmit="return confirm('Are you sure you want to deactivate this user?');">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="id"
+                               value="@Model.Id" />
+
+                        <input type="hidden"
+                               name="isActive"
+                               value="false" />
+
+                        <button type="submit"
+                                class="user-status-action deactivate">
+
+                            Deactivate User
+
+                        </button>
+
+                    </form>
+                }
+            }
+            else
+            {
+                <form asp-controller="SuperAdmin"
+                      asp-action="SetUserActiveStatus"
+                      method="post"
+                      onsubmit="return confirm('Are you sure you want to activate this user?');">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.Id" />
+
+                    <input type="hidden"
+                           name="isActive"
+                           value="true" />
+
+                    <button type="submit"
+                            class="user-status-action activate">
+
+                        Activate User
+
+                    </button>
+
+                </form>
+            }
+
+        </div>
+
+    </div>
+
+</div>

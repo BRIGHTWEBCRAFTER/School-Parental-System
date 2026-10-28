@@ -1,0 +1,862 @@
+﻿
+/* =================================================
+   SCHOOL ADMIN PROFILE
+   ================================================= */
+
+.sa-profile-page {
+    min-height: calc(100vh - 76px);
+    padding: 24px;
+    color: #16352a;
+}
+
+/* =================================================
+   PAGE HEADING
+   ================================================= */
+
+.sa-profile-heading {
+    margin-bottom: 18px;
+}
+
+    .sa-profile-heading h2 {
+        margin: 0 0 5px;
+        color: #073a28;
+        font-size: 21px;
+        font-weight: 800;
+    }
+
+    .sa-profile-heading p {
+        margin: 0;
+        color: #71847b;
+        font-size: 11px;
+    }
+
+/* =================================================
+   PROFILE OVERVIEW
+   ================================================= */
+
+.sa-profile-hero {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 24px;
+    margin-bottom: 16px;
+    border: 1px solid #e2ded3;
+    border-radius: 13px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(22, 53, 42, .04);
+}
+
+/* AVATAR */
+
+.sa-profile-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 78px;
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    background: #0b4a32;
+    color: #fff;
+    border: 3px solid #f4e8c5;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+/* PROFILE NAME */
+
+.sa-profile-identity {
+    flex: 1;
+    min-width: 0;
+}
+
+    .sa-profile-identity h3 {
+        margin: 0 0 7px;
+        color: #073a28;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+.sa-profile-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    background: #eef7f2;
+    color: #0b4a32;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.sa-profile-identity p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 5px 0;
+    color: #71847b;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+    .sa-profile-identity p i {
+        color: #0e5b3d;
+    }
+
+/* ACCOUNT STATUS */
+
+.sa-profile-hero-status {
+    align-self: flex-start;
+}
+
+.sa-profile-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+    .sa-profile-status i {
+        font-size: 7px;
+    }
+
+    .sa-profile-status.is-active {
+        background: #e6f4ec;
+        color: #0e6a43;
+    }
+
+    .sa-profile-status.is-inactive {
+        background: #fde9e7;
+        color: #b33e35;
+    }
+
+/* =================================================
+   PROFILE GRID
+   ================================================= */
+
+.sa-profile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
+.sa-profile-side-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+/* =================================================
+   PROFILE CARDS
+   ================================================= */
+
+.sa-profile-card {
+    overflow: hidden;
+    min-width: 0;
+    border: 1px solid #e2ded3;
+    border-radius: 13px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(22, 53, 42, .04);
+}
+
+.sa-profile-card-header {
+    padding: 16px 18px;
+    border-bottom: 1px solid #eee9df;
+}
+
+    .sa-profile-card-header h3 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 4px;
+        color: #073a28;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+        .sa-profile-card-header h3 i {
+            color: #0e5b3d;
+            font-size: 16px;
+        }
+
+    .sa-profile-card-header p {
+        margin: 0;
+        color: #71847b;
+        font-size: 11px;
+    }
+
+.sa-profile-card-body {
+    padding: 8px 18px 16px;
+}
+
+/* =================================================
+   ACCOUNT DETAILS
+   ================================================= */
+
+.sa-profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 13px 0;
+    border-bottom: 1px solid #f0ede5;
+}
+
+    .sa-profile-field:last-child {
+        border-bottom: 0;
+    }
+
+    .sa-profile-field span {
+        color: #71847b;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .sa-profile-field strong {
+        color: #16352a;
+        font-size: 12px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+        .sa-profile-field strong.sa-status-active {
+            color: #0e6a43;
+        }
+
+        .sa-profile-field strong.sa-status-inactive {
+            color: #b33e35;
+        }
+
+/* =================================================
+   ACCOUNT ACTIONS
+   ================================================= */
+
+.sa-profile-action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #e2ded3;
+    border-radius: 9px;
+    background: #fffdf7;
+    text-decoration: none;
+    transition: .2s ease;
+}
+
+    .sa-profile-action:hover {
+        border-color: #a7c9b5;
+        background: #eef7f2;
+    }
+
+.sa-profile-action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: #eef7f2;
+    color: #0b4a32;
+    font-size: 16px;
+}
+
+.sa-profile-action-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+    .sa-profile-action-text strong {
+        color: #073a28;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .sa-profile-action-text small {
+        color: #71847b;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+.sa-profile-arrow {
+    color: #71847b;
+    font-size: 12px;
+}
+
+.sa-profile-action:hover .sa-profile-arrow {
+    color: #0b4a32;
+}
+
+/* SECURITY NOTE */
+
+.sa-profile-security-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f7f3e8;
+    color: #52665d;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+    .sa-profile-security-note i {
+        flex-shrink: 0;
+        color: #9c780e;
+        font-size: 14px;
+    }
+
+/* =================================================
+   SCHOOL INFORMATION
+   ================================================= */
+
+.sa-profile-school {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0ede5;
+}
+
+.sa-profile-school-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 10px;
+    background: #eef7f2;
+    color: #0b4a32;
+    font-size: 19px;
+}
+
+.sa-profile-school strong,
+.sa-profile-school span {
+    display: block;
+}
+
+.sa-profile-school strong {
+    margin-bottom: 4px;
+    color: #073a28;
+    font-size: 12px;
+}
+
+.sa-profile-school span {
+    color: #71847b;
+    font-size: 10px;
+}
+
+/* =================================================
+   RESPONSIVE
+   ================================================= */
+
+@media (max-width: 900px) {
+
+    .sa-profile-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .sa-profile-page {
+        padding: 15px;
+    }
+
+    .sa-profile-hero {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        padding: 18px;
+        gap: 12px;
+    }
+
+    .sa-profile-avatar {
+        flex-basis: 58px;
+        width: 58px;
+        height: 58px;
+        font-size: 18px;
+    }
+
+    .sa-profile-identity h3 {
+        font-size: 17px;
+    }
+
+    .sa-profile-hero-status {
+        width: 100%;
+    }
+
+    .sa-profile-card-header {
+        padding: 14px 15px;
+    }
+
+    .sa-profile-card-body {
+        padding: 7px 15px 14px;
+    }
+}
+
+
+/* =================================================
+   EDIT SCHOOL ADMIN PROFILE
+   ================================================= */
+
+/* PAGE HEADING */
+
+.sa-profile-page .sa-profile-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.sa-edit-back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 0 13px;
+    border: 1px solid #e2ded3;
+    border-radius: 8px;
+    background: #fff;
+    color: #0b4a32;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+    .sa-edit-back-button:hover {
+        background: #eef7f2;
+        color: #073a28;
+    }
+
+/* FORM CONTAINER */
+
+.sa-edit-profile-container {
+    width: 100%;
+    max-width: 760px;
+}
+
+/* FORM */
+
+.sa-edit-profile-form {
+    padding: 22px;
+}
+
+/* FORM GROUPS */
+
+.sa-edit-form-group {
+    margin-bottom: 20px;
+}
+
+    .sa-edit-form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #16352a;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+.sa-required {
+    color: #b33e35;
+}
+
+/* INPUT WRAPPER */
+
+.sa-edit-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+    .sa-edit-input-wrapper > i {
+        position: absolute;
+        left: 13px;
+        color: #71847b;
+        font-size: 15px;
+        pointer-events: none;
+    }
+
+/* INPUTS */
+
+.sa-edit-input {
+    width: 100%;
+    height: 42px;
+    padding: 0 14px 0 40px;
+    border: 1px solid #dedbd1;
+    border-radius: 8px;
+    background: #fffdf7;
+    color: #16352a;
+    font-family: inherit;
+    font-size: 12px;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+    .sa-edit-input:focus {
+        outline: none;
+        border-color: #0b4a32;
+        box-shadow: 0 0 0 3px rgba(11,74,50,.10);
+    }
+
+    .sa-edit-input::placeholder {
+        color: #9aa69d;
+    }
+
+/* HELP TEXT */
+
+.sa-edit-field-help {
+    display: block;
+    margin-top: 7px;
+    color: #71847b;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+/* VALIDATION */
+
+.sa-edit-validation-summary {
+    color: #b33e35;
+    font-size: 12px;
+}
+
+    .sa-edit-validation-summary ul {
+        margin: 0 0 15px;
+        padding-left: 20px;
+    }
+
+.sa-edit-field-error {
+    display: block;
+    margin-top: 5px;
+    color: #b33e35;
+    font-size: 10px;
+}
+
+    .sa-edit-field-error:empty {
+        display: none;
+    }
+
+.sa-edit-input.input-validation-error {
+    border-color: #d86459;
+}
+
+/* INFORMATION NOTE */
+
+.sa-edit-info-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 6px;
+    padding: 13px;
+    border: 1px solid #eee4c8;
+    border-radius: 9px;
+    background: #fff9e9;
+    color: #725d2f;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+    .sa-edit-info-note i {
+        flex-shrink: 0;
+        color: #9c780e;
+        font-size: 15px;
+    }
+
+/* FORM ACTIONS */
+
+.sa-edit-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid #eee9df;
+}
+
+.sa-edit-cancel-button,
+.sa-edit-save-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 39px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* CANCEL */
+
+.sa-edit-cancel-button {
+    border: 1px solid #dedbd1;
+    background: #fff;
+    color: #52665d;
+}
+
+    .sa-edit-cancel-button:hover {
+        background: #f7f3e8;
+        color: #16352a;
+    }
+
+/* SAVE */
+
+.sa-edit-save-button {
+    border: 1px solid #0b4a32;
+    background: #0b4a32;
+    color: #fff;
+}
+
+    .sa-edit-save-button:hover {
+        border-color: #073a28;
+        background: #073a28;
+    }
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+
+    .sa-profile-page .sa-profile-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .sa-edit-profile-form {
+        padding: 16px;
+    }
+
+    .sa-edit-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .sa-edit-cancel-button,
+    .sa-edit-save-button {
+        width: 100%;
+    }
+}
+
+
+/* =================================================
+   PROFILE HERO - EDIT BUTTON
+   ================================================= */
+
+.sa-profile-hero-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.sa-edit-profile-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 0 13px;
+    border: 1px solid #0b4a32;
+    border-radius: 8px;
+    background: #0b4a32;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+    .sa-edit-profile-button:hover {
+        border-color: #073a28;
+        background: #073a28;
+        color: #fff;
+    }
+
+@media (max-width: 600px) {
+
+    .sa-profile-hero-status {
+        align-items: flex-start;
+    }
+}
+
+
+/* =================================================
+   PROFILE PICTURE DISPLAY
+   ================================================= */
+
+.sa-profile-avatar {
+    overflow: hidden;
+}
+
+.sa-profile-avatar-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* =================================================
+   PROFILE PICTURE UPLOAD
+   ================================================= */
+
+.sa-profile-upload-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    width: 100%;
+    max-width: 235px;
+    margin-top: 4px;
+}
+
+/* FILE LABEL */
+
+.sa-profile-upload-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #0b4a32;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* FILE INPUT */
+
+.sa-profile-picture-input {
+    width: 100%;
+    max-width: 235px;
+    padding: 7px;
+    border: 1px solid #e2ded3;
+    border-radius: 8px;
+    background: #fffdf7;
+    color: #52665d;
+    font-size: 10px;
+}
+
+    .sa-profile-picture-input::file-selector-button {
+        margin-right: 8px;
+        padding: 7px 9px;
+        border: 0;
+        border-radius: 6px;
+        background: #eef7f2;
+        color: #0b4a32;
+        font-family: inherit;
+        font-size: 10px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+/* FILE INFORMATION */
+
+.sa-profile-upload-hint {
+    color: #71847b;
+    font-size: 9px;
+    text-align: right;
+}
+
+/* UPLOAD BUTTON */
+
+.sa-profile-upload-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 0 13px;
+    border: 1px solid #0b4a32;
+    border-radius: 8px;
+    background: #0b4a32;
+    color: #fff;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .sa-profile-upload-button:hover {
+        border-color: #073a28;
+        background: #073a28;
+    }
+
+    .sa-profile-upload-button:focus-visible {
+        outline: 2px solid #c6a34d;
+        outline-offset: 2px;
+    }
+
+/* =================================================
+   RESPONSIVE
+   ================================================= */
+
+@media (max-width: 600px) {
+
+    .sa-profile-upload-form {
+        align-items: flex-start;
+    }
+
+    .sa-profile-upload-hint {
+        text-align: left;
+    }
+}
+
+
+/* =================================================
+   REMOVE PROFILE PICTURE
+   ================================================= */
+
+.sa-profile-remove-form {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.sa-profile-remove-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 0 13px;
+    border: 1px solid #efcbc7;
+    border-radius: 8px;
+    background: #fff6f5;
+    color: #b33e35;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+    .sa-profile-remove-button:hover {
+        border-color: #d86459;
+        background: #fde9e7;
+        color: #942f27;
+    }
+
+    .sa-profile-remove-button:focus-visible {
+        outline: 2px solid #c6a34d;
+        outline-offset: 2px;
+    }
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+
+    .sa-profile-remove-form {
+        justify-content: flex-start;
+    }
+}

@@ -1,0 +1,643 @@
+﻿
+/* ==========================================
+   SCHOOL PARENTAL SYSTEM
+   TEACHER - ASSIGNED CLASSES
+
+   Shared design:
+   Green / Cream / White / Gold
+   ========================================== */
+
+.teacher-assigned-page {
+    --teacher-green: #0b4a32;
+    --teacher-dark-green: #073a28;
+    --teacher-gold: #c6a34d;
+    --teacher-cream: #f7f3e8;
+    --teacher-border: #e2ded3;
+    --teacher-muted: #71847b;
+    padding: 24px;
+    color: var(--teacher-dark-green);
+}
+
+/* ==========================================
+   INFORMATION BANNER
+   ========================================== */
+
+.teacher-info-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 24px;
+    padding: 18px 22px;
+    background: #fff9e9;
+    border: 1px solid #e8dbb3;
+    border-left: 4px solid var(--teacher-gold);
+    border-radius: 14px;
+}
+
+.teacher-info-banner-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    background: #f2e5ba;
+    color: var(--teacher-dark-green);
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.teacher-info-banner-content {
+    flex: 1;
+}
+
+    .teacher-info-banner-content strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--teacher-dark-green);
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .teacher-info-banner-content p {
+        margin: 0;
+        color: #687a6f;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+.teacher-info-banner-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--teacher-muted);
+    font-size: 18px;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+}
+
+    .teacher-info-banner-close:hover {
+        background: #f2e5ba;
+        color: var(--teacher-dark-green);
+    }
+
+/* ==========================================
+   MY ASSIGNED CLASS SUMMARY
+   ========================================== */
+
+.teacher-assigned-summary-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 22px;
+    margin-bottom: 24px;
+    padding: 26px;
+    background: #ffffff;
+    border: 1px solid var(--teacher-border);
+    border-radius: 18px;
+    box-shadow: 0 5px 18px rgba(7, 58, 40, .04);
+}
+
+.teacher-assigned-summary-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    background: #e9f3ec;
+    color: var(--teacher-green);
+    border-radius: 16px;
+    font-size: 28px;
+}
+
+.teacher-assigned-summary-label {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: var(--teacher-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.teacher-assigned-summary-content h3 {
+    margin: 0 0 10px;
+    color: var(--teacher-dark-green);
+    font-size: clamp(24px, 2.2vw, 32px);
+    font-weight: 800;
+}
+
+.teacher-assigned-summary-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+    color: #526a5c;
+    font-size: 13px;
+}
+
+.teacher-summary-divider {
+    width: 1px;
+    height: 18px;
+    background: var(--teacher-border);
+}
+
+.teacher-assigned-summary-content p {
+    margin: 0;
+    color: var(--teacher-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.teacher-assigned-summary-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* ==========================================
+   COMMON BUTTONS
+   ========================================== */
+
+.teacher-primary-button,
+.teacher-secondary-button,
+.teacher-table-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 10px 15px;
+    border-radius: 9px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color .2s, border-color .2s, box-shadow .2s, transform .2s;
+}
+
+    /* PRIMARY GREEN */
+
+    .teacher-primary-button,
+    .teacher-table-button.primary {
+        background: var(--teacher-green);
+        color: #ffffff;
+        border: 1px solid var(--teacher-green);
+    }
+
+        .teacher-primary-button:hover,
+        .teacher-table-button.primary:hover {
+            background: var(--teacher-dark-green);
+            color: #ffffff;
+            border-color: var(--teacher-dark-green);
+            box-shadow: 0 4px 12px rgba(7, 58, 40, .12);
+        }
+
+    /* LIGHT GREEN */
+
+    .teacher-secondary-button,
+    .teacher-table-button.light {
+        background: #eef5f0;
+        color: var(--teacher-green);
+        border: 1px solid #d6e5da;
+    }
+
+        .teacher-secondary-button:hover,
+        .teacher-table-button.light:hover {
+            background: #e0ede4;
+            color: var(--teacher-dark-green);
+            border-color: #b9d1bf;
+        }
+
+        .teacher-primary-button:focus-visible,
+        .teacher-secondary-button:focus-visible,
+        .teacher-table-button:focus-visible,
+        .teacher-info-banner-close:focus-visible,
+        .teacher-term-filter select:focus-visible {
+            outline: 3px solid var(--teacher-gold);
+            outline-offset: 3px;
+        }
+
+/* ==========================================
+   CLASSES I TEACH CARD
+   ========================================== */
+
+.teacher-assigned-table-card {
+    margin-bottom: 24px;
+    background: #ffffff;
+    border: 1px solid var(--teacher-border);
+    border-radius: 18px;
+    box-shadow: 0 5px 18px rgba(7, 58, 40, .04);
+    overflow: hidden;
+}
+
+.teacher-assigned-table-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px 24px 18px;
+}
+
+    .teacher-assigned-table-header h3 {
+        margin: 0 0 7px;
+        color: var(--teacher-dark-green);
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .teacher-assigned-table-header p {
+        margin: 0;
+        color: var(--teacher-muted);
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+/* ==========================================
+   TERM FILTER
+   ========================================== */
+
+.teacher-term-filter select {
+    min-height: 40px;
+    padding: 0 14px;
+    background: #ffffff;
+    color: var(--teacher-dark-green);
+    border: 1px solid var(--teacher-border);
+    border-radius: 10px;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* ==========================================
+   CLASSES TABLE
+   ========================================== */
+
+.teacher-assigned-table-wrapper {
+    padding: 0 20px 20px;
+    overflow-x: auto;
+}
+
+.teacher-assigned-table {
+    width: 100%;
+    min-width: 920px;
+    border-collapse: collapse;
+}
+
+    .teacher-assigned-table th {
+        padding: 15px 16px;
+        background: var(--teacher-cream);
+        color: var(--teacher-dark-green);
+        border-bottom: 1px solid var(--teacher-border);
+        font-size: 13px;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .teacher-assigned-table td {
+        padding: 16px;
+        background: #ffffff;
+        color: #254737;
+        border-bottom: 1px solid #eeeae1;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .teacher-assigned-table tbody tr {
+        transition: background-color .2s;
+    }
+
+        .teacher-assigned-table tbody tr:hover td {
+            background: #faf8f1;
+        }
+
+        .teacher-assigned-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+/* ==========================================
+   TABLE ACTIONS
+   ========================================== */
+
+.teacher-assigned-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+    .teacher-assigned-actions .teacher-table-button {
+        min-height: 36px;
+        padding: 8px 12px;
+        white-space: nowrap;
+    }
+
+/* ==========================================
+   NEED TO MANAGE CLASS DETAILS?
+   ========================================== */
+
+.teacher-assigned-note-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 22px 24px;
+    background: #fffdf7;
+    border: 1px solid #e8dfc5;
+    border-left: 4px solid var(--teacher-gold);
+    border-radius: 16px;
+}
+
+.teacher-assigned-note-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    background: #f3e8c5;
+    color: var(--teacher-dark-green);
+    border-radius: 14px;
+    font-size: 24px;
+}
+
+.teacher-assigned-note-card h4 {
+    margin: 0 0 6px;
+    color: var(--teacher-dark-green);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.teacher-assigned-note-card p {
+    margin: 0;
+    color: var(--teacher-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   EMPTY STATE
+   ========================================== */
+
+.teacher-empty-state {
+    padding: 35px 24px;
+    background: #ffffff;
+    color: var(--teacher-muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 1200px) {
+    .teacher-assigned-summary-card {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .teacher-assigned-summary-actions {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 700px) {
+    .teacher-assigned-page {
+        padding: 16px;
+    }
+
+    .teacher-assigned-summary-card {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .teacher-assigned-summary-actions {
+        grid-column: auto;
+    }
+
+        .teacher-assigned-summary-actions a {
+            flex: 1 1 auto;
+        }
+
+    .teacher-info-banner {
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .teacher-assigned-table-header {
+        flex-direction: column;
+        padding: 20px 16px;
+    }
+
+    .teacher-term-filter,
+    .teacher-term-filter select {
+        width: 100%;
+    }
+
+    .teacher-assigned-table-wrapper {
+        padding: 0 12px 16px;
+    }
+
+    .teacher-assigned-note-card {
+        align-items: flex-start;
+        padding: 18px;
+    }
+
+    .teacher-assigned-note-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .teacher-assigned-page * {
+        transition: none !important;
+    }
+}
+
+
+
+/* ==========================================
+   TEACHER ASSIGNED CLASSES
+   COMPACT LAYOUT + LEARNER SEARCH
+   Green / Cream / White / Gold
+   ========================================== */
+
+/* PAGE SPACING */
+
+.teacher-assigned-page {
+    padding: 20px 24px;
+}
+
+    /* COMPACT ATTENDANCE INFORMATION BANNER */
+
+    .teacher-assigned-page .teacher-info-banner {
+        padding: 12px 16px;
+        gap: 12px;
+        margin-bottom: 18px;
+        border-radius: 12px;
+    }
+
+    .teacher-assigned-page .teacher-info-banner-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 16px;
+    }
+
+    .teacher-assigned-page .teacher-info-banner-content strong {
+        font-size: 13px;
+        margin-bottom: 3px;
+    }
+
+    .teacher-assigned-page .teacher-info-banner-content p {
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .teacher-assigned-page .teacher-info-banner-close {
+        width: 28px;
+        height: 28px;
+        font-size: 15px;
+    }
+
+    /* COMPACT ASSIGNED CLASS CARD */
+
+    .teacher-assigned-page .teacher-assigned-summary-card {
+        padding: 18px 20px;
+        gap: 16px;
+        margin-bottom: 18px;
+        border-radius: 14px;
+    }
+
+    .teacher-assigned-page .teacher-assigned-summary-icon {
+        width: 58px;
+        height: 58px;
+        font-size: 24px;
+        border-radius: 12px;
+    }
+
+    .teacher-assigned-page .teacher-assigned-summary-label {
+        margin-bottom: 5px;
+        font-size: 12px;
+    }
+
+    .teacher-assigned-page .teacher-assigned-summary-content h3 {
+        font-size: 26px;
+        margin-bottom: 6px;
+    }
+
+    .teacher-assigned-page .teacher-assigned-summary-meta {
+        margin-bottom: 7px;
+        gap: 9px;
+        font-size: 12px;
+    }
+
+    .teacher-assigned-page .teacher-assigned-summary-content p {
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .teacher-assigned-page .teacher-assigned-summary-actions {
+        gap: 8px;
+    }
+
+    .teacher-assigned-page .teacher-primary-button,
+    .teacher-assigned-page .teacher-secondary-button {
+        min-height: 36px;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    /* COMPACT TABLE */
+
+    .teacher-assigned-page .teacher-assigned-table-card {
+        margin-bottom: 18px;
+        border-radius: 14px;
+    }
+
+    .teacher-assigned-page .teacher-assigned-table-header {
+        padding: 18px 20px 12px;
+    }
+
+        .teacher-assigned-page .teacher-assigned-table-header h3 {
+            font-size: 18px;
+        }
+
+    .teacher-assigned-page .teacher-assigned-table th,
+    .teacher-assigned-page .teacher-assigned-table td {
+        padding: 12px;
+    }
+
+    /* COMPACT BOTTOM NOTE */
+
+    .teacher-assigned-page .teacher-assigned-note-card {
+        padding: 15px 18px;
+        gap: 12px;
+        border-radius: 12px;
+    }
+
+    .teacher-assigned-page .teacher-assigned-note-icon {
+        width: 46px;
+        height: 46px;
+        font-size: 20px;
+    }
+
+    .teacher-assigned-page .teacher-assigned-note-card h4 {
+        font-size: 15px;
+    }
+
+    .teacher-assigned-page .teacher-assigned-note-card p {
+        font-size: 12px;
+    }
+
+/* LEARNER RESULTS */
+
+.teacher-learner-results-table {
+    min-width: 520px;
+}
+
+    .teacher-learner-results-table td:first-child {
+        font-weight: 600;
+        color: #073a28;
+    }
+
+    .teacher-learner-results-table td i {
+        margin-right: 8px;
+        color: #0b4a32;
+    }
+
+.teacher-search-result-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: #e9f3ec;
+    color: #0b4a32;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+    .teacher-assigned-page {
+        padding: 14px;
+    }
+
+        .teacher-assigned-page .teacher-assigned-summary-card {
+            padding: 16px;
+        }
+}
+

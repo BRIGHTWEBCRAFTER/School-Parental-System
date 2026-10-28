@@ -1,43 +1,64 @@
-﻿using System.Security.Claims;
+using SupabaseSessionService = SchoolParentalSystem.Web.Services.SupabaseSessionService;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using SchoolParentalSystem.Web.Models;
-using SchoolParentalSystem.Web.Services;
+using SchoolParentalSystem.Web.Services.SuperAdmin;
 using SchoolParentalSystem.Web.ViewModels;
+using Supabase.Gotrue;
+using System.Security.Claims;
+
 
 namespace SchoolParentalSystem.Web.Controllers;
 
+
+//
+// Class Name       : AuthController
+// Purpose           : Handles sign-in, logout, account invitations and password recovery.
+// Re-use            : Used by MVC routing and corresponding services.
+// Input Parameters  : Injected service dependencies.
+// Output Type       : MVC controller class
+//
 public class AuthController : Controller
 {
     private readonly Supabase.Client _supabase;
 
-    private readonly SupabaseSessionService
-        _supabaseSession;
+    private readonly SupabaseSessionService _supabaseSession;
 
-    private readonly ILogger<AuthController>
-        _logger;
+    private readonly ILogger<AuthController> _logger;
 
 
+    //
+    // Method Name       : AuthController
+    // Purpose           : Initializes required dependencies for AuthController.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : Supabase.Client supabase; SupabaseSessionService supabaseSession;
+    //                      ILogger<AuthController> logger
+    // Output Type       : Constructor (initializes controller dependencies)
+    //
     public AuthController(
         Supabase.Client supabase,
         SupabaseSessionService supabaseSession,
         ILogger<AuthController> logger)
     {
         _supabase = supabase;
-
         _supabaseSession = supabaseSession;
-
         _logger = logger;
     }
 
 
-    // -----------------------------------------------------
+    // =====================================================
     // LOGIN PAGE
-    // -----------------------------------------------------
+    // =====================================================
 
+    //
+    // Method Name       : Login
+    // Purpose           : Show sign-in screen or authenticate the submitted credentials.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : None
+    // Output Type       : IActionResult
+    //
     [HttpGet]
     [AllowAnonymous]
     public IActionResult Login()
@@ -47,14 +68,23 @@ public class AuthController : Controller
             return RedirectAuthenticatedUser();
         }
 
-        return View(new LoginViewModel());
+
+        return View(
+            new LoginViewModel());
     }
 
 
-    // -----------------------------------------------------
+    // =====================================================
     // LOGIN SUBMIT
-    // -----------------------------------------------------
+    // =====================================================
 
+    //
+    // Method Name       : Login
+    // Purpose           : Show sign-in screen or authenticate the submitted credentials.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : LoginViewModel model
+    // Output Type       : Task<IActionResult>
+    //
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
@@ -70,14 +100,25 @@ public class AuthController : Controller
         try
         {
             var email =
-                model.Email.Trim().ToLowerInvariant();
+                model.Email
+                    .Trim()
+                    .ToLowerInvariant();
 
 
-            // Authenticate against Supabase Auth.
+            var selectedRole =
+                model.Role
+                    .Trim();
+
+
+            // -------------------------------------------------
+            // AUTHENTICATE WITH SUPABASE
+            // -------------------------------------------------
+
             var authSession =
-                await _supabase.Auth.SignIn(
-                    email,
-                    model.Password);
+                await _supabase.Auth
+                    .SignIn(
+                        email,
+                        model.Password);
 
 
             if (authSession == null ||
@@ -91,31 +132,37 @@ public class AuthController : Controller
                     "",
                     "Invalid email or password.");
 
+
                 return View(model);
             }
 
 
             if (!Guid.TryParse(
-                    authSession.User.Id,
-                    out var userId))
+                authSession.User.Id,
+                out var userId))
             {
                 await SafeSupabaseSignOut();
+
 
                 ModelState.AddModelError(
                     "",
                     "Your account could not be verified.");
 
+
                 return View(model);
             }
 
 
-            // The Supabase session is now attached to this
-            // scoped client, so RLS applies to this query.
+            // -------------------------------------------------
+            // LOAD APPLICATION PROFILE
+            // -------------------------------------------------
+
             var profileResponse =
                 await _supabase
                     .From<UserProfile>()
-                    .Where(user =>
-                        user.Id == userId)
+                    .Where(
+                        user =>
+                            user.Id == userId)
                     .Get();
 
 
@@ -128,55 +175,233 @@ public class AuthController : Controller
             {
                 await SafeSupabaseSignOut();
 
+
                 ModelState.AddModelError(
                     "",
                     "No application profile exists for this account.");
 
+
                 return View(model);
             }
 
+
+            // -------------------------------------------------
+            // ACCOUNT STATUS
+            // -------------------------------------------------
 
             if (!profile.IsActive)
             {
                 await SafeSupabaseSignOut();
 
+
                 ModelState.AddModelError(
                     "",
-                    "This account is inactive.");
+                    "This account has been deactivated. Please contact your school administrator.");
+
 
                 return View(model);
             }
 
 
-            // Learner is never an authentication role.
-            // Parent belongs primarily to the Flutter app.
-            var allowedWebRoles = new[]
-            {
-                "Super Admin",
-                "School Admin",
-                "Teacher"
-            };
+            //
+            // Purpose : Prevent a Teacher from accessing
+            //           the portal before account activation.
+            //
 
-
-            if (!allowedWebRoles.Contains(profile.Role))
+            if (profile.Role == "Teacher" &&
+                profile.RequiresPasswordChange)
             {
                 await SafeSupabaseSignOut();
 
                 ModelState.AddModelError(
                     "",
-                    "This account does not have access to the web portal.");
+                    "Your account requires activation. " +
+                    "Use the temporary PIN sent to your email " +
+                    "to create your password.");
 
                 return View(model);
             }
 
 
-            // Save Supabase session tokens server-side.
+
+            // -------------------------------------------------
+            // WEB ACCESS ROLES
+            // -------------------------------------------------
+
+            var allowedWebRoles =
+                new[]
+                {
+                    "Super Admin",
+                    "School Admin",
+                    "Teacher"
+                };
+
+
+            if (string.IsNullOrWhiteSpace(
+                    profile.Role) ||
+                !allowedWebRoles.Contains(
+                    profile.Role))
+            {
+                await SafeSupabaseSignOut();
+
+
+                ModelState.AddModelError(
+                    "",
+                    "This account does not have access to the web portal.");
+
+
+                return View(model);
+            }
+
+
+            // -------------------------------------------------
+            // SELECTED ROLE MUST MATCH DATABASE ROLE
+            // -------------------------------------------------
+            //
+            // This prevents:
+            //
+            // School Admin -> selecting Teacher
+            // Super Admin  -> selecting Teacher
+            //
+            // to avoid the Access Code requirement.
+            // -------------------------------------------------
+
+            if (!string.Equals(
+                    selectedRole,
+                    profile.Role,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                await SafeSupabaseSignOut();
+
+
+                ModelState.AddModelError(
+                    nameof(LoginViewModel.Role),
+                    "The selected role does not match this account.");
+
+
+                return View(model);
+            }
+
+
+            // -------------------------------------------------
+            // SCHOOL STATUS
+            // -------------------------------------------------
+
+            if (profile.SchoolId.HasValue &&
+                !string.Equals(
+                    profile.Role,
+                    "Super Admin",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                var schoolResponse =
+                    await _supabase
+                        .From<SchoolStatusRecord>()
+                        .Where(
+                            school =>
+                                school.Id ==
+                                profile.SchoolId.Value)
+                        .Get();
+
+
+                var schoolStatus =
+                    schoolResponse.Models
+                        .FirstOrDefault()?
+                        .Status;
+
+
+                if (string.Equals(
+                    schoolStatus,
+                    "Inactive",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    await SafeSupabaseSignOut();
+
+
+                    ModelState.AddModelError(
+                        "",
+                        "Your school has been deactivated. Please contact the system administrator.");
+
+
+                    return View(model);
+                }
+            }
+
+
+            // -------------------------------------------------
+            // ADMIN ACCESS CODE
+            // -------------------------------------------------
+            //
+            // Super Admin:
+            // Email + Password + Access Code
+            //
+            // School Admin:
+            // Email + Password + Access Code
+            //
+            // Teacher:
+            // Email + Password only
+            // -------------------------------------------------
+
+            var requiresAccessCode =
+                string.Equals(
+                    profile.Role,
+                    "Super Admin",
+                    StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(
+                    profile.Role,
+                    "School Admin",
+                    StringComparison.OrdinalIgnoreCase);
+
+
+            if (requiresAccessCode)
+            {
+                if (string.IsNullOrWhiteSpace(
+                    model.AccessCode))
+                {
+                    await SafeSupabaseSignOut();
+
+
+                    ModelState.AddModelError(
+                        nameof(LoginViewModel.AccessCode),
+                        "Access Code is required for this role.");
+
+
+                    return View(model);
+                }
+
+
+                var accessCodeValid =
+                    await VerifyLoginAccessCodeAsync(
+                        model.AccessCode);
+
+
+                if (!accessCodeValid)
+                {
+                    await SafeSupabaseSignOut();
+
+
+                    ModelState.AddModelError(
+                        nameof(LoginViewModel.AccessCode),
+                        "The Access Code is invalid.");
+
+
+                    return View(model);
+                }
+            }
+
+
+            // -------------------------------------------------
+            // STORE SUPABASE SESSION
+            // -------------------------------------------------
+
             _supabaseSession.Store(
                 authSession.AccessToken,
                 authSession.RefreshToken);
 
 
-            // Create ASP.NET identity claims.
+            // -------------------------------------------------
+            // ASP.NET IDENTITY CLAIMS
+            // -------------------------------------------------
+
             var claims =
                 new List<Claim>
                 {
@@ -194,7 +419,11 @@ public class AuthController : Controller
 
                     new(
                         ClaimTypes.Role,
-                        profile.Role)
+                        profile.Role),
+
+                    new(
+                        "login_at",
+                        DateTime.UtcNow.ToString("o"))
                 };
 
 
@@ -216,7 +445,8 @@ public class AuthController : Controller
 
 
             var principal =
-                new ClaimsPrincipal(identity);
+                new ClaimsPrincipal(
+                    identity);
 
 
             await HttpContext.SignInAsync(
@@ -225,9 +455,25 @@ public class AuthController : Controller
                 principal);
 
 
-            // We currently have the School Admin
-            // dashboard implemented.
-            if (profile.Role == "School Admin")
+            // -------------------------------------------------
+            // ROLE REDIRECT
+            // -------------------------------------------------
+
+            if (string.Equals(
+                profile.Role,
+                "Super Admin",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return RedirectToAction(
+                    "Dashboard",
+                    "SuperAdmin");
+            }
+
+
+            if (string.Equals(
+                profile.Role,
+                "School Admin",
+                StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToAction(
                     "Dashboard",
@@ -235,39 +481,133 @@ public class AuthController : Controller
             }
 
 
-            // Super Admin / Teacher dashboards will be
-            // connected when those sections are built.
             return RedirectToAction(
-                "Index",
-                "Home");
+                "Dashboard",
+                "Teacher");
         }
         catch (Exception ex)
         {
-            // Do not log passwords or auth tokens.
+            // Never log passwords, access codes,
+            // Supabase auth tokens or refresh tokens.
+
             _logger.LogWarning(
                 ex,
                 "A Supabase login attempt failed.");
 
 
+            await SafeSupabaseSignOut();
+
+
             ModelState.AddModelError(
                 "",
-                "Unable to sign in. Check your email and password.");
+                "Unable to sign in. Please check your login details.");
+
 
             return View(model);
         }
     }
 
-    // -----------------------------------------------------
-    // Reset Password
-    // -----------------------------------------------------
+
+    // =====================================================
+    // VERIFY ADMIN LOGIN ACCESS CODE
+    // =====================================================
+
+    //
+    // Method Name       : VerifyLoginAccessCodeAsync
+    // Purpose           : Handle the verify login access code operation.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : string accessCode
+    // Output Type       : Task<bool>
+    //
+    private async Task<bool>
+        VerifyLoginAccessCodeAsync(
+            string accessCode)
+    {
+        try
+        {
+            var parameters =
+                new Dictionary<string, object>
+                {
+                    {
+                        "p_code",
+                        accessCode.Trim()
+                    }
+                };
+
+
+            var response =
+                await _supabase.Rpc(
+                    "verify_login_access_code",
+                    parameters);
+
+
+            if (response == null ||
+                string.IsNullOrWhiteSpace(
+                    response.Content))
+            {
+                return false;
+            }
+
+
+            var result =
+                response.Content
+                    .Trim()
+                    .Trim('"');
+
+
+            return bool.TryParse(
+                       result,
+                       out var isValid)
+                   &&
+                   isValid;
+        }
+        catch (Exception ex)
+        {
+            // Never log the actual access code.
+
+            _logger.LogWarning(
+                ex,
+                "Login access code verification failed.");
+
+
+            return false;
+        }
+    }
+
+
+    // =====================================================
+    // FORGOT PASSWORD
+    // GET
+    // =====================================================
+
+    //
+    // Method Name       : ForgotPassword
+    // Purpose           : Display or process a password recovery request.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : None
+    // Output Type       : IActionResult
+    //
     [HttpGet]
     [AllowAnonymous]
     public IActionResult ForgotPassword()
     {
-        return View(new ForgotPasswordViewModel());
+        return View(
+            new ForgotPasswordViewModel());
     }
 
 
+    // =====================================================
+    // FORGOT PASSWORD
+    // POST
+    // =====================================================
+
+    //
+    // Method Name       : ForgotPassword
+    // Purpose           : Display or process a password recovery request.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : ForgotPasswordViewModel model
+    // Output Type       : Task<IActionResult>
+    //
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
@@ -279,31 +619,57 @@ public class AuthController : Controller
             return View(model);
         }
 
+
         try
         {
-            var redirectUrl = Url.Action(
-                nameof(ResetPassword),
-                "Auth",
-                null,
-                Request.Scheme);
+            var redirectUrl =
+                Url.Action(
+                    nameof(ResetPassword),
+                    "Auth",
+                    values: null,
+                    protocol: Request.Scheme);
+
+
+            if (string.IsNullOrWhiteSpace(
+                redirectUrl))
+            {
+                throw new InvalidOperationException(
+                    "Password reset URL could not be created.");
+            }
+
 
             var options =
-                new Supabase.Gotrue.ResetPasswordForEmailOptions(
-                    model.Email.Trim().ToLowerInvariant())
+                new ResetPasswordForEmailOptions(
+                    model.Email
+                        .Trim()
+                        .ToLowerInvariant())
                 {
-                    RedirectTo = redirectUrl
+                    RedirectTo =
+                        redirectUrl,
+
+                    FlowType =
+                        Constants
+                            .OAuthFlowType
+                            .Implicit
                 };
 
-            await _supabase.Auth
-                .ResetPasswordForEmail(options);
 
-            // Do not reveal whether an email exists.
+            await _supabase.Auth
+                .ResetPasswordForEmail(
+                    options);
+
+
+            // Do not reveal whether the email exists.
+
             ViewBag.SuccessMessage =
                 "If an account exists for that email, a password reset link has been sent.";
 
+
             ModelState.Clear();
 
-            return View(new ForgotPasswordViewModel());
+
+            return View(
+                new ForgotPasswordViewModel());
         }
         catch (Exception ex)
         {
@@ -311,76 +677,162 @@ public class AuthController : Controller
                 ex,
                 "Password reset email request failed.");
 
+
             ModelState.AddModelError(
                 "",
                 "We could not send the reset email right now. Please try again.");
+
 
             return View(model);
         }
     }
 
 
+    // =====================================================
+    // RESET PASSWORD
+    // GET
+    // =====================================================
+
+    //
+    // Method Name       : ResetPassword
+    // Purpose           : Display or process the password reset form.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : None
+    // Output Type       : IActionResult
+    //
     [HttpGet]
     [AllowAnonymous]
     public IActionResult ResetPassword()
     {
-        return View(new ResetPasswordViewModel());
+        ViewData["Title"] =
+            "Reset Password";
+
+
+        return View(
+            new ResetPasswordViewModel());
     }
 
 
+    // =====================================================
+    // RESET PASSWORD
+    // POST
+    // =====================================================
+
+    //
+    // Method Name       : ResetPassword
+    // Purpose           : Display or process the password reset form.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : ResetPasswordViewModel model
+    // Output Type       : Task<IActionResult>
+    //
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetPassword(
         ResetPasswordViewModel model)
     {
+        ViewData["Title"] =
+            "Reset Password";
+
+
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        if (string.IsNullOrWhiteSpace(model.AccessToken) ||
-            string.IsNullOrWhiteSpace(model.RefreshToken))
+
+        // -------------------------------------------------
+        // RECOVERY TOKENS
+        // -------------------------------------------------
+
+        if (string.IsNullOrWhiteSpace(
+                model.AccessToken) ||
+            string.IsNullOrWhiteSpace(
+                model.RefreshToken))
         {
             ModelState.AddModelError(
                 "",
-                "The password reset link is invalid or has expired.");
+                "The password reset link is invalid or has expired. Please request a new reset link.");
+
 
             return View(model);
         }
 
+
         try
         {
-            var session =
-                await _supabase.Auth.SetSession(
-                    model.AccessToken,
-                    model.RefreshToken);
+            // -------------------------------------------------
+            // CREATE RECOVERY SESSION
+            // -------------------------------------------------
 
-            if (session == null)
+            var recoverySession =
+                await _supabase.Auth
+                    .SetSession(
+                        model.AccessToken,
+                        model.RefreshToken);
+
+
+            if (recoverySession == null)
             {
                 ModelState.AddModelError(
                     "",
-                    "The password reset link is invalid or has expired.");
+                    "The password reset link is invalid or has expired. Please request a new reset link.");
+
 
                 return View(model);
             }
 
-            var attributes =
-                new Supabase.Gotrue.UserAttributes
-                {
-                    Password = model.NewPassword
-                };
 
-            await _supabase.Auth.Update(attributes);
+            // -------------------------------------------------
+            // CHANGE PASSWORD
+            // -------------------------------------------------
 
-            await _supabase.Auth.SignOut(
-                Supabase.Gotrue.Constants
-                    .SignOutScope.Local);
+            var updatedUser =
+                await _supabase.Auth
+                    .Update(
+                        new UserAttributes
+                        {
+                            Password =
+                                model.NewPassword
+                        });
+
+
+            if (updatedUser == null)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "Your password could not be updated.");
+
+
+                return View(model);
+            }
+
+
+            // -------------------------------------------------
+            // CLEAR RECOVERY / LOGIN SESSIONS
+            // -------------------------------------------------
+
+            await SafeSupabaseSignOut();
+
+
+            HttpContext.Session.Clear();
+
+
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults
+                    .AuthenticationScheme);
+
+
+            // -------------------------------------------------
+            // SUCCESS
+            // -------------------------------------------------
 
             TempData["LoginMessage"] =
-                "Your password has been changed successfully. You can now sign in.";
+                "Your password has been changed successfully. You can now sign in with your new password.";
 
-            return RedirectToAction(nameof(Login));
+
+            return RedirectToAction(
+                nameof(Login));
         }
         catch (Exception ex)
         {
@@ -388,19 +840,28 @@ public class AuthController : Controller
                 ex,
                 "Password update failed.");
 
+
             ModelState.AddModelError(
                 "",
-                "The password could not be changed. The reset link may have expired.");
+                "The password could not be changed. The reset link may have expired. Please request a new reset link.");
+
 
             return View(model);
         }
     }
 
 
-    // -----------------------------------------------------
+    // =====================================================
     // LOGOUT
-    // -----------------------------------------------------
+    // =====================================================
 
+    //
+    // Method Name       : Logout
+    // Purpose           : Sign out the current user and clear the authenticated session.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : None
+    // Output Type       : Task<IActionResult>
+    //
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
@@ -415,10 +876,11 @@ public class AuthController : Controller
 
             if (restored)
             {
-                // Log out this browser/session only.
-                await _supabase.Auth.SignOut(
-                    Supabase.Gotrue.Constants
-                        .SignOutScope.Local);
+                await _supabase.Auth
+                    .SignOut(
+                        Constants
+                            .SignOutScope
+                            .Local);
             }
         }
         catch (Exception ex)
@@ -430,6 +892,7 @@ public class AuthController : Controller
         finally
         {
             _supabaseSession.Clear();
+
 
             HttpContext.Session.Clear();
 
@@ -445,10 +908,17 @@ public class AuthController : Controller
     }
 
 
-    // -----------------------------------------------------
+    // =====================================================
     // ACCESS DENIED
-    // -----------------------------------------------------
+    // =====================================================
 
+    //
+    // Method Name       : AccessDenied
+    // Purpose           : Display the page for users without access permissions.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : None
+    // Output Type       : IActionResult
+    //
     [HttpGet]
     public IActionResult AccessDenied()
     {
@@ -456,6 +926,17 @@ public class AuthController : Controller
     }
 
 
+    // =====================================================
+    // REDIRECT AUTHENTICATED USER
+    // =====================================================
+
+    //
+    // Method Name       : RedirectAuthenticatedUser
+    // Purpose           : Handle the redirect authenticated user operation.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : None
+    // Output Type       : IActionResult
+    //
     private IActionResult
         RedirectAuthenticatedUser()
     {
@@ -466,6 +947,11 @@ public class AuthController : Controller
 
         return role switch
         {
+            "Super Admin" =>
+                RedirectToAction(
+                    "Dashboard",
+                    "SuperAdmin"),
+
             "School Admin" =>
                 RedirectToAction(
                     "Dashboard",
@@ -473,19 +959,32 @@ public class AuthController : Controller
 
             _ =>
                 RedirectToAction(
-                    "Index",
-                    "Home")
+                    "Dashboard",
+                    "Teacher")
         };
     }
 
 
+    // =====================================================
+    // SAFE SUPABASE SIGN OUT
+    // =====================================================
+
+    //
+    // Method Name       : SafeSupabaseSignOut
+    // Purpose           : Attempt to clear Supabase authentication without disrupting logout.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : None
+    // Output Type       : Task
+    //
     private async Task SafeSupabaseSignOut()
     {
         try
         {
-            await _supabase.Auth.SignOut(
-                Supabase.Gotrue.Constants
-                    .SignOutScope.Local);
+            await _supabase.Auth
+                .SignOut(
+                    Constants
+                        .SignOutScope
+                        .Local);
         }
         catch
         {
@@ -496,9 +995,18 @@ public class AuthController : Controller
         _supabaseSession.Clear();
     }
 
-    /*=======================================
-     INVITATION LINK
-     =========================================*/
+
+    // =====================================================
+    // INVITATION LINK
+    // =====================================================
+
+    //
+    // Method Name       : AcceptInvitation
+    // Purpose           : Redirect an invited user into the activation flow.
+    // Re-use            : Invoked by AuthController or MVC requests.
+    // Input Parameters  : None
+    // Output Type       : IActionResult
+    //
     [AllowAnonymous]
     [HttpGet]
     public IActionResult AcceptInvitation()

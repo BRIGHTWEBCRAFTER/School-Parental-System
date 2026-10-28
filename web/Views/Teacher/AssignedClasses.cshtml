@@ -1,0 +1,640 @@
+@using System.Linq
+@model SchoolParentalSystem.Web.ViewModels.Teacher.TeacherAssignedClassesViewModel
+
+@{
+    ViewData["Title"] = "Assigned Classes";
+    Layout = "_TeacherLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/teacher/teacher-assigned-classes.css"
+      asp-append-version="true" />
+
+<style>
+    /* =========================================
+           ASSIGNED CLASS ACTION BUTTONS
+           ========================================= */
+
+    .teacher-assigned-page .teacher-assigned-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+        .teacher-assigned-page .teacher-assigned-actions a {
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+    /* TAKE ATTENDANCE */
+
+    .teacher-take-attendance-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 16px;
+        background: #edf5ef;
+        color: #073f32;
+        border: 1px solid #d7e4dd;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: 0.2s ease;
+    }
+
+        .teacher-take-attendance-button:hover {
+            background: #dceee2;
+            color: #073f32;
+        }
+
+    /* RECORD GRADES */
+
+    .teacher-record-grades-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 16px;
+        background: #073f32;
+        color: white;
+        border: 1px solid #073f32;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: 0.2s ease;
+    }
+
+        .teacher-record-grades-button:hover {
+            background: #0b5945;
+            color: white;
+        }
+
+    /* VIEW STUDENTS - NOT CONNECTED YET */
+
+    .teacher-students-pending-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 16px;
+        border-radius: 10px;
+        border: 1px solid #d7e4dd;
+        background: #edf5ef;
+        color: #61776b;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: not-allowed;
+        opacity: 0.75;
+    }
+
+    /* FOCUS STYLES */
+
+    .teacher-take-attendance-button:focus-visible,
+    .teacher-record-grades-button:focus-visible {
+        outline: 3px solid #d9aa35;
+        outline-offset: 2px;
+    }
+</style>
+
+
+<section class="dashboard-content teacher-assigned-page">
+
+    <!-- ==========================================
+         INFORMATION BANNER
+         ========================================== -->
+
+    <div class="teacher-info-banner">
+
+        <div class="teacher-info-banner-icon">
+            <i class="bi bi-exclamation-lg"></i>
+        </div>
+
+        <div class="teacher-info-banner-content">
+
+            <strong>
+                Attendance can be recorded by both
+                class teachers and subject teachers.
+            </strong>
+
+            <p>
+                Class teachers record daily class attendance
+                for their assigned class.
+
+                Subject teachers may also record attendance
+                for their classes to monitor subject
+                participation.
+            </p>
+
+        </div>
+
+        <button type="button"
+                class="teacher-info-banner-close"
+                aria-label="Dismiss information">
+
+            <i class="bi bi-x-lg"></i>
+
+        </button>
+
+    </div>
+
+
+    <!-- ==========================================
+         LEARNER SEARCH RESULTS
+         ========================================== -->
+    @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+    {
+        <section class="teacher-assigned-table-card">
+
+            <div class="teacher-assigned-table-header">
+
+                <div>
+
+                    <h3>
+                        <i class="bi bi-search"></i>
+                        Learner Search Results
+                    </h3>
+
+                    <p>
+                        Results for "@Model.SearchQuery"
+                        within your authorized classes.
+                    </p>
+
+                </div>
+
+                <span class="teacher-search-result-count">
+
+                    @Model.LearnerMatches.Count found
+
+                </span>
+
+            </div>
+
+
+            @if (Model.LearnerMatches.Any())
+            {
+                <div class="teacher-assigned-table-wrapper">
+
+                    <table class="teacher-assigned-table teacher-learner-results-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Learner Name</th>
+                                <th>Admission Number</th>
+                                <th>Class</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            @foreach (var learner in Model.LearnerMatches)
+                            {
+                                <tr>
+
+                                    <td>
+
+                                        <i class="bi bi-person-circle"></i>
+
+                                        @learner.FullName
+
+                                    </td>
+
+
+                                    <td>
+                                        @learner.AdmissionNumber
+                                    </td>
+
+
+                                    <td>
+                                        @learner.ClassName
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="teacher-empty-state">
+
+                    No matching learners found in
+                    your assigned classes.
+
+                </div>
+            }
+
+        </section>
+    }
+
+
+    <!-- ==========================================
+         ASSIGNED CLASS SUMMARY
+         ========================================== -->
+    @if (Model.AssignedClass != null)
+    {
+        <section class="teacher-assigned-summary-card">
+
+            <!-- CLASS ICON -->
+
+            <div class="teacher-assigned-summary-icon">
+
+                <i class="bi bi-easel2"></i>
+
+            </div>
+
+
+            <!-- CLASS INFORMATION -->
+
+            <div class="teacher-assigned-summary-content">
+
+                <span class="teacher-assigned-summary-label">
+
+                    My Assigned Class (Class Teacher)
+
+                </span>
+
+
+                <h3>
+                    @Model.AssignedClass.ClassName
+                </h3>
+
+
+                <!-- CLASS META -->
+
+                <div class="teacher-assigned-summary-meta">
+
+                    <span>
+
+                        @(Model.AssignedClass.LearnerCount.HasValue
+                            ? $"{Model.AssignedClass.LearnerCount.Value} Learners"
+                            : "Learner count pending")
+
+                    </span>
+
+
+                    <span class="teacher-summary-divider"></span>
+
+
+                    <span>
+
+                        Class Teacher:
+                        @Model.AssignedClass.ClassTeacherName
+
+                    </span>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <p>
+                    @Model.AssignedClass.Description
+                </p>
+
+            </div>
+
+
+            <!-- =====================================
+                 SUMMARY ACTION BUTTONS
+                 ===================================== -->
+
+            <div class="teacher-assigned-summary-actions">
+
+                <!-- TAKE ATTENDANCE -->
+
+                <a asp-controller="Teacher"
+                   asp-action="Attendance"
+                   class="teacher-secondary-button">
+
+                    <i class="bi bi-calendar-check"></i>
+
+                    Take Attendance
+
+                </a>
+
+
+                <!-- VIEW GRADES -->
+
+                <a asp-controller="Teacher"
+                   asp-action="GradeRecording"
+                   class="teacher-secondary-button">
+
+                    <i class="bi bi-journal-text"></i>
+
+                    View Grades
+
+                </a>
+
+
+                <!-- CLASS COMMUNICATION -->
+
+                <a asp-controller="Teacher"
+                   asp-action="Communication"
+                   class="teacher-primary-button">
+
+                    <i class="bi bi-chat-left-text"></i>
+
+                    Class Communication
+
+                </a>
+
+            </div>
+
+        </section>
+    }
+
+
+    <!-- ==========================================
+         CLASSES I TEACH
+         ========================================== -->
+
+    <section class="teacher-assigned-table-card">
+
+        <!-- TABLE HEADING -->
+
+        <div class="teacher-assigned-table-header">
+
+            <div>
+
+                <h3>Classes I Teach</h3>
+
+                <p>
+                    List of all classes and subjects
+                    you teach. You can record attendance
+                    and grades for each class.
+                </p>
+
+            </div>
+
+
+            <!-- TERM FILTER -->
+
+            <form asp-controller="Teacher"
+                  asp-action="AssignedClasses"
+                  method="get"
+                  class="teacher-term-filter">
+
+                <select name="term"
+                        aria-label="Filter classes by term"
+                        onchange="this.form.submit()">
+
+                    @foreach (var term in Model.Terms)
+                    {
+                        if (term == Model.SelectedTerm)
+                        {
+                            <option value="@term" selected="selected">
+
+                                @term
+
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@term">
+
+                                @term
+
+                            </option>
+                        }
+                    }
+
+                </select>
+
+            </form>
+
+        </div>
+
+
+        <!-- =====================================
+             CLASSES TABLE
+             ===================================== -->
+        @if (Model.ClassesITeach.Any())
+        {
+            <div class="teacher-assigned-table-wrapper">
+
+                <table class="teacher-assigned-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Class</th>
+                            <th>Room No.</th>
+                            <th>Subject</th>
+                            <th>No. of Students</th>
+                            <th>Schedule</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var item in Model.ClassesITeach)
+                        {
+                            <tr>
+
+                                <!-- CLASS NAME -->
+
+                                <td>
+                                    @item.ClassName
+                                </td>
+
+
+                                <!-- ROOM NUMBER -->
+
+                                <td>
+                                    @item.RoomNumber
+                                </td>
+
+
+                                <!-- SUBJECT -->
+
+                                <td>
+                                    @item.SubjectName
+                                </td>
+
+
+                                <!-- NUMBER OF STUDENTS -->
+
+                                <td>
+
+                                    @(item.StudentCount?.ToString() ?? "—")
+
+                                </td>
+
+
+                                <!-- SCHEDULE -->
+
+                                <td>
+                                    @item.Schedule
+                                </td>
+
+
+                                <!-- =====================================
+                                     ACTION BUTTONS
+                                     ===================================== -->
+
+                                <td>
+
+                                    <div class="teacher-assigned-actions">
+
+                                        <!-- TAKE ATTENDANCE -->
+
+                                        <a asp-controller="Teacher"
+                                           asp-action="Attendance"
+                                           asp-route-classId="@item.ClassId"
+                                           class="teacher-take-attendance-button"
+                                           title="Open Teacher Attendance">
+
+                                            <i class="bi bi-calendar-check"></i>
+
+                                            Take Attendance
+
+                                        </a>
+
+
+                                        <!-- RECORD GRADES -->
+
+                                        <a asp-controller="Teacher"
+                                           asp-action="GradeRecording"
+                                           asp-route-classId="@item.ClassId"
+                                           class="teacher-record-grades-button"
+                                           title="Open Grade Recording">
+
+                                            <i class="bi bi-journal-check"></i>
+
+                                            Record Grades
+
+                                        </a>
+
+
+                                        <!-- VIEW STUDENTS -->
+
+                                        <button type="button"
+                                                class="teacher-students-pending-button"
+                                                disabled
+                                                title="Class Students page is being connected">
+
+                                            <i class="bi bi-people"></i>
+
+                                            View Students
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <!-- EMPTY CLASS STATE -->
+
+            <div class="teacher-empty-state">
+
+                @(string.IsNullOrWhiteSpace(Model.SearchQuery)
+                    ? "No teaching classes available yet."
+                    : "No matching classes or subjects found.")
+
+            </div>
+        }
+
+    </section>
+
+
+    <!-- ==========================================
+         BOTTOM INFORMATION NOTE
+         ========================================== -->
+
+    <section class="teacher-assigned-note-card">
+
+        <div class="teacher-assigned-note-icon">
+
+            <i class="bi bi-gear-wide-connected"></i>
+
+        </div>
+
+
+        <div>
+
+            <h4>
+                Need to manage class details?
+            </h4>
+
+            <p>
+                For class creation, updates,
+                or schedule changes, please
+                contact your School Administrator.
+            </p>
+
+        </div>
+
+    </section>
+
+</section>
+
+
+<!-- ==========================================
+     PAGE JAVASCRIPT
+     ========================================== -->
+@section Scripts
+{
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                // INFORMATION BANNER
+
+                const closeButton =
+                    document.querySelector(
+                        ".teacher-info-banner-close");
+
+                const banner =
+                    document.querySelector(
+                        ".teacher-info-banner");
+
+
+                if (closeButton && banner) {
+
+                    closeButton.addEventListener(
+                        "click",
+                        function () {
+
+                            banner.style.display = "none";
+
+                        }
+                    );
+                }
+
+            }
+        );
+
+    </script>
+}

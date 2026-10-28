@@ -1,0 +1,164 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.AnnouncementManagementViewModel
+
+@{
+    ViewData["Title"] = "Announcements";
+}
+
+<section class="sa-schools-page">
+
+    <section class="sa-schools-header">
+
+        <div>
+
+            <span class="sa-page-label">
+                Communication
+            </span>
+
+            <h2>Announcements</h2>
+
+            <p>
+                View system announcements sent
+                to registered schools.
+            </p>
+
+        </div>
+
+
+        <a asp-controller="SuperAdmin"
+           asp-action="CreateAnnouncement"
+           class="super-primary-button">
+
+            <i class="bi bi-plus-lg"></i>
+            New Announcement
+
+        </a>
+
+    </section>
+
+
+    <section class="sa-schools-card">
+
+        <div class="sa-schools-toolbar">
+
+            <div>
+
+                <h3>
+                    Announcement History
+                </h3>
+
+                <span>
+                    @Model.Announcements.Count announcement(s)
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="sa-schools-table-wrapper">
+
+            <table class="sa-schools-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Announcement</th>
+                        <th>School</th>
+                        <th>Priority</th>
+                        <th>Created</th>
+                        <th>Expires</th>
+                        <th>Acknowledgement</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @foreach (var announcement in Model.Announcements)
+                    {
+                        <tr>
+
+                            <td>
+
+                                <strong>
+                                    @announcement.Title
+                                </strong>
+
+                                <span class="sa-table-secondary">
+                                    @announcement.Content
+                                </span>
+
+                            </td>
+
+
+                            <td>
+                                @announcement.SchoolName
+                            </td>
+
+
+                            <td>
+                                @announcement.Priority
+                            </td>
+
+
+                            <td>
+
+                                @(announcement.CreatedAt
+                                                            .ToLocalTime()
+                                                            .ToString("dd MMM yyyy HH:mm"))
+
+                            </td>
+
+
+                            <td>
+
+                                @(announcement.ExpiresAt.HasValue
+                                                            ? announcement.ExpiresAt.Value
+                                                            .ToLocalTime()
+                                                            .ToString("dd MMM yyyy HH:mm")
+                                                            : "No expiry")
+
+                            </td>
+
+
+                            <td>
+
+                                @(announcement.AcknowledgementRequired
+                                                            ? "Required"
+                                                            : "Not required")
+
+                        </td>
+
+
+                            <td>
+
+                                <div class="sa-school-actions">
+
+                                    <a asp-controller="SuperAdmin"
+                                       asp-action="AnnouncementDetails"
+                                       asp-route-id="@announcement.Id"
+                                       class="sa-school-action-button"
+                                       title="View announcement">
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                                        }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</section>

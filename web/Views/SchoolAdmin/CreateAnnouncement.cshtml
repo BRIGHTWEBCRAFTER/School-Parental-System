@@ -1,0 +1,640 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.CreateAnnouncementViewModel
+
+@{
+    ViewData["Title"] = "Create Announcement";
+    Layout = "_SchoolAdminLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-create-announcement.css"
+      asp-append-version="true" />
+
+
+<section class="dashboard-content">
+
+    <div class="page-heading announcement-page-heading">
+
+        <div>
+            <h2>Create Announcement</h2>
+
+            <p>
+                Send school communication to the appropriate
+                learners, parents and staff.
+            </p>
+        </div>
+
+
+        <a asp-controller="SchoolAdmin"
+           asp-action="Communication"
+           class="announcement-back-button">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to Communication
+
+        </a>
+
+    </div>
+
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="CreateAnnouncement"
+          method="post"
+          class="announcement-form">
+
+        <div asp-validation-summary="ModelOnly"
+             class="announcement-validation-summary">
+        </div>
+
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-megaphone-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Announcement Details</h3>
+
+                    <p>
+                        Enter the message and choose its priority.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="announcement-form-grid">
+
+                <div class="announcement-field full-width">
+
+                    <label asp-for="Title">
+                        Announcement Title
+                    </label>
+
+                    <input asp-for="Title"
+                           placeholder="Enter announcement title" />
+
+                    <span asp-validation-for="Title"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <div class="announcement-field full-width">
+
+                    <label asp-for="Content">
+                        Message
+                    </label>
+
+                    <textarea asp-for="Content"
+                              rows="6"
+                              placeholder="Write your announcement message...">
+                    </textarea>
+
+                    <span asp-validation-for="Content"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <div class="announcement-field">
+
+                    <label asp-for="Priority">
+                        Priority
+                    </label>
+
+                    <select asp-for="Priority"
+                            id="announcementPriority">
+
+                        <option value="Normal">
+                            Normal
+                        </option>
+
+                        <option value="Important">
+                            Important
+                        </option>
+
+                        <option value="Urgent">
+                            Urgent
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="Priority"
+                          class="field-validation">
+                    </span>
+
+                </div>
+
+
+                <div class="announcement-field">
+
+                    <label asp-for="ExpiresAt">
+                        Expiry Date
+                    </label>
+
+                    <input asp-for="ExpiresAt"
+                           type="datetime-local"
+                           value="@(Model.ExpiresAt.HasValue
+                               ? Model.ExpiresAt.Value.ToString("yyyy-MM-ddTHH:mm")
+                               : "")" />
+
+                    <small>
+                        Optional. Leave blank if the announcement
+                        should remain active.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-bullseye"></i>
+                </div>
+
+                <div>
+                    <h3>Target Audience</h3>
+
+                    <p>
+                        Choose who should receive this announcement.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="announcement-field">
+
+                <label asp-for="TargetType">
+                    Target Type
+                </label>
+
+                <select asp-for="TargetType"
+                        id="targetTypeSelect">
+
+                    <option value="Whole School">
+                        Whole School
+                    </option>
+
+                    <option value="Role">
+                        Role
+                    </option>
+
+                    <option value="Grade">
+                        Grade
+                    </option>
+
+                    <option value="Class">
+                        Class
+                    </option>
+
+                    <option value="Specific Users">
+                        Specific Users
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="TargetType"
+                      class="field-validation">
+                </span>
+
+            </div>
+
+
+            <div id="roleTargetSection"
+                 class="target-section">
+
+                <div class="announcement-field">
+
+                    <label asp-for="TargetRole">
+                        Target Role
+                    </label>
+
+                    <select asp-for="TargetRole"
+                            id="targetRoleSelect">
+
+                        <option value="">
+                            Select role
+                        </option>
+
+                        <option value="Parent">
+                            Parents
+                        </option>
+
+                        <option value="Teacher">
+                            Teachers
+                        </option>
+
+                        <option value="School Admin">
+                            School Administrators
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div id="gradeTargetSection"
+                 class="target-section">
+
+                <div class="announcement-field">
+
+                    <label asp-for="TargetGrade">
+                        Target Grade
+                    </label>
+
+                    <select asp-for="TargetGrade"
+                            id="targetGradeSelect">
+
+                        <option value="">
+                            Select grade
+                        </option>
+
+                        @foreach (var grade in Model.Grades)
+                        {
+                            <option value="@grade">
+                                @grade
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div id="classTargetSection"
+                 class="target-section">
+
+                <div class="announcement-field">
+
+                    <label asp-for="TargetClassId">
+                        Target Class
+                    </label>
+
+                    <select asp-for="TargetClassId"
+                            id="targetClassSelect">
+
+                        <option value="">
+                            Select class
+                        </option>
+
+                        @foreach (var schoolClass in Model.Classes)
+                        {
+                            <option value="@schoolClass.Id">
+                                @schoolClass.DisplayName
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div id="specificUsersSection"
+                 class="target-section">
+
+                <div class="specific-users-heading">
+
+                    <div>
+                        <strong>
+                            Select Recipients
+                        </strong>
+
+                        <span>
+                            Choose one or more users from your school.
+                        </span>
+                    </div>
+
+                    <span id="selectedUserCount"
+                          class="selected-user-count">
+                        0 selected
+                    </span>
+
+                </div>
+
+
+                <div class="specific-users-list">
+
+                    @if (Model.Users.Any())
+                    {
+                        @foreach (var user in Model.Users)
+                        {
+                            var isSelected =
+                            Model.SelectedUserIds.Contains(
+                            user.Id);
+
+                            <label class="specific-user-option">
+
+                                <input type="checkbox"
+                                       name="SelectedUserIds"
+                                       value="@user.Id"
+                                       class="specific-user-checkbox"
+                                       checked="@isSelected" />
+
+                                <span class="specific-user-avatar">
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        user.FullName)
+                                        ? "?"
+                                        : user.FullName
+                                        .Substring(0, 1)
+                                        .ToUpper())
+
+                                </span>
+
+
+                                <span class="specific-user-details">
+
+                                    <strong>
+                                        @user.FullName
+                                    </strong>
+
+                                    <span>
+                                        @user.Role
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                       user.Email))
+                                        {
+                                            <text>
+                                                · @user.Email
+                                            </text>
+                                        }
+                                    </span>
+
+                                </span>
+
+                            </label>
+                        }
+                    }
+                    else
+                    {
+                        <div class="specific-users-empty">
+                            No active users are available.
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="announcement-form-card">
+
+            <div class="announcement-section-header">
+
+                <div class="announcement-section-icon">
+                    <i class="bi bi-check2-square"></i>
+                </div>
+
+                <div>
+                    <h3>Acknowledgement</h3>
+
+                    <p>
+                        Important or urgent announcements may
+                        require confirmation from recipients.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <label class="acknowledgement-option">
+
+                <input asp-for="AcknowledgementRequired"
+                       id="acknowledgementCheckbox" />
+
+                <span class="acknowledgement-check">
+                    <i class="bi bi-check-lg"></i>
+                </span>
+
+                <span class="acknowledgement-content">
+
+                    <strong>
+                        Require parent acknowledgement
+                    </strong>
+
+                    <span id="acknowledgementHelp">
+                        Available for Important and Urgent
+                        announcements.
+                    </span>
+
+                </span>
+
+            </label>
+
+        </section>
+
+
+        <div class="announcement-form-actions">
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="Communication"
+               class="announcement-cancel-button">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="announcement-submit-button">
+
+                <i class="bi bi-send-fill"></i>
+                Create Announcement
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const targetType =
+                document.getElementById("targetTypeSelect");
+
+            const roleSection =
+                document.getElementById("roleTargetSection");
+
+            const gradeSection =
+                document.getElementById("gradeTargetSection");
+
+            const classSection =
+                document.getElementById("classTargetSection");
+
+            const specificUsersSection =
+                document.getElementById("specificUsersSection");
+
+            const targetRole =
+                document.getElementById("targetRoleSelect");
+
+            const targetGrade =
+                document.getElementById("targetGradeSelect");
+
+            const targetClass =
+                document.getElementById("targetClassSelect");
+
+            const userCheckboxes =
+                document.querySelectorAll(
+                    ".specific-user-checkbox");
+
+            const selectedUserCount =
+                document.getElementById("selectedUserCount");
+
+            const priority =
+                document.getElementById(
+                    "announcementPriority");
+
+            const acknowledgement =
+                document.getElementById(
+                    "acknowledgementCheckbox");
+
+            const acknowledgementHelp =
+                document.getElementById(
+                    "acknowledgementHelp");
+
+
+            function updateTargetSections() {
+
+                const selected =
+                    targetType.value;
+
+
+                roleSection.style.display =
+                    selected === "Role"
+                        ? "block"
+                        : "none";
+
+
+                gradeSection.style.display =
+                    selected === "Grade"
+                        ? "block"
+                        : "none";
+
+
+                classSection.style.display =
+                    selected === "Class"
+                        ? "block"
+                        : "none";
+
+
+                specificUsersSection.style.display =
+                    selected === "Specific Users"
+                        ? "block"
+                        : "none";
+
+
+                targetRole.disabled =
+                    selected !== "Role";
+
+                targetGrade.disabled =
+                    selected !== "Grade";
+
+                targetClass.disabled =
+                    selected !== "Class";
+
+
+                userCheckboxes.forEach(function (checkbox) {
+
+                    checkbox.disabled =
+                        selected !== "Specific Users";
+
+                });
+            }
+
+
+            function updateSelectedUserCount() {
+
+                const checked =
+                    document.querySelectorAll(
+                        ".specific-user-checkbox:checked");
+
+                selectedUserCount.textContent =
+                    checked.length +
+                    (checked.length === 1
+                        ? " selected"
+                        : " selected");
+            }
+
+
+            function updateAcknowledgement() {
+
+                const canRequireAcknowledgement =
+                    priority.value === "Important" ||
+                    priority.value === "Urgent";
+
+
+                acknowledgement.disabled =
+                    !canRequireAcknowledgement;
+
+
+                if (!canRequireAcknowledgement) {
+
+                    acknowledgement.checked =
+                        false;
+
+                    acknowledgementHelp.textContent =
+                        "Change priority to Important or Urgent to require acknowledgement.";
+                }
+                else {
+
+                    acknowledgementHelp.textContent =
+                        "Recipients will be asked to acknowledge this announcement.";
+                }
+            }
+
+
+            targetType.addEventListener(
+                "change",
+                updateTargetSections);
+
+
+            priority.addEventListener(
+                "change",
+                updateAcknowledgement);
+
+
+            userCheckboxes.forEach(function (checkbox) {
+
+                checkbox.addEventListener(
+                    "change",
+                    updateSelectedUserCount);
+
+            });
+
+
+            updateTargetSections();
+            updateSelectedUserCount();
+            updateAcknowledgement();
+
+        });
+    </script>
+}

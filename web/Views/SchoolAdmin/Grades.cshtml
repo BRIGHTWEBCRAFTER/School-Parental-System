@@ -1,0 +1,531 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.GradeManagementViewModel
+
+@{
+    ViewData["Title"] = "Grades Management";
+    Layout = "_SchoolAdminLayout";
+}
+
+<link rel="stylesheet"
+      href="~/css/school-admin-grades.css"
+      asp-append-version="true" />
+
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+            <h2>Grades Management</h2>
+
+            <p>
+                View and monitor learner assessment results
+                across classes and subjects.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="grades-info-banner">
+
+        <div class="grades-info-icon">
+            <i class="bi bi-info-circle-fill"></i>
+        </div>
+
+        <p>
+            Grades are recorded by teachers for their assigned
+            classes and subjects. School administrators can review
+            results and academic performance.
+        </p>
+
+    </div>
+
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="Grades"
+          method="get"
+          class="grades-filter-bar">
+
+        <div class="grades-search">
+
+            <i class="bi bi-search"></i>
+
+            <input type="text"
+                   name="search"
+                   value="@Model.SearchTerm"
+                   placeholder="Search learners..." />
+
+        </div>
+
+
+        <div class="grades-filter">
+
+            <i class="bi bi-easel"></i>
+
+            <select name="classId">
+
+                <option value="">
+                    All Classes
+                </option>
+
+                @foreach (var schoolClass in Model.Classes)
+                {
+                    if (Model.SelectedClassId == schoolClass.Id)
+                    {
+                        <option value="@schoolClass.Id"
+                                selected>
+                            @schoolClass.DisplayName
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@schoolClass.Id">
+                            @schoolClass.DisplayName
+                        </option>
+                    }
+                }
+
+            </select>
+
+        </div>
+
+
+        <div class="grades-filter">
+
+            <i class="bi bi-book"></i>
+
+            <select name="subjectId">
+
+                <option value="">
+                    All Subjects
+                </option>
+
+                @foreach (var subject in Model.Subjects)
+                {
+                    if (Model.SelectedSubjectId == subject.Id)
+                    {
+                        <option value="@subject.Id"
+                                selected>
+                            @subject.Name
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@subject.Id">
+                            @subject.Name
+                        </option>
+                    }
+                }
+
+            </select>
+
+        </div>
+
+
+        <div class="grades-filter">
+
+            <i class="bi bi-calendar3"></i>
+
+            <select name="term">
+
+                <option value="">
+                    All Terms
+                </option>
+
+                @foreach (var term in Model.Terms)
+                {
+                    if (Model.SelectedTerm == term)
+                    {
+                        <option value="@term"
+                                selected>
+                            @term
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@term">
+                            @term
+                        </option>
+                    }
+                }
+
+            </select>
+
+        </div>
+
+
+        <div class="grades-filter">
+
+            <i class="bi bi-calendar-event"></i>
+
+            <select name="academicYear">
+
+                <option value="">
+                    All Years
+                </option>
+
+                @foreach (var year in Model.AcademicYears)
+                {
+                    if (Model.SelectedAcademicYear == year)
+                    {
+                        <option value="@year"
+                                selected>
+                            @year
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@year">
+                            @year
+                        </option>
+                    }
+                }
+
+            </select>
+
+        </div>
+
+
+        <button type="submit"
+                class="grades-filter-button">
+
+            <i class="bi bi-funnel-fill"></i>
+            Apply Filters
+
+        </button>
+
+
+        <a asp-controller="SchoolAdmin"
+           asp-action="Grades"
+           class="grades-clear-button">
+
+            Clear
+
+        </a>
+
+    </form>
+
+
+    <div class="grades-summary-grid">
+
+        <div class="grades-summary-card total">
+
+            <div class="grades-summary-icon">
+                <i class="bi bi-file-earmark-bar-graph-fill"></i>
+            </div>
+
+            <div>
+                <span>Total Results</span>
+                <strong>@Model.TotalRecords</strong>
+            </div>
+
+        </div>
+
+
+        <div class="grades-summary-card average">
+
+            <div class="grades-summary-icon">
+                <i class="bi bi-graph-up-arrow"></i>
+            </div>
+
+            <div>
+                <span>Average Score</span>
+
+                <strong>
+                    @Model.AverageScore.ToString("0.0")%
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="grades-summary-card highest">
+
+            <div class="grades-summary-icon">
+                <i class="bi bi-trophy-fill"></i>
+            </div>
+
+            <div>
+                <span>Highest Score</span>
+
+                <strong>
+                    @Model.HighestScore.ToString("0.##")%
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="grades-summary-card lowest">
+
+            <div class="grades-summary-icon">
+                <i class="bi bi-bar-chart-fill"></i>
+            </div>
+
+            <div>
+                <span>Lowest Score</span>
+
+                <strong>
+                    @Model.LowestScore.ToString("0.##")%
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <section class="grades-panel">
+
+        <div class="grades-panel-header">
+
+            <div>
+
+                <h3>
+                    <i class="bi bi-mortarboard-fill"></i>
+                    Assessment Results
+                </h3>
+
+                <p>
+                    Academic assessment records for your school.
+                </p>
+
+            </div>
+
+
+            <div class="grades-result-count">
+
+                @Model.TotalRecords
+
+                @(Model.TotalRecords == 1
+                    ? "result"
+                    : "results")
+
+            </div>
+
+        </div>
+
+
+        @if (Model.Records.Any())
+        {
+            <div class="grades-table-wrapper">
+
+                <table class="grades-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Admission No.</th>
+                            <th>Learner</th>
+                            <th>Class</th>
+                            <th>Subject</th>
+                            <th>Assessment</th>
+                            <th>Type</th>
+                            <th>Score</th>
+                            <th>Grade</th>
+                            <th>Term</th>
+                            <th>Year</th>
+                            <th>Teacher</th>
+                            <th>Remarks</th>
+                            <th>Updated</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var record in Model.Records)
+                        {
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        @record.AdmissionNumber
+                                    </strong>
+                                </td>
+
+
+                                <td>
+
+                                    <div class="grades-learner-cell">
+
+                                        <div class="grades-avatar">
+
+                                            @(string.IsNullOrWhiteSpace(
+                                                record.LearnerName)
+                                                ? "?"
+                                                : record.LearnerName
+                                                .Substring(0, 1)
+                                                .ToUpper())
+
+                                        </div>
+
+
+                                        <a asp-controller="SchoolAdmin"
+                                           asp-action="LearnerDetails"
+                                           asp-route-id="@record.LearnerId">
+
+                                            @record.LearnerName
+
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="grades-class-cell">
+
+                                        <strong>
+                                            @record.ClassName
+                                        </strong>
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                       record.ClassCode))
+                                        {
+                                            <span>
+                                                @record.ClassCode
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+                                    @record.SubjectName
+                                </td>
+
+
+                                <td>
+                                    <strong>
+                                        @record.AssessmentName
+                                    </strong>
+                                </td>
+
+
+                                <td>
+
+                                    <span class="assessment-type-badge">
+                                        @record.AssessmentType
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="grade-score">
+
+                                        @record.Score.ToString("0.##")%
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                   record.GradeLetter))
+                                    {
+                                        <span class="grade-letter">
+                                            @record.GradeLetter
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="grades-muted">
+                                            —
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <td>
+                                    @record.AcademicTerm
+                                </td>
+
+
+                                <td>
+                                    @record.AcademicYear
+                                </td>
+
+
+                                <td>
+                                    @record.TeacherName
+                                </td>
+
+
+                                <td>
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                   record.Remarks))
+                                    {
+                                        @record.Remarks
+                                    }
+                                    else
+                                    {
+                                        <span class="grades-muted">
+                                            —
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="grades-updated">
+
+                                        <strong>
+                                            @(record.UpdatedAt
+                                                .ToString(
+                                                "dd MMM yyyy"))
+                                        </strong>
+
+                                        <span>
+                                            @(record.UpdatedAt
+                                                .ToString(
+                                                "HH:mm"))
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="grades-empty-state">
+
+                <div class="grades-empty-icon">
+                    <i class="bi bi-file-earmark-x"></i>
+                </div>
+
+                <h3>No grade records found</h3>
+
+                <p>
+                    There are no grade records matching
+                    the selected filters.
+                </p>
+
+            </div>
+        }
+
+    </section>
+
+</section>

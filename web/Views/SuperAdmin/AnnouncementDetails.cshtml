@@ -1,0 +1,271 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.SuperAdmin.AnnouncementDetailsViewModel
+
+@{
+    ViewData["Title"] = "Announcement Details";
+
+    var priorityClass =
+        Model.Priority.ToLowerInvariant();
+}
+
+<section class="sa-school-details-page">
+
+    <!-- HEADER -->
+
+    <section class="sa-school-details-header">
+
+        <div>
+
+            <a asp-controller="SuperAdmin"
+               asp-action="Announcements"
+               class="sa-back-link">
+
+                <i class="bi bi-arrow-left"></i>
+                Back to Announcements
+
+            </a>
+
+
+            <span class="sa-page-label">
+                Communication
+            </span>
+
+
+            <h2>
+                @Model.Title
+            </h2>
+
+
+            <div class="sa-school-details-meta">
+
+                <span class="sa-announcement-priority @priorityClass">
+                    @Model.Priority
+                </span>
+
+                <span>
+                    <i class="bi bi-building"></i>
+
+                    @Model.SchoolName
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SUMMARY -->
+
+    <section class="sa-school-details-summary">
+
+        <article class="sa-school-detail-stat">
+
+            <div class="sa-school-detail-stat-icon">
+
+                <i class="bi bi-calendar-check"></i>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Created
+                </span>
+
+                <strong>
+                    @(Model.CreatedAt
+                                        .ToLocalTime()
+                                        .ToString("dd MMM yyyy HH:mm"))
+                </strong>
+
+            </div>
+
+        </article>
+
+
+        <article class="sa-school-detail-stat">
+
+            <div class="sa-school-detail-stat-icon">
+
+                <i class="bi bi-hourglass-split"></i>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Expires
+                </span>
+
+                <strong>
+
+                    @(Model.ExpiresAt.HasValue
+                                        ? Model.ExpiresAt.Value
+                                        .ToLocalTime()
+                                        .ToString("dd MMM yyyy HH:mm")
+                                        : "No expiry")
+
+                </strong>
+
+            </div>
+
+        </article>
+
+
+        <article class="sa-school-detail-stat">
+
+            <div class="sa-school-detail-stat-icon">
+
+                <i class="bi bi-check2-square"></i>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Acknowledgement
+                </span>
+
+                <strong>
+
+                    @(Model.AcknowledgementRequired
+                                        ? "Required"
+                                        : "Not required")
+
+                </strong>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- MESSAGE -->
+
+    <section class="sa-school-details-card">
+
+        <div class="sa-detail-card-header">
+
+            <i class="bi bi-megaphone-fill"></i>
+
+            <h3>
+                Announcement Message
+            </h3>
+
+        </div>
+
+
+        <div class="sa-announcement-message">
+
+            @Model.Content
+
+        </div>
+
+    </section>
+
+
+    <!-- INFORMATION -->
+
+    <section class="sa-school-details-grid">
+
+        <article class="sa-school-details-card">
+
+            <div class="sa-detail-card-header">
+
+                <i class="bi bi-building-fill"></i>
+
+                <h3>
+                    Recipient
+                </h3>
+
+            </div>
+
+
+            <div class="sa-detail-list">
+
+                <div>
+
+                    <span>
+                        School
+                    </span>
+
+                    <strong>
+                        @Model.SchoolName
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Priority
+                    </span>
+
+                    <strong>
+                        @Model.Priority
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+        <article class="sa-school-details-card">
+
+            <div class="sa-detail-card-header">
+
+                <i class="bi bi-info-circle-fill"></i>
+
+                <h3>
+                    Delivery Information
+                </h3>
+
+            </div>
+
+
+            <div class="sa-detail-list">
+
+                <div>
+
+                    <span>
+                        Created
+                    </span>
+
+                    <strong>
+
+                        @(Model.CreatedAt
+                                                .ToLocalTime()
+                                                .ToString("dd MMM yyyy HH:mm"))
+
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Acknowledgement
+                    </span>
+
+                    <strong>
+
+                        @(Model.AcknowledgementRequired
+                                                ? "Required"
+                                                : "Not required")
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </article>
+
+    </section>
+
+</section>

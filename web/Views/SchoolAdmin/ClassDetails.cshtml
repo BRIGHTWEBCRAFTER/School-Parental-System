@@ -1,0 +1,884 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.ClassDetailsViewModel
+
+@{
+    ViewData["Title"] = "Class Details";
+    Layout = "_SchoolAdminLayout";
+
+    var sectionText =
+        string.IsNullOrWhiteSpace(Model.Section)
+            ? "No section"
+            : $"Section {Model.Section}";
+
+    var roomText =
+        string.IsNullOrWhiteSpace(Model.RoomNumber)
+            ? "Not provided"
+            : Model.RoomNumber;
+
+    var capacityText =
+        Model.Capacity.HasValue
+            ? Model.Capacity.Value.ToString()
+            : "Not provided";
+}
+
+
+<section class="dashboard-content">
+
+    <div class="detail-page-heading">
+
+        <div>
+
+            <h2>Class Details</h2>
+
+            <p>
+                View class information and teacher assignment.
+            </p>
+
+        </div>
+
+
+        <div class="detail-heading-actions">
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="Classes"
+               class="detail-back-action">
+
+                <i class="bi bi-arrow-left"></i>
+
+                Back
+
+            </a>
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="EditClass"
+               asp-route-id="@Model.Id"
+               class="detail-edit-action">
+
+                <i class="bi bi-pencil-square"></i>
+
+                Edit Class
+
+            </a>
+
+            @if (Model.IsActive)
+            {
+                <button type="button"
+                        class="detail-deactivate-action"
+                        id="openDeactivateModal">
+
+                    <i class="bi bi-dash-circle"></i>
+                    Deactivate
+
+                </button>
+            }
+            else
+            {
+                <form asp-controller="SchoolAdmin"
+                      asp-action="ReactivateClass"
+                      asp-route-id="@Model.Id"
+                      asp-route-returnUrl="@Context.Request.Path"
+                      method="post"
+                      class="inline-form">
+
+                    @Html.AntiForgeryToken()
+
+
+                    <button type="submit"
+                            class="detail-reactivate-action">
+
+                        <i class="bi bi-check-circle"></i>
+                        Reactivate
+
+                    </button>
+
+                </form>
+            }
+
+        </div>
+
+    </div>
+
+
+    <!-- HERO -->
+    <section class="detail-profile-hero">
+
+        <div class="detail-avatar">
+
+            <i class="bi bi-easel-fill"></i>
+
+        </div>
+
+
+        <div class="detail-identity">
+
+            <div class="detail-name-row">
+
+                <h3>
+                    @Model.Name
+                </h3>
+
+
+                <span class="detail-status
+                      @(Model.IsActive
+                          ? "active"
+                          : "inactive")">
+
+                    @Model.Status
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-meta">
+
+                <span>
+                    @Model.Code
+                </span>
+
+
+                <span class="detail-meta-dot">
+                    •
+                </span>
+
+
+                <span>
+                    @Model.Grade
+                </span>
+
+
+                <span class="detail-meta-dot">
+                    •
+                </span>
+
+
+                <span>
+                    @sectionText
+                </span>
+
+
+                <span class="detail-meta-dot">
+                    •
+                </span>
+
+
+                <span>
+                    @Model.AcademicYear
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <div class="detail-content-grid">
+
+        <!-- CLASS INFORMATION -->
+        <section class="detail-card">
+
+            <div class="detail-card-header">
+
+                <div class="detail-card-icon">
+
+                    <i class="bi bi-building-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h3>
+                        Class Information
+                    </h3>
+
+                    <p>
+                        Main class and academic details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="detail-definition-grid">
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+                        <i class="bi bi-easel"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Class Name
+                        </span>
+
+                        <strong>
+                            @Model.Name
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+                        <i class="bi bi-hash"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Class Code
+                        </span>
+
+                        <strong>
+                            @Model.Code
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+                        <i class="bi bi-mortarboard"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Grade
+                        </span>
+
+                        <strong>
+                            @Model.Grade
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Section
+                        </span>
+
+                        <strong>
+                            @(string.IsNullOrWhiteSpace(
+                                Model.Section)
+                                ? "Not provided"
+                                : Model.Section)
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+                        <i class="bi bi-door-open"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Room Number
+                        </span>
+
+                        <strong>
+                            @roomText
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Capacity
+                        </span>
+
+                        <strong>
+                            @capacityText
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Academic Year
+                        </span>
+
+                        <strong>
+                            @Model.AcademicYear
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+                        <i class="bi bi-activity"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Status
+                        </span>
+
+                        <strong>
+                            @Model.Status
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CLASS TEACHER -->
+        <section class="detail-card">
+
+            <div class="detail-card-header">
+
+                <div class="detail-card-icon">
+
+                    <i class="bi bi-person-workspace"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h3>
+                        Class Teacher
+                    </h3>
+
+                    <p>
+                        Teacher responsible for this class.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="detail-side-fields">
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+                        <i class="bi bi-person"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Teacher
+                        </span>
+
+                        <strong>
+                            @Model.ClassTeacherName
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Employee ID
+                        </span>
+
+                        <strong>
+
+                            @(string.IsNullOrWhiteSpace(
+                                Model.ClassTeacherEmployeeId)
+                                ? "Not available"
+                                : Model.ClassTeacherEmployeeId)
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-field">
+
+                    <div class="detail-field-icon">
+                        <i class="bi bi-link-45deg"></i>
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Assignment
+                        </span>
+
+                        <strong>
+
+                            @(Model.ClassTeacherName ==
+                                "Not assigned"
+                                ? "No teacher assigned"
+                                : "Assigned")
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- Enrollement </-->
+    <section class="detail-card detail-linked-card">
+
+        <div class="detail-card-header">
+
+            <div class="detail-card-icon">
+
+                <i class="bi bi-people-fill"></i>
+
+            </div>
+
+
+            <div>
+
+                <h3>
+                    Enrolled Learners
+                </h3>
+
+                <p>
+
+                    @if (Model.EnrolledLearnerCount == 1)
+                    {
+                        <text>
+                            1 learner currently enrolled in this class.
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                            @Model.EnrolledLearnerCount learners currently enrolled in this class.
+                        </text>
+                    }
+
+                </p>
+
+            </div>
+
+
+            <div class="class-enrollment-count">
+
+                <strong>
+                    @Model.EnrolledLearnerCount
+                </strong>
+
+                @if (Model.Capacity.HasValue)
+                {
+                    <span>
+                        / @Model.Capacity.Value
+                    </span>
+                }
+
+            </div>
+
+        </div>
+
+
+        @if (Model.EnrolledLearners.Any())
+        {
+            <div class="table-wrapper learner-table-wrapper">
+
+                <table class="learner-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Admission No.</th>
+                            <th>Learner</th>
+                            <th>Grade</th>
+                            <th>Gender</th>
+                            <th>Enrolled</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var learner in
+                       Model.EnrolledLearners)
+                        {
+                            <tr>
+
+                                <td>
+
+                                    <strong>
+                                        @learner.AdmissionNumber
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="learner-name-cell">
+
+                                        <div class="learner-avatar">
+
+                                            @(string.IsNullOrWhiteSpace(
+                                                learner.FullName)
+                                                ? "?"
+                                                : learner.FullName
+                                                .Substring(0, 1)
+                                                .ToUpperInvariant())
+
+                                        </div>
+
+
+                                        <span>
+                                            @learner.FullName
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+                                    @learner.Grade
+                                </td>
+
+
+                                <td>
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        learner.Gender)
+                                        ? "Not provided"
+                                        : learner.Gender)
+
+                                </td>
+
+
+                                <td>
+                                    @(learner.EnrollmentDate.ToString("dd MMM yyyy"))
+                                </td>
+
+
+                                <td>
+
+                                    <span class="learner-status
+                                      @(learner.IsActive
+                                          ? "active-status"
+                                          : "inactive-status")">
+
+                                        @learner.Status
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <a asp-controller="SchoolAdmin"
+                                       asp-action="LearnerDetails"
+                                       asp-route-id="@learner.LearnerId"
+                                       class="action-icon view-action"
+                                       title="View learner">
+
+                                        <i class="bi bi-eye-fill"></i>
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="class-empty-enrollment">
+
+                <i class="bi bi-people"></i>
+
+                <strong>
+                    No learners enrolled
+                </strong>
+
+                <span>
+                    There are currently no active learner
+                    enrollments for this class.
+                </span>
+
+            </div>
+        }
+
+    </section>
+
+    <!-- RECORD HISTORY -->
+    <div class="detail-audit-strip">
+
+        <div class="detail-audit-item">
+
+            <div class="detail-audit-icon">
+                <i class="bi bi-clock"></i>
+            </div>
+
+            <div>
+                <span>Created</span>
+
+                <strong>
+                    @Model.CreatedAt.ToString(
+                             "dd MMMM yyyy, hh:mm tt")
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="detail-audit-divider"></div>
+
+
+        <div class="detail-audit-item">
+
+            <div class="detail-audit-icon">
+                <i class="bi bi-pencil-fill"></i>
+            </div>
+
+            <div>
+                <span>Last Updated</span>
+
+                <strong>
+                    @Model.UpdatedAt.ToString(
+                             "dd MMMM yyyy, hh:mm tt")
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+    @if (Model.IsActive)
+    {
+        <div id="deactivateModal"
+             class="confirmation-overlay">
+
+            <div class="confirmation-card">
+
+                <div class="confirmation-icon danger">
+
+                    <i class="bi bi-dash-circle-fill"></i>
+
+                </div>
+
+
+                <h3>
+                    Deactivate Class?
+                </h3>
+
+
+                <p class="confirmation-message">
+
+                    Are you sure you want to deactivate this class?
+                    The class record and its existing academic records
+                    will remain in the system, but the class will no
+                    longer be active.
+
+                </p>
+
+
+                <div class="confirmation-record">
+
+                    <span>
+                        Class:
+                    </span>
+
+                    <strong>
+                        @Model.Name
+                    </strong>
+
+                </div>
+
+
+                <div class="confirmation-actions">
+
+                    <button type="button"
+                            class="confirmation-cancel"
+                            id="cancelDeactivate">
+
+                        Cancel
+
+                    </button>
+
+
+                    <form asp-controller="SchoolAdmin"
+                          asp-action="DeactivateClass"
+                          asp-route-id="@Model.Id"
+                          asp-route-returnUrl="@Context.Request.Path"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+
+                        <button type="submit"
+                                class="confirmation-deactivate">
+
+                            Deactivate
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+</section>
+
+<script>
+    const deactivateModal =
+        document.getElementById(
+            "deactivateModal"
+        );
+
+    const openDeactivateModal =
+        document.getElementById(
+            "openDeactivateModal"
+        );
+
+    const cancelDeactivate =
+        document.getElementById(
+            "cancelDeactivate"
+        );
+
+
+    function closeDeactivateModal() {
+
+        if (!deactivateModal) {
+            return;
+        }
+
+        deactivateModal
+            .classList
+            .remove("show");
+    }
+
+
+    if (openDeactivateModal &&
+        deactivateModal) {
+
+        openDeactivateModal.addEventListener(
+            "click",
+            function () {
+
+                deactivateModal
+                    .classList
+                    .add("show");
+            }
+        );
+    }
+
+
+    if (cancelDeactivate) {
+
+        cancelDeactivate.addEventListener(
+            "click",
+            closeDeactivateModal
+        );
+    }
+
+
+    if (deactivateModal) {
+
+        deactivateModal.addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target ===
+                    deactivateModal) {
+
+                    closeDeactivateModal();
+                }
+            }
+        );
+    }
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Escape") {
+                closeDeactivateModal();
+            }
+        }
+    );
+</script>

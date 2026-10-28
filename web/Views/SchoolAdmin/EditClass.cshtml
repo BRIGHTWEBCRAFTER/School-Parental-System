@@ -1,0 +1,300 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.EditClassViewModel
+
+@{
+    ViewData["Title"] = "Edit Class";
+    Layout = "_SchoolAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+
+            <h2>Edit Class</h2>
+
+            <p>
+                Update class information and teacher assignment.
+            </p>
+
+        </div>
+
+
+        <a asp-controller="SchoolAdmin"
+           asp-action="ClassDetails"
+           asp-route-id="@Model.Id"
+           class="secondary-action">
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back to Details
+
+        </a>
+
+    </div>
+
+
+    <form asp-controller="SchoolAdmin"
+          asp-action="EditClass"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+
+        <input asp-for="Id"
+               type="hidden" />
+
+
+        <div asp-validation-summary="ModelOnly"
+             class="validation-summary-errors">
+        </div>
+
+
+        <section class="form-card">
+
+            <div class="form-section-header">
+
+                <i class="bi bi-pencil-square"></i>
+
+                <div>
+
+                    <h3>
+                        Class Information
+                    </h3>
+
+                    <p>
+                        Update class and academic details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="class-form-grid">
+
+                <div class="form-field">
+
+                    <label asp-for="Name">
+
+                        Class Name
+
+                        <span class="required-mark">
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <input asp-for="Name" />
+
+
+                    <span asp-validation-for="Name"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label asp-for="Code">
+
+                        Class Code
+
+                        <span class="required-mark">
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <input asp-for="Code" />
+
+
+                    <span asp-validation-for="Code"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label asp-for="Grade">
+
+                        Grade
+
+                        <span class="required-mark">
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <input asp-for="Grade" />
+
+
+                    <span asp-validation-for="Grade"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label asp-for="Section">
+                        Section
+                    </label>
+
+
+                    <input asp-for="Section"
+                           placeholder="e.g. A" />
+
+
+                    <span asp-validation-for="Section"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label asp-for="RoomNumber">
+                        Room Number
+                    </label>
+
+
+                    <input asp-for="RoomNumber"
+                           placeholder="e.g. Room 12" />
+
+
+                    <span asp-validation-for="RoomNumber"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label asp-for="Capacity">
+                        Capacity
+                    </label>
+
+
+                    <input asp-for="Capacity"
+                           type="number"
+                           min="1"
+                           max="200" />
+
+
+                    <span asp-validation-for="Capacity"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label asp-for="AcademicYear">
+
+                        Academic Year
+
+                        <span class="required-mark">
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <input asp-for="AcademicYear"
+                           type="number"
+                           min="2020"
+                           max="2100" />
+
+
+                    <span asp-validation-for="AcademicYear"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label asp-for="ClassTeacherId">
+                        Class Teacher
+                    </label>
+
+
+                    <select asp-for="ClassTeacherId">
+
+                        <option value="">
+                            Not assigned
+                        </option>
+
+
+                        @foreach (var teacher in Model.Teachers)
+                        {
+                            <option value="@teacher.Id">
+                                @teacher.DisplayName
+                            </option>
+                        }
+
+                    </select>
+
+
+                    <span class="field-hint">
+                        Changing this updates the teacher
+                        responsible for the class.
+                    </span>
+
+
+                    <span asp-validation-for="ClassTeacherId"
+                          class="field-validation-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div class="class-form-actions">
+
+            <a asp-controller="SchoolAdmin"
+               asp-action="ClassDetails"
+               asp-route-id="@Model.Id"
+               class="secondary-action">
+
+                Cancel
+
+            </a>
+
+
+            <button type="submit"
+                    class="primary-action">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+                Save Changes
+
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

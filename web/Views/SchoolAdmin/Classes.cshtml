@@ -1,0 +1,528 @@
+﻿@model SchoolParentalSystem.Web.ViewModels.ClassesPageViewModel
+
+@{
+    ViewData["Title"] = "Class Management";
+    Layout = "_SchoolAdminLayout";
+}
+
+<section class="dashboard-content">
+
+    <div class="page-heading">
+
+        <div>
+            <h2>Classes</h2>
+
+            <p>
+                Manage classes registered at your school.
+            </p>
+        </div>
+
+
+        <a class="primary-action"
+           asp-controller="SchoolAdmin"
+           asp-action="AddClass">
+
+            <i class="bi bi-plus-circle-fill"></i>
+            Add Class
+
+        </a>
+
+    </div>
+
+
+    <div class="learner-summary-grid">
+
+        <div class="summary-card">
+
+            <div class="summary-icon gold">
+                <i class="bi bi-building-fill"></i>
+            </div>
+
+            <div>
+                <span>Total Classes</span>
+                <strong>@Model.TotalClasses</strong>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon green-summary">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+
+            <div>
+                <span>Active Classes</span>
+                <strong>@Model.ActiveClasses</strong>
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon muted-summary">
+                <i class="bi bi-dash-circle-fill"></i>
+            </div>
+
+            <div>
+                <span>Inactive Classes</span>
+                <strong>@Model.InactiveClasses</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <section class="panel learner-management-panel">
+
+        <div class="learner-toolbar">
+
+            <div class="table-search">
+
+                <i class="bi bi-search"></i>
+
+                <input type="text"
+                       id="classSearch"
+                       placeholder="Search class name or code..." />
+
+            </div>
+
+
+            <div class="learner-filters">
+
+                <select id="classGradeFilter">
+
+                    <option value="">
+                        All Grades
+                    </option>
+
+                    @foreach (var grade in Model.Classes
+                    .Select(x => x.Grade)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Distinct()
+                    .OrderBy(x => x))
+                    {
+                        <option value="@grade">
+                            @grade
+                        </option>
+                    }
+
+                </select>
+
+
+                <select id="classStatusFilter">
+
+                    <option value="">
+                        All Statuses
+                    </option>
+
+                    <option value="Active">
+                        Active
+                    </option>
+
+                    <option value="Inactive">
+                        Inactive
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        @if (Model.Classes.Any())
+        {
+            <div class="table-wrapper learner-table-wrapper">
+
+                <table class="learner-table"
+                       id="classesTable">
+
+                    <thead>
+
+                        <tr>
+                            <th>Class Code</th>
+                            <th>Class</th>
+                            <th>Grade</th>
+                            <th>Section</th>
+                            <th>Class Teacher</th>
+                            <th>Room</th>
+                            <th>Capacity</th>
+                            <th>Year</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var schoolClass in Model.Classes)
+                        {
+                            <tr data-name="@((schoolClass.Name ?? "").ToLowerInvariant())"
+                                data-code="@((schoolClass.Code ?? "").ToLowerInvariant())"
+                                data-grade="@schoolClass.Grade"
+                                data-status="@schoolClass.Status">
+
+                                <td>
+                                    <strong>
+                                        @schoolClass.Code
+                                    </strong>
+                                </td>
+
+
+                                <td>
+                                    @schoolClass.Name
+                                </td>
+
+
+                                <td>
+                                    @schoolClass.Grade
+                                </td>
+
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(
+                                        schoolClass.Section)
+                                        ? "Not provided"
+                                        : schoolClass.Section)
+                                </td>
+
+
+                                <td>
+                                    @schoolClass.ClassTeacherName
+                                </td>
+
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(
+                                        schoolClass.RoomNumber)
+                                        ? "Not provided"
+                                        : schoolClass.RoomNumber)
+                                </td>
+
+
+                                <td>
+                                    @(schoolClass.Capacity.HasValue
+                                        ? schoolClass.Capacity.Value
+                                        : "—")
+                                </td>
+
+
+                                <td>
+                                    @schoolClass.AcademicYear
+                                </td>
+
+
+                                <td>
+
+                                    <span class="learner-status
+                                          @(schoolClass.Status == "Active"
+                                              ? "active-status"
+                                              : "inactive-status")">
+
+                                        @schoolClass.Status
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="learner-actions">
+
+                                        <button type="button"
+                                                class="more-actions-button"
+                                                aria-label="Class actions">
+
+                                            <i class="bi bi-three-dots-vertical"></i>
+
+                                        </button>
+
+
+                                        <div class="learner-action-menu">
+
+                                            <a asp-controller="SchoolAdmin"
+                                               asp-action="ClassDetails"
+                                               asp-route-id="@schoolClass.Id"
+                                               class="action-icon view-action"
+                                               title="View class">
+
+                                                <i class="bi bi-eye-fill"></i>
+
+                                            </a>
+
+
+                                            <a asp-controller="SchoolAdmin"
+                                               asp-action="EditClass"
+                                               asp-route-id="@schoolClass.Id"
+                                               class="action-icon edit-action"
+                                               title="Edit class">
+
+                                                <i class="bi bi-pencil-fill"></i>
+
+                                            </a>
+
+
+                                            @if (schoolClass.IsActive)
+                                            {
+                                                <button type="button"
+                                                        class="action-icon deactivate-action open-deactivate-confirmation"
+                                                        data-record-type="Class"
+                                                        data-record-name="@schoolClass.Name"
+                                                        data-action="@Url.Action(
+                "DeactivateClass",
+                "SchoolAdmin",
+                new
+                {
+                    id = schoolClass.Id,
+                    returnUrl = "/SchoolAdmin/Classes"
+                })"
+                                                        title="Deactivate class">
+
+                                                    <i class="bi bi-dash-circle-fill"></i>
+
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <form asp-controller="SchoolAdmin"
+                                                      asp-action="ReactivateClass"
+                                                      asp-route-id="@schoolClass.Id"
+                                                      asp-route-returnUrl="/SchoolAdmin/Classes"
+                                                      method="post">
+
+                                                    @Html.AntiForgeryToken()
+
+
+                                                    <button type="submit"
+                                                            class="action-icon reactivate-action"
+                                                            title="Reactivate class">
+
+                                                        <i class="bi bi-check-circle-fill"></i>
+
+                                                    </button>
+
+                                                </form>
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="dashboard-empty-state">
+
+                <i class="bi bi-building"></i>
+
+                <strong>
+                    No classes registered
+                </strong>
+
+                <span>
+                    Classes added to this school
+                    will appear here.
+                </span>
+
+            </div>
+        }
+
+    </section>
+
+</section>
+
+<partial name="_DeactivateConfirmation" />
+
+@section Scripts {
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const actionContainers =
+                    document.querySelectorAll(
+                        ".learner-actions"
+                    );
+
+
+                actionContainers.forEach(
+                    container => {
+
+                        const button =
+                            container.querySelector(
+                                ".more-actions-button"
+                            );
+
+                        const menu =
+                            container.querySelector(
+                                ".learner-action-menu"
+                            );
+
+
+                        button?.addEventListener(
+                            "click",
+                            function (event) {
+
+                                event.stopPropagation();
+
+
+                                actionContainers.forEach(
+                                    other => {
+
+                                        if (other !== container) {
+
+                                            other.classList
+                                                .remove("open");
+                                        }
+
+                                    });
+
+
+                                container.classList
+                                    .toggle("open");
+                            }
+                        );
+
+
+                        menu?.addEventListener(
+                            "click",
+                            event =>
+                                event.stopPropagation()
+                        );
+
+                    }
+                );
+
+
+                document.addEventListener(
+                    "click",
+                    function () {
+
+                        actionContainers.forEach(
+                            container =>
+                                container.classList
+                                    .remove("open")
+                        );
+
+                    }
+                );
+
+
+                const search =
+                    document.getElementById(
+                        "classSearch"
+                    );
+
+                const gradeFilter =
+                    document.getElementById(
+                        "classGradeFilter"
+                    );
+
+                const statusFilter =
+                    document.getElementById(
+                        "classStatusFilter"
+                    );
+
+                const rows =
+                    document.querySelectorAll(
+                        "#classesTable tbody tr"
+                    );
+
+
+                function filterClasses() {
+
+                    const searchValue =
+                        search?.value
+                            .trim()
+                            .toLowerCase() ?? "";
+
+                    const gradeValue =
+                        gradeFilter?.value ?? "";
+
+                    const statusValue =
+                        statusFilter?.value ?? "";
+
+
+                    rows.forEach(row => {
+
+                        const name =
+                            row.dataset.name ?? "";
+
+                        const code =
+                            row.dataset.code ?? "";
+
+                        const grade =
+                            row.dataset.grade ?? "";
+
+                        const status =
+                            row.dataset.status ?? "";
+
+
+                        const matchesSearch =
+                            !searchValue ||
+                            name.includes(searchValue) ||
+                            code.includes(searchValue);
+
+
+                        const matchesGrade =
+                            !gradeValue ||
+                            grade === gradeValue;
+
+
+                        const matchesStatus =
+                            !statusValue ||
+                            status === statusValue;
+
+
+                        row.style.display =
+                            matchesSearch &&
+                                matchesGrade &&
+                                matchesStatus
+                                ? ""
+                                : "none";
+
+                    });
+
+                }
+
+
+                search?.addEventListener(
+                    "input",
+                    filterClasses
+                );
+
+                gradeFilter?.addEventListener(
+                    "change",
+                    filterClasses
+                );
+
+                statusFilter?.addEventListener(
+                    "change",
+                    filterClasses
+                );
+
+            }
+        );
+
+    </script>
+
+}
